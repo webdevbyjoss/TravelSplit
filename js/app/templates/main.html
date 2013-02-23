@@ -1,0 +1,66 @@
+<div data-role="page">
+    <div data-role="content">
+
+        <div data-role="fieldcontain" class="ui-hide-label">
+            <label for="member">Add people:</label>
+            <input type="text" name="member" id="member" value="" maxlength="25" placeholder="John, Lisa or any other name..."/>
+        </div>
+
+        <div id="members-list">
+            <!-- 
+            <div class="list-none">please add people</div>
+            <div class="list-item">
+                <div class="money-plus">$100</div>
+                <div class="members-list-user">John</div>
+            </div>
+            <div class="list-item">
+                <div class="money-minus">$100</div>
+                <div class="members-list-user">Mark</div>
+            </div>
+            <div class="list-item">
+                <div class="money-none">$0</div>
+                <div class="members-list-user">Alex</div>
+            </div>
+            -->
+        </div>
+
+        <div id="payments">
+            <!-- <h3>Payments</h3> -->
+            <div data-role="fieldcontain" class="ui-hide-label">
+                <label for="member">Add payment:</label>
+                <input type="text" name="payment" id="payment" value="" maxlength="30" placeholder="Pizza, taxi, beer..."/>
+            </div>
+
+            <div id="spendings-list">
+                <div class="list-none">please add payments</div>
+                <div class="list-item"></div>
+            </div>
+        </div>
+
+    </div><!-- /content -->
+</div><!-- /page -->
+
+<div id="payment-details" class="payment-details-page" data-role="page" data-theme="c">
+    <div data-role="header">
+        <h1>How to split the bill?</h1>
+    </div>
+    <div data-role="content">
+        <!--
+        <input id="select-all"  type="checkbox" checked="checked"><label for="select-all">All</label>
+        -->
+        <table class="group-settings">
+            <!--
+            <tr>
+                <td><input id="j" type="checkbox"><label for="j">John</label></td>
+                <td class="money-value"><input type="text" value=""  /></td>
+            </tr>
+            -->
+        </table>
+
+        <div data-role="controlgroup" data-type="horizontal">
+            <button id="payment-details-save" tabindex="100" data-icon="check" data-role="button">Save</button>
+            <button id="payment-details-cancel" tabindex="101" data-icon="delete" data-role="button" data-iconpos="notext"></button>
+        </div>
+
+    </div><!-- /content -->
+</div><!-- /page -->

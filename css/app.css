@@ -1,0 +1,82 @@
+.ui-br {
+    border: 0!important;
+}
+
+/* List of members */
+
+#members-list {
+
+}
+
+.list-item {
+    padding: 10px;
+    cursor: pointer;
+}
+
+.money-plus, .money-minus, .money-none {
+    float: right;
+    font-size: 1.4em;
+    font-weight: bold;
+    position:relative;
+    top:-0.2em;
+}
+
+.money-plus {
+    color: green;
+}
+
+.money-minus {
+    color: red;
+}
+
+.money-none {
+    color: blue;
+}
+
+.list-user {
+
+}
+
+.list-none {
+    text-align: center;
+    color: silver;
+    padding: 20px;
+    cursor: pointer;
+}
+
+/* List of spendings */
+.list-item span.description {
+    color: gray;
+    font-size: 0.8em;
+    padding-left: 5px;
+}
+
+
+/* Payment details */
+table.group-settings {
+    width: 100%;
+}
+
+table.group-settings td.money-value {
+    width: 80px;
+}
+
+table.group-settings input[disabled] {
+    background-color: #ECECEC;
+}
+
+
+button#payment-details-save {
+
+}
+
+
+/**
+ Remove input spin box
+ */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    /* display: none; <- Crashes Chrome on hover */
+    -webkit-appearance: none;
+    margin: 0; /* <-- Apparently some margin are still there even though it's hidden */
+}
