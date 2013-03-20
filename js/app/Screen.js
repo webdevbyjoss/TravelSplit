@@ -1,6 +1,14 @@
 // The purpose of this module is to load all libraries 
 // required to initialized main screen
-define(['app/Spendings', 'text!app/templates/main.html'], function(Spendings, html){
+define([
+    'app/Spendings',
+    'text!app/templates/main.html',
+    'i18n!app/nls/messages'
+], function(
+    Spendings,
+    html,
+    i18n
+){
     "use strict";
     
     // members array of strings that will hold the list of team members
@@ -22,8 +30,8 @@ define(['app/Spendings', 'text!app/templates/main.html'], function(Spendings, ht
 
         if (Members.length === 0) {
             // render message if no members are added
-            template = '<div class="list-none">please add people</div>';
-            $('#members-list').html(template).find('.list-none').click(function(){
+            template = '<div class="list-none">' + i18n['you can add payments now'] + '</div>';
+            $('#members-list').html(template).find('.list-none').click(function() {
                 $('#member').focus();
             });
 
@@ -46,8 +54,9 @@ define(['app/Spendings', 'text!app/templates/main.html'], function(Spendings, ht
                 moneyClass = 'plus';
             }
 
-            template += '<div class="list-item"><div class="money-' + moneyClass + '">$' + Math.abs(budget).toFixed(2) + '</div>'
-                        + '<div class="list-user" data-icon="minus">' + member + '</div></div>';
+            template += '<div class="list-item"><div class="money-' + moneyClass 
+                + '">$' + Math.abs(budget).toFixed(2) + '</div>'
+                + '<div class="list-user" data-icon="minus">' + member + '</div></div>';
         });
 
         $('#members-list').html(template).trigger("create"); // jQuery Mobile "create" event required to initialize UI elements
@@ -76,7 +85,7 @@ define(['app/Spendings', 'text!app/templates/main.html'], function(Spendings, ht
 
         if (SpendingsUI.length === 0) {
             // render message about empty list
-            template = '<div class="list-none">please add payments</div>';
+            template = '<div class="list-none">you can add payments now</div>';
             $('#spendings-list').html(template);
             $('#payments').show();
             return;
@@ -144,7 +153,6 @@ define(['app/Spendings', 'text!app/templates/main.html'], function(Spendings, ht
 
 
 
-
     function hideDetails() {
 
         // get money values and add to the transactions log as separate records
@@ -194,7 +202,6 @@ define(['app/Spendings', 'text!app/templates/main.html'], function(Spendings, ht
         location.hash = '';
     }
 
-
     function recalculateBudgets() {
 
         var log = [];
@@ -221,14 +228,22 @@ define(['app/Spendings', 'text!app/templates/main.html'], function(Spendings, ht
 
 
 
-
+    // TODO: kinda ugly design descision, lets redesign this later
     return function () {
 
+        var tmpl = _.template(html);
+        var page = tmpl({'t':i18n});
+
         // load template
-        $('body').html(html);
+        $('body').html(page);
 
         // update default settings
         $.mobile.defaultPageTransition = 'none';
+
+        // Disable native jQuery Mobile events bindings in order to allow Backbone.JS integration
+        // see: http://view.jquerymobile.com/1.3.0/docs/examples/backbone-require/index.php
+        $.mobile.linkBindingEnabled = false;
+        $.mobile.hashListeningEnabled = false;
 
         $('#member').change(function() {
             var member = $(this).val();

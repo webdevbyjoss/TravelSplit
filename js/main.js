@@ -21,10 +21,23 @@ requirejs.config({
 			deps: ['jquery']
 		}
 	}
+    //Set the config for the i18n
+    // i18n module
+    // locale: 'uk-ua'
 });
 
 // load initial set of libraries
 require(['app/events', 'app/Screen'], function(bindEvents, initUI) {
-	bindEvents(initUI); // TODO: kinda ugly convention (?)
-	require(['jquery-mobile']);
+	
+    // We currently use jQuery Mobile for our application UI
+    // so need to wait untill "mobileinit" will be fired
+    $(document).bind("mobileinit", function() {
+        // TODO: hide splash screen if it will be available
+		bindEvents(initUI); // TODO: kinda ugly convention (?)
+    });
+
+	require(['jquery-mobile'], function () {
+
+	});
+
 });
