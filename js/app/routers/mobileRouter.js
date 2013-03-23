@@ -1,4 +1,6 @@
-define(['jquery', 'backbone', 'views/PaymentView'], function($, Backbone, PaymentView){
+define(['jquery', 'backbone', 'utils', 'views/PaymentView', 'cordova']
+, function($, Backbone, utils, PaymentView) {
+
 	return Backbone.Router.extend({
 
 		initialize: function () {
@@ -14,6 +16,10 @@ define(['jquery', 'backbone', 'views/PaymentView'], function($, Backbone, Paymen
 			'': 'home',
 			'payment?:id': 'payment'
 		}, 
+
+		initApp: function () {
+
+		},
 
 		home: function () {
 

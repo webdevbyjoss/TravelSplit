@@ -7,7 +7,9 @@ define({
 		'please add payments': 'please add payments',
 		'Payment details': 'Payment details',
 		'Save': 'Save',
-		'please add people': 'please add people'
+		'please add people': 'please add people',
+		'Whos in your awesome team?': 'Who\'s in your awesome team?',
+		'Where you spend the money?': 'Where you spend the money?'
 	},
 	'uk-ua': true
 });

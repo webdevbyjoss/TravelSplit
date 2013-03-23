@@ -1,8 +1,8 @@
 // The purpose of this module is to load all libraries 
 // required to initialized main screen
 define([
-    'app/Spendings',
-    'text!app/templates/main.html',
+    'app/models/Spendings',
+    'text!tpl/main.html',
     'i18n!app/nls/messages'
 ], function(
     Spendings,

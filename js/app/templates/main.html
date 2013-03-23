@@ -1,7 +1,7 @@
 <div data-role="page">
     <div data-role="content">
 
-        <h2>People</h2>
+        <h2><%- t['Whos in your awesome team?'] %></h2>
 
         <div data-role="fieldcontain" class="ui-hide-label">
             <label for="member"><%- t['Add people'] %>:</label>
@@ -29,7 +29,7 @@
 
         <div id="payments">
             
-            <h2>Payments</h2>
+            <h2><%- t['Where you spend the money?'] %></h2>
 
             <div data-role="fieldcontain" class="ui-hide-label">
                 <label for="member"><%- t['Add payment'] %>:</label>
@@ -47,28 +47,4 @@
 </div><!-- /page -->
 
 <div id="payment-details" class="payment-details-page" data-role="page" data-theme="c">
-    <div data-role="header">
-        <h1><%- t['Payment details'] %></h1>
-    </div>
-    <div data-role="content">
-        <!--
-        <input id="select-all"  type="checkbox" checked="checked"><label for="select-all">All</label>
-        -->
-        <table class="group-settings">
-            <!--
-            <tr>
-                <td><input id="j" type="checkbox"><label for="j">John</label></td>
-                <td class="money-value"><input type="text" value=""  /></td>
-            </tr>
-            -->
-        </table>
-
-        <div data-role="controlgroup" data-type="horizontal">
-            <button id="payment-details-save" tabindex="100" data-icon="check" 
-                data-role="button"><%- t['Save'] %></button>
-            <button id="payment-details-cancel" tabindex="101" data-icon="delete" 
-                data-role="button" data-iconpos="notext"></button>
-        </div>
-
-    </div><!-- /content -->
 </div><!-- /page -->

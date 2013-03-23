@@ -1,52 +1,33 @@
-define(['cordova', 'jquery', 'underscore'], function() {
+define(['utils', 'cordova'], function(utils) {
     "use strict";
 
     return function(initCallback) {
 
-        // DOM ready
-        $(function() {
+        // Just init app on regular browser
+        // Without Cordova we can perfrom that immediately
+        if (!utils.isCordova()) {
+            initCallback();
+            return;
+        }
 
-            // Just init app on regular browser
-            // Without Cordova we can perfrom that immediately
-            if (!isCordova()) {
-                initCallback();
-                return;
-            }
+        // This will be called only on Cordova device
+        // Application init on Cordova should be done on "deviceready"
+        document.addEventListener("deviceready", function() {
+        
+            // Initialize Cordova specific application events
+            document.addEventListener("pause", pauseHandler, false);
+            document.addEventListener("resume", resumeHandler, false);
+            document.addEventListener("online", onlineHandler, false);
+            document.addEventListener("offline", offlineHandler, false);
+            document.addEventListener("backbutton", backbuttonHandler, false);
+            document.addEventListener("menubutton", menubuttonHandler, false);
 
-            // This will be called only on Cordova device
-            // Application init on Cordova should be done on "deviceready"
-            document.addEventListener("deviceready", function() {
-            
-                // Initialize Cordova specific application events
-                document.addEventListener("pause", pauseHandler, false);
-                document.addEventListener("resume", resumeHandler, false);
-                document.addEventListener("online", onlineHandler, false);
-                document.addEventListener("offline", offlineHandler, false);
-                document.addEventListener("backbutton", backbuttonHandler, false);
-                document.addEventListener("menubutton", menubuttonHandler, false);
+            // finally start application initialization
+            initCallback();
 
-                // finally start application initialization
-                initCallback();
-
-            }, false);
-
-        });
+        }, false);
 
     }
-
-
-    /**
-     * Determine whether the file loaded from Cordova or not
-     * 
-     * @return Boolean true if application is in Cordova environment
-     */
-    function isCordova() {
-        return (cordova || PhoneGap || phonegap) 
-        && /^file:\/{3}[^\/]/i.test(window.location.href) 
-        && /ios|iphone|ipod|ipad|android/i.test(navigator.userAgent);
-    }
-
-
 
 
     function pauseHandler() {
@@ -75,7 +56,5 @@ define(['cordova', 'jquery', 'underscore'], function() {
     function menubuttonHandler() {
         console.log('Application menu button pressed');
     }
-
-
 
 });
