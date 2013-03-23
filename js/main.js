@@ -28,18 +28,9 @@ requirejs.config({
 });
 
 // load initial set of libraries
-require(['app/events', 'app/views/Main', 'app/routers/mobileRouter'], function(bindEvents, initUI, MobileRouter) {
-	
-    // We currently use jQuery Mobile for our application UI
-    // so need to wait untill "mobileinit" will be fired
-    $(document).bind("mobileinit", function() {
-        // TODO: hide splash screen if it will be available
-		bindEvents(initUI); // TODO: kinda ugly convention (?)
+require(['app/routers/mobileRouter'], function(MobileRouter) {
 
-		// Instantiate Mobile Router
-        this.router = new MobileRouter();
-    });
-
-	require(['jquery-mobile']);
+	// Instantiate Mobile Router
+    this.router = new MobileRouter();
 
 });
