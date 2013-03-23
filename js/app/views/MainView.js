@@ -1,48 +1,91 @@
-// The purpose of this module is to load all libraries 
-// required to initialized main screen
 define([
     'app/models/Spendings',
     'text!tpl/main.html',
+    'text!tpl/payment.html',
     'i18n!app/nls/messages'
 ], function(
     Spendings,
-    html,
+    tplMain,
+    tplPayment,
     i18n
 ){
-    "use strict";
-    
-    // members array of strings that will hold the list of team members
-    var Members = [];
+"use strict";
 
-    // members hash that will hold the money owned/earned by each member    	
-    var MembersSpendings = {};
+return Backbone.View.extend({
+	events: {
+		'change #member': 'memberChangeHandler',
+		'change #payment': 'paymentChangeHandler',
+		'change #select-all': 'selectallChangeHandler',
+        'click #payment-details-save': 'saveClickHandler',
+        'click #payment-details-cancel': 'cancelClickHandler'
+	},
+	/**
+	 * Members array of strings that will hold the list of team members
+	 * 
+	 * @type {Array}
+	 */
+	Members: [],
 
-    // transactions that were made by the members
-	   // fields:
-	   // - description
-	   // - total
-	   // - spending object {'John': 100, 'Alex': 20, 'Ann':0, 'Mark': 0}
-	var SpendingsUI = [];
+	/**
+	 * Members hash that will hold the money owned/earned by each member
+	 * 
+	 * @type {Object}
+	 */
+	MembersSpendings:{},
 
-    function renderMembersList() {
+	/**
+	 * Transactions that were made by the members
+	 * fields:
+	 * - description
+	 * - total
+	 * - spending object {'John': 100, 'Alex': 20, 'Ann':0, 'Mark': 0}
+	 * 
+	 * @type {Array}
+	 */
+	SpendingsUI: [],
 
+	/**
+	 * Main page template
+	 * 
+	 * @type {String}
+	 */
+	template: _.template(tplMain),
+    templatePayment: _.template(tplPayment),
+
+	initialise: function() {
+        
+	},
+
+	render: function() {
+		this.$el.html( this.template({'t':i18n}) ).trigger("create");
+        // render payment details view
+        $('#payment-details').html( this.templatePayment({'t':i18n}));
+
+		$('#member').focus();
+
+        this.renderMembersList();
+        this.hidePayments();
+	},
+
+    renderMembersList: function() {
+    	var self = this;
         var template = "";
 
-        if (Members.length === 0) {
+        if (this.Members.length === 0) {
             // render message if no members are added
             template = '<div class="list-none">' + i18n['you can add payments now'] + '</div>';
             $('#members-list').html(template).find('.list-none').click(function() {
                 $('#member').focus();
             });
 
-            hidePayments();
+            this.hidePayments();
 
             return;
         }
 
         // or render the list othervise
-        Members.forEach(function(member, index){
-            var budget = MembersSpendings[member];
+        this.Members.forEach(function(member, index){
+            var budget = self.MembersSpendings[member];
             if (isNaN(budget)) {
                 budget = 0;
             }
@@ -67,23 +110,23 @@ define([
             if (confirm('Are you sure to remove "' + member + '"?')) {
                 var index = Members.indexOf(member);
                 if (index !== -1) {
-                    Members.splice(Members.indexOf(member), 1);
-                    renderMembersList();
+                    self.Members.splice(Members.indexOf(member), 1);
+                    self.renderMembersList();
                 }
             }
         });
 
-        renderPayments();
-    }
-
-    /* Payments functionality */
+        this.renderPayments();
+    }, 
 
 
-    function renderPayments() {
+
+
+	renderPayments: function() {
         // render payments log data
         var template = "";
 
-        if (SpendingsUI.length === 0) {
+        if (this.SpendingsUI.length === 0) {
             // render message about empty list
             template = '<div class="list-none">you can add payments now</div>';
             $('#spendings-list').html(template);
@@ -91,7 +134,7 @@ define([
             return;
         }
 
-        SpendingsUI.forEach(function(item){
+        this.SpendingsUI.forEach(function(item){
             
             var members = [];
             $.each(item.spendings, function(key, value) {
@@ -109,17 +152,20 @@ define([
         $('#spendings-list').html(template).trigger("create");
 
         $('#payments').show();
-    }
+    },
 
-    function hidePayments() {
+
+
+    hidePayments: function() {
         $('#payments').hide();
-    }
+    },
 
 
-    function showDetails() {
+
+    showDetails: function() {
 
         var template = "";
-        Members.forEach(function(member, index){
+        this.Members.forEach(function(member, index){
             template += '<tr><td><input checked="checked" id="member-' + index + '" type="checkbox" value=' + index + '>'
                       + '<label for="member-' + index + '">' + member + '</label></td>'
                       + '<td class="money-value"><input tabindex="' + (index + 1) +'" data-id="' + index 
@@ -148,12 +194,14 @@ define([
         });
 
         // prepare and open payment details page
-        location.hash = 'payment-details';
-    }
+        this.trigger('navigate', 'payment/111');
+    },
 
 
 
-    function hideDetails() {
+    hideDetails: function() {
+    	
+    	var self = this;
 
         // get money values and add to the transactions log as separate records
         var spendingObj = {};
@@ -174,7 +222,7 @@ define([
             var id = $(this).data('id');
 
             // create records in spending object
-            spendingObj[ Members[id] ] = value;
+            spendingObj[ self.Members[id] ] = value;
             total += value;
         });
 
@@ -191,22 +239,23 @@ define([
             'spendings': spendingObj,
         };
 
-        SpendingsUI.push(logItem);
+        this.SpendingsUI.push(logItem);
 
         // recalculate member budget and re-render members list
-        recalculateBudgets();
+        this.recalculateBudgets();
 
         $('#payment').val('')
-        renderPayments();
+        this.renderPayments();
 
-        location.hash = '';
-    }
+        this.trigger('navigate', '');
+    },
 
-    function recalculateBudgets() {
 
+    recalculateBudgets: function() {
+    	var self = this;
         var log = [];
 
-        SpendingsUI.forEach(function(item) {
+        this.SpendingsUI.forEach(function(item) {
             log.push(item.spendings);
         });
 
@@ -214,89 +263,72 @@ define([
         var data = t.run(log);
 
         // update member spendings array
-        Members.forEach(function(member){
+        this.Members.forEach(function(member){
             if (data[member]) {
-                MembersSpendings[member] = data[member];
+                self.MembersSpendings[member] = data[member];
             }
         });
         
         // render new data
-        renderMembersList();
+        this.renderMembersList();
+    },
+
+
+
+
+	memberChangeHandler: function(e) {
+		var elem = e.target;
+
+        var member = $(elem).val();
+        if (member === "") {
+            // silently quit on empty values
+            return;
+        }
+        // clear field and focus
+        $(elem).val('');
+        // if particular member already exists, do nothing
+        if (this.Members.indexOf(member) !== -1) {
+            return;
+        }
+        // Add new member to the list
+        // TODO: update UI
+        this.Members.push(member);
+        this.renderMembersList();
+        
+        $(elem).focus().click();
+	},
+
+
+	paymentChangeHandler: function(e) {
+		var elem = e.target;
+
+	    var payment = $(elem).val();
+        if (payment === "") {
+            return;
+        }
+        this.showDetails();
+	},
+
+
+	selectallChangeHandler: function(e) {
+		var elem = e.target;
+
+		var state = $(elem).prop('checked');
+
+        // apply the same state to all items
+        $('table.group-settings input[type=checkbox]').each(function(){
+            $(this).prop("checked", state).change().checkboxradio('refresh');
+        });
+	},
+
+    saveClickHandler: function(e) {
+        this.hideDetails();
+    },
+
+    cancelClickHandler: function(e) {
+        $('#payment').val('').focus();
+        this.trigger('navigate', '');
     }
 
-
-
-
-
-    // TODO: kinda ugly design descision, lets redesign this later
-    return function () {
-
-        var tmpl = _.template(html);
-        var page = tmpl({'t':i18n});
-
-        // load template
-        $('body').html(page);
-
-        // update default settings
-        $.mobile.defaultPageTransition = 'none';
-
-        // Disable native jQuery Mobile events bindings in order to allow Backbone.JS integration
-        // see: http://view.jquerymobile.com/1.3.0/docs/examples/backbone-require/index.php
-        $.mobile.linkBindingEnabled = false;
-        $.mobile.hashListeningEnabled = false;
-
-        $('#member').change(function() {
-            var member = $(this).val();
-            if (member === "") {
-                // silently quit on empty values
-                return;
-            }
-            // clear field and focus
-            $(this).val('');
-            // if particular member already exists, do nothing
-            if (Members.indexOf(member) !== -1) {
-                return;
-            }
-            // Add new member to the list
-            // TODO: update UI
-            Members.push(member);
-            renderMembersList();
-            
-            $(this).focus().click();
-
-        }).focus();
-
-        $('#payment').change(function(){
-            var payment = $(this).val();
-            if (payment === "") {
-                return;
-            }
-            showDetails();
-        });
-
-        $('#select-all').change(function(){
-            var state = $(this).prop('checked');
-
-            // apply the same state to all items
-            $('table.group-settings input[type=checkbox]').each(function(){
-                $(this).prop("checked", state).change().checkboxradio('refresh');
-            });
-        });
-
-
-        $('#payment-details-save').click(function(){
-            hideDetails();
-        });
-
-        $('#payment-details-cancel').click(function(){
-            $('#payment').val('').focus();
-            location.hash = '';
-        });
-
-        renderMembersList();
-        hidePayments();
-    }
-
-
-
+});
 });
