@@ -5,7 +5,7 @@ define({
 		'Add payment': 'Add payment',
 		'Pizza, taxi, beer': 'Pizza, taxi, beer',
 		'please add payments': 'please add payments',
-		'Payment details': 'Payment details',
+		'Who paid the bill?': 'Who paid the bill?',
 		'Save': 'Save',
 		'please add people': 'please add people',
 		'Whos in your awesome team?': 'Who\'s in your awesome team?',

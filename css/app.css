@@ -10,7 +10,20 @@
 
 .list-item {
     padding: 10px;
+    padding-left: 40px;
+    padding-right: 13px;
+
     cursor: pointer;
+
+    background-image: url('../img/monotone_delete_small.png');
+    
+    background-repeat: no-repeat;
+    background-position: 7px 5px;
+}
+
+.list-item:hover {
+    background-color: #fdfdfd;
+    border-radius: 15px;
 }
 
 .money-plus, .money-minus, .money-none {
@@ -22,7 +35,7 @@
 }
 
 .money-plus {
-    color: green;
+    color: blue;
 }
 
 .money-minus {
@@ -30,7 +43,7 @@
 }
 
 .money-none {
-    color: blue;
+    color: green;
 }
 
 .list-user {

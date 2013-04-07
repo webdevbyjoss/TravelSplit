@@ -42,7 +42,7 @@ define(['jquery', 'backbone', 'utils', 'views/PaymentView', 'views/MainView', 'c
 	        var self = this;
 	        document.addEventListener("deviceready", function() {
 	            // Initialize Cordova specific application events
-	            document.addEventListener("pause", self.mobileHandler, false); // Application minimised/paused
+	            document.addEventListener("pause", self.pauseHandler, false); // Application minimised/paused
 	            document.addEventListener("resume", self.mobileHandler, false); // Application resumed
 	            document.addEventListener("online", self.mobileHandler, false); // Device went online
 	            document.addEventListener("offline", self.mobileHandler, false); // Device went offline
@@ -52,6 +52,14 @@ define(['jquery', 'backbone', 'utils', 'views/PaymentView', 'views/MainView', 'c
 	            self.runApp();
 
 	        }, false);
+		},
+
+		pauseHandler: function(e) {
+			this.MainView.saveData();
+		},
+
+		resumeHandler: function(e) {
+			this.MainView.loadData();
 		},
 
 		mobileHandler: function(e) {

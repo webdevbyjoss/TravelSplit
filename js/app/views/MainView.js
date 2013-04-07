@@ -52,8 +52,8 @@ return Backbone.View.extend({
 	template: _.template(tplMain),
     templatePayment: _.template(tplPayment),
 
-	initialise: function() {
-        
+	initialize: function() {
+        this.loadData();
 	},
 
 	render: function() {
@@ -63,9 +63,22 @@ return Backbone.View.extend({
 
 		$('#member').focus();
 
-        this.renderMembersList();
-        this.hidePayments();
+        this.recalculateBudgets();
 	},
+
+    loadData: function () {
+        console.log('load data');
+        this.SpendingsUI = localStorage["SpendingsUI"] ? JSON.parse(localStorage["SpendingsUI"]) : [];
+        this.Members = localStorage["Members"] ? JSON.parse(localStorage["Members"]) : [];
+        console.log(this.SpendingsUI);
+        console.log(this.Members);
+    },
+
+    saveData: function() {
+        console.log('save data');
+        localStorage["SpendingsUI"] = JSON.stringify(this.SpendingsUI);
+        localStorage["Members"] = JSON.stringify(this.Members);
+    },
 
     renderMembersList: function() {
     	var self = this;
@@ -73,7 +86,7 @@ return Backbone.View.extend({
 
         if (this.Members.length === 0) {
             // render message if no members are added
-            template = '<div class="list-none">' + i18n['you can add payments now'] + '</div>';
+            template = '<div class="list-none">' + i18n['please add people'] + '</div>';
             $('#members-list').html(template).find('.list-none').click(function() {
                 $('#member').focus();
             });
@@ -105,18 +118,24 @@ return Backbone.View.extend({
         $('#members-list').html(template).trigger("create"); // jQuery Mobile "create" event required to initialize UI elements
 
         // addign events to newly generated DOM elemets
-        $('div.list-item').click(function(){
+        $('#members-list div.list-item').click(function(){
             var member = $('.list-user', this).text();
             if (confirm('Are you sure to remove "' + member + '"?')) {
-                var index = Members.indexOf(member);
+                var index = self.Members.indexOf(member);
                 if (index !== -1) {
-                    self.Members.splice(Members.indexOf(member), 1);
-                    self.renderMembersList();
+                    self.Members.splice(self.Members.indexOf(member), 1);
+                    self.recalculateBudgets();
                 }
             }
         });
 
-        this.renderPayments();
+        // display mayments form only if 2 and more members are available
+        if (this.Members.length > 1) {
+            this.renderPayments();
+        } else {
+            this.hidePayments();
+        }
+        
     }, 
 
 
@@ -125,6 +144,7 @@ return Backbone.View.extend({
 	renderPayments: function() {
         // render payments log data
         var template = "";
+        var self = this;
 
         if (this.SpendingsUI.length === 0) {
             // render message about empty list
@@ -134,7 +154,7 @@ return Backbone.View.extend({
             return;
         }
 
-        this.SpendingsUI.forEach(function(item){
+        this.SpendingsUI.forEach(function(item, index){
             
             var members = [];
             $.each(item.spendings, function(key, value) {
@@ -145,11 +165,31 @@ return Backbone.View.extend({
             });
 
             template += '<div class="list-item"><div class="money-none">$' + item.total + '</div>'
-                      + '<div class="list-user">' + item.description 
+                      + '<div class="list-user" data-id="' + index + '">' + item.description 
                       + ' <span class="description">' + members.join(', ') + '</span></div></div>';
         });
 
         $('#spendings-list').html(template).trigger("create");
+
+        // addign events to newly generated DOM elemets
+        $('#spendings-list div.list-item').click(function(){
+            var el = $('.list-user', this);
+            var title = $(el).text();
+            var id = $(el).data('id');
+            
+            if (confirm('Are you sure to remove "' + title + '"?')) {
+                /*
+                var index = self.Members.indexOf(member);
+                if (index !== -1) {
+                    self.Members.splice(self.Members.indexOf(member), 1);
+                    self.renderMembersList();
+                }
+                */
+               self.SpendingsUI.splice(id, 1);
+               self.recalculateBudgets();
+               console.log('Remove ' + id + ': ' + title);
+            }
+        });
 
         $('#payments').show();
     },
@@ -264,13 +304,14 @@ return Backbone.View.extend({
 
         // update member spendings array
         this.Members.forEach(function(member){
-            if (data[member]) {
-                self.MembersSpendings[member] = data[member];
-            }
+            self.MembersSpendings[member] = data[member] ? data[member] : 0;
         });
         
         // render new data
         this.renderMembersList();
+
+        // save data on each budget recalculation
+        this.saveData();
     },
 
 
@@ -294,6 +335,9 @@ return Backbone.View.extend({
         // TODO: update UI
         this.Members.push(member);
         this.renderMembersList();
+
+        // save data after new member is added
+        this.saveData();
         
         $(elem).focus().click();
 	},
