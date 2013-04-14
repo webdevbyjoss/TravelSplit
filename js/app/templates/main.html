@@ -1,34 +1,7 @@
 <div id="main" data-role="page">
     <div data-role="content">
-
-        <h2><%- t['Whos in your awesome team?'] %></h2>
-
-        <div data-role="fieldcontain" class="ui-hide-label">
-            <label for="member"><%- t['Add people'] %>:</label>
-            <input type="text" name="member" id="member" value="" maxlength="25" 
-                placeholder="<%- t['John, Lisa or any other name'] %>..."/>
-        </div>
-
-        <div id="members-list">
-            <!-- 
-            <div class="list-none">please add people</div>
-            <div class="list-item">
-                <div class="money-plus">$100</div>
-                <div class="members-list-user">John</div>
-            </div>
-            <div class="list-item">
-                <div class="money-minus">$100</div>
-                <div class="members-list-user">Mark</div>
-            </div>
-            <div class="list-item">
-                <div class="money-none">$0</div>
-                <div class="members-list-user">Alex</div>
-            </div>
-            -->
-        </div>
-
+        <div id="members"><!-- views/members.html --></div>
         <div id="payments">
-            
             <h2><%- t['Where you spend the money?'] %></h2>
 
             <div data-role="fieldcontain" class="ui-hide-label">
@@ -42,7 +15,6 @@
                 <div class="list-item"></div>
             </div>
         </div>
-
     </div><!-- /content -->
 </div><!-- /page -->
 

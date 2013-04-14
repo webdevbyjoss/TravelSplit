@@ -11,6 +11,8 @@ requirejs.config({
 		// application specific paths
 		'app': '../app',
 		'views': '../app/views',
+		'model': '../app/models',
+		'collection': '../app/collections',
 		// templates directory
 		'tpl': '../app/templates'
 	},

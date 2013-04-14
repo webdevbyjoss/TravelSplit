@@ -3,8 +3,33 @@ define(['jquery', 'backbone', 'utils', 'views/PaymentView', 'views/MainView', 'c
 
 	return Backbone.Router.extend({
 
+		routes: {
+			'': 'home',
+			'payment/:id': 'payment'
+		},
+
+		home: function () {
+
+			if ($.mobile.activePage) {
+				// Programatically changes to the jQuery mobile page only when everything is initialized
+				$.mobile.changePage( $("#main"), { changeHash: false } );
+			}
+
+			this.CurrentView = this.MainView;
+		},
+
+		payment: function (id) {
+			// Programatically changes to the jQuery mobile page
+			$.mobile.changePage( $("#payment-details"), { changeHash: false } );
+			this.CurrentView = this.PaymentView;
+		},
+
 		initialize: function () {
 			var self = this;
+
+			this.MainView = new MainView({el:'body'});
+			this.PaymentView = new PaymentView({el:'#payment-details'});
+
 		    // We currently use jQuery Mobile for our application UI
 		    // so need to wait untill "mobileinit" will be fired
 		    $(document).bind("mobileinit", function() {
@@ -26,80 +51,59 @@ define(['jquery', 'backbone', 'utils', 'views/PaymentView', 'views/MainView', 'c
 			require(['jquery-mobile']);
 		},
 
-		routes: {
-			'': 'home',
-			'payment/:id': 'payment'
-		},
-
 		initApp: function() {
+
 			if (!utils.isCordova()) {
-				// early return on non-cordova devices
 				this.runApp();
+				// early return on non-cordova devices
 				return;
 			}
+
 	        // This will be called only on Cordova device
 	        // Application init on Cordova should be done on "deviceready"
 	        var self = this;
 	        document.addEventListener("deviceready", function() {
-	            // Initialize Cordova specific application events
-	            document.addEventListener("pause", self.pauseHandler, false); // Application minimised/paused
-	            document.addEventListener("resume", self.mobileHandler, false); // Application resumed
-	            document.addEventListener("online", self.mobileHandler, false); // Device went online
-	            document.addEventListener("offline", self.mobileHandler, false); // Device went offline
-	            document.addEventListener("backbutton", self.mobileHandler, false); // Device back button pressed
-	            document.addEventListener("menubutton", self.mobileHandler, false); // Device menu button pressed
 
-	            self.runApp();
+				self.runApp();
+
+	            // Initialize Cordova specific application events
+	            document.addEventListener("pause", function(e) { // Application minimised/paused
+	            	self.MainView.saveData();
+	            }, false);
+	            document.addEventListener("resume", function(e) { // Application resumed
+					self.MainView.loadData();
+	            }, false);
+	            document.addEventListener("backbutton", function (e) { // Device back button pressed
+	            	self.CurrentView.backButtonHandler();
+	            }, false);
+
+	            // document.addEventListener("online", self.mobileHandler, false); // Device went online
+	            // document.addEventListener("offline", self.mobileHandler, false); // Device went offline
+	            // document.addEventListener("menubutton", self.mobileHandler, false); // Device menu button pressed
 
 	        }, false);
-		},
-
-		pauseHandler: function(e) {
-			this.MainView.saveData();
-		},
-
-		resumeHandler: function(e) {
-			this.MainView.loadData();
-		},
-
-		mobileHandler: function(e) {
-			console.log(e);
-			/*
-	        if (confirm("Do you want to exit the application?")) {
-	            navigator.app.exitApp();
-	        }
-	        */
 		},
 
 		runApp: function() {
 			var self = this;
 
-			this.MainView = new MainView({
-				el: 'body'
-			}).on('navigate', function(url) {
-				self.navigate(url, {'trigger': true});
-			}).render();;
+			// this will hold the link to view that is currently displayed on screen
+			this.MainView.on('navigate', function(url) {
+				self.navidateHandler(url);
+			}).render();
 
-			this.paymentView = new PaymentView({
-				el: '#payment-details',
+			this.PaymentView.on('navigate', function(url) {
+				self.navidateHandler(url);
 			});
+
+			this.CurrentView = this.MainView;
 
 			Backbone.history.start();
 		},
 
-		home: function () {
-
-			if ($.mobile.activePage) {
-				// Programatically changes to the jQuery mobile page only when everything is initialized
-				$.mobile.changePage( $("#main"), { changeHash: false } );
-			}
-			
+		navidateHandler: function(url) {
+			this.navigate(url, {'trigger': true});
 		},
-
-		payment: function (id) {
-			// Programatically changes to the jQuery mobile page
-			$.mobile.changePage( $("#payment-details"), { changeHash: false } );
-		}
 
 	});
 });

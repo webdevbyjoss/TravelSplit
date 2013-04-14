@@ -1,37 +1,27 @@
 define([
+    'i18n!app/nls/messages',
     'app/models/Spendings',
+    'collection/Members',
+    'app/views/MembersView',
     'text!tpl/main.html',
-    'text!tpl/payment.html',
-    'i18n!app/nls/messages'
+    'text!tpl/payment.html'
 ], function(
+    i18n,
     Spendings,
+    MembersCollection,
+    MembersView,
     tplMain,
-    tplPayment,
-    i18n
+    tplPayment
 ){
 "use strict";
 
 return Backbone.View.extend({
 	events: {
-		'change #member': 'memberChangeHandler',
 		'change #payment': 'paymentChangeHandler',
 		'change #select-all': 'selectallChangeHandler',
         'click #payment-details-save': 'saveClickHandler',
         'click #payment-details-cancel': 'cancelClickHandler'
 	},
-	/**
-	 * Members array of strings that will hold the list of team members
-	 * 
-	 * @type {Array}
-	 */
-	Members: [],
-
-	/**
-	 * Members hash that will hold the money owned/earned by each member
-	 * 
-	 * @type {Object}
-	 */
-	MembersSpendings:{},
 
 	/**
 	 * Transactions that were made by the members
@@ -52,94 +42,66 @@ return Backbone.View.extend({
 	template: _.template(tplMain),
     templatePayment: _.template(tplPayment),
 
+    /**
+     * Sub-views
+     */
+    MembersView: null,
+
 	initialize: function() {
-        this.loadData();
+        var self = this;
+
+        this.MembersCollection = new MembersCollection();
+
+        this.MembersView = new MembersView({
+            'collection': this.MembersCollection
+        });
+
+        this.MembersCollection.on('add remove reset', function() {
+            this.save();
+            self.recalculateBudgets();
+            self.renderMembersList();
+        });
+
+        this.MembersCollection.on('update', function(){
+            this.save();
+            self.renderMembersList();
+        });
 	},
 
 	render: function() {
 		this.$el.html( this.template({'t':i18n}) ).trigger("create");
+
+        this.MembersView
+            .setElement(this.$('#members'));
+        this.loadData();
+
         // render payment details view
         $('#payment-details').html( this.templatePayment({'t':i18n}));
-
-		$('#member').focus();
 
         this.recalculateBudgets();
 	},
 
     loadData: function () {
-        console.log('load data');
-        this.SpendingsUI = localStorage["SpendingsUI"] ? JSON.parse(localStorage["SpendingsUI"]) : [];
-        this.Members = localStorage["Members"] ? JSON.parse(localStorage["Members"]) : [];
-        console.log(this.SpendingsUI);
-        console.log(this.Members);
+        // force data load
+        this.MembersCollection.load();
     },
 
     saveData: function() {
-        console.log('save data');
-        localStorage["SpendingsUI"] = JSON.stringify(this.SpendingsUI);
-        localStorage["Members"] = JSON.stringify(this.Members);
+        // force data save
+        this.MembersCollection.save();
     },
 
     renderMembersList: function() {
-    	var self = this;
-        var template = "";
-
-        if (this.Members.length === 0) {
-            // render message if no members are added
-            template = '<div class="list-none">' + i18n['please add people'] + '</div>';
-            $('#members-list').html(template).find('.list-none').click(function() {
-                $('#member').focus();
-            });
-
-            this.hidePayments();
-
-            return;
-        }
-
-        // or render the list othervise
-        this.Members.forEach(function(member, index){
-            var budget = self.MembersSpendings[member];
-            if (isNaN(budget)) {
-                budget = 0;
-            }
-
-            var moneyClass = 'none';
-            if (budget < 0) {
-                moneyClass = 'minus';
-            } else if (budget > 0) {
-                moneyClass = 'plus';
-            }
-
-            template += '<div class="list-item"><div class="money-' + moneyClass 
-                + '">$' + Math.abs(budget).toFixed(2) + '</div>'
-                + '<div class="list-user" data-icon="minus">' + member + '</div></div>';
-        });
-
-        $('#members-list').html(template).trigger("create"); // jQuery Mobile "create" event required to initialize UI elements
-
-        // addign events to newly generated DOM elemets
-        $('#members-list div.list-item').click(function(){
-            var member = $('.list-user', this).text();
-            if (confirm('Are you sure to remove "' + member + '"?')) {
-                var index = self.Members.indexOf(member);
-                if (index !== -1) {
-                    self.Members.splice(self.Members.indexOf(member), 1);
-                    self.recalculateBudgets();
-                }
-            }
-        });
+        // render the members list
+        this.MembersView.render();
 
         // display mayments form only if 2 and more members are available
-        if (this.Members.length > 1) {
+        if (this.MembersCollection.length >= 2) {
             this.renderPayments();
         } else {
             this.hidePayments();
         }
-        
-    }, 
-
-
-
+    },
 
 	renderPayments: function() {
         // render payments log data
@@ -205,9 +167,9 @@ return Backbone.View.extend({
     showDetails: function() {
 
         var template = "";
-        this.Members.forEach(function(member, index){
+        this.MembersCollection.forEach(function(member, index) {
             template += '<tr><td><input checked="checked" id="member-' + index + '" type="checkbox" value=' + index + '>'
-                      + '<label for="member-' + index + '">' + member + '</label></td>'
+                      + '<label for="member-' + index + '">' + member.get('name') + '</label></td>'
                       + '<td class="money-value"><input tabindex="' + (index + 1) +'" data-id="' + index 
                       + '" name="member-money[' + index + ']" type="number" min="0" max="5000" step="0.01" placeholder="0" />'
                       + '</td></tr>';
@@ -259,10 +221,11 @@ return Backbone.View.extend({
                 value = 0;
             }
 
-            var id = $(this).data('id');
+            var id = parseInt($(this).data('id'), 10);
 
             // create records in spending object
-            spendingObj[ self.Members[id] ] = value;
+            // TODO: migrate this to ID instead of index
+            spendingObj[ self.MembersCollection.at(id).get('name') ] = value;
             total += value;
         });
 
@@ -303,44 +266,16 @@ return Backbone.View.extend({
         var data = t.run(log);
 
         // update member spendings array
-        this.Members.forEach(function(member){
-            self.MembersSpendings[member] = data[member] ? data[member] : 0;
+        this.MembersCollection.forEach(function(member) {
+            var memberName = member.get('name');
+            var memberMoney = data[memberName] ? data[memberName] : 0;
+
+            // update silently for performance reasons
+            member.set('money', memberMoney, {silent:true});
         });
-        
-        // render new data
-        this.renderMembersList();
 
-        // save data on each budget recalculation
-        this.saveData();
+        this.MembersCollection.trigger('change');
     },
-
-
-
-
-	memberChangeHandler: function(e) {
-		var elem = e.target;
-
-        var member = $(elem).val();
-        if (member === "") {
-            // silently quit on empty values
-            return;
-        }
-        // clear field and focus
-        $(elem).val('');
-        // if particular member already exists, do nothing
-        if (this.Members.indexOf(member) !== -1) {
-            return;
-        }
-        // Add new member to the list
-        // TODO: update UI
-        this.Members.push(member);
-        this.renderMembersList();
-
-        // save data after new member is added
-        this.saveData();
-        
-        $(elem).focus().click();
-	},
 
 
 	paymentChangeHandler: function(e) {
@@ -372,6 +307,12 @@ return Backbone.View.extend({
     cancelClickHandler: function(e) {
         $('#payment').val('').focus();
         this.trigger('navigate', '');
+    },
+
+    backButtonHandler: function(e) {
+        if (confirm("Exit the app? Data will be saved automatically.")) {
+            navigator.app.exitApp();
+        }
     }
 
 });
