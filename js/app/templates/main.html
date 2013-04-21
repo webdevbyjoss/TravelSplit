@@ -1,21 +1,8 @@
 <div id="main" data-role="page">
     <div data-role="content">
         <div id="members"><!-- views/members.html --></div>
-        <div id="payments">
-            <h2><%- t['Where you spend the money?'] %></h2>
-
-            <div data-role="fieldcontain" class="ui-hide-label">
-                <label for="member"><%- t['Add payment'] %>:</label>
-                <input type="text" name="payment" id="payment" value="" maxlength="30" 
-                    placeholder="<%- t['Pizza, taxi, beer'] %>..."/>
-            </div>
-
-            <div id="spendings-list">
-                <div class="list-none"><%- t['you can add payments now'] %></div>
-                <div class="list-item"></div>
-            </div>
-        </div>
-    </div><!-- /content -->
+        <div id="payments"><!-- views/payments.html --></div>
+    </div>
 </div><!-- /page -->
 
 <div id="payment-details" class="payment-details-page" data-role="page" data-theme="c">

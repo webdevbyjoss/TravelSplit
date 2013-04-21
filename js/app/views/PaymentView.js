@@ -1,5 +1,4 @@
-define(['jquery', 'backbone', 'i18n!app/nls/messages', 'text!tpl/payment.html']
-	, function($, Backbone, i18n, tplPayment) {
+define(['text!tpl/payment.html', 'backbone'], function(tplPayment) {
 	return Backbone.View.extend({
 		events: {
 

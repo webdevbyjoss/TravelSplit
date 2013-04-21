@@ -2,6 +2,10 @@
     border: 0!important;
 }
 
+#members h2 {
+    margin: 0;
+}
+
 /* List of members */
 
 #members-list {

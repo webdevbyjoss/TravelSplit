@@ -4,12 +4,15 @@ define({
 		'John, Lisa or any other name': 'John, Lisa or any other name',
 		'Add payment': 'Add payment',
 		'Pizza, taxi, beer': 'Pizza, taxi, beer',
-		'please add payments': 'please add payments',
+		'you can add payments now': 'you can add payments now',
 		'Who paid the bill?': 'Who paid the bill?',
 		'Save': 'Save',
 		'please add people': 'please add people',
-		'Whos in your awesome team?': 'Who\'s in your awesome team?',
-		'Where you spend the money?': 'Where you spend the money?'
+		'Who\'s in your team?': 'Who\'s in your team?',
+		'Where you spend the money?': 'Where you spend the money?',
+		'Team requires at least two members': 'Team requires at least two members',
+		'Team': 'Team',
+		'Costs': 'Costs'
 	},
 	'uk-ua': true
 });

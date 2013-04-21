@@ -1,10 +1,11 @@
-<h2><%- t['Whos in your awesome team?'] %></h2>
+<h2><%- t['Team'] %></h2>
 
 <div data-role="fieldcontain" class="ui-hide-label">
     <label for="member"><%- t['Add people'] %>:</label>
     <input type="text" name="member" id="member" value="" maxlength="25" 
         placeholder="<%- t['John, Lisa or any other name'] %>..."/>
 </div>
+
 
 <div id="members-list">
     <!-- 
@@ -23,13 +24,11 @@
     </div>
     -->
 
-	<% if (members.length === 0) { %>
-
+	<% if (items.length === 0) { %>
 	<div class="list-none"><%- t['please add people'] %></div>
-
 	<% } else { %>
 
-		<% members.forEach(function(member) {
+		<% items.forEach(function(member) {
 			var budget = member.get('money');
 		    var moneyClass = (budget === 0) ? 'none' : (budget > 0 ? 'plus' : 'minus');
 		%>

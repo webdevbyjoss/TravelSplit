@@ -33,7 +33,6 @@ define(['jquery', 'backbone', 'utils', 'views/PaymentView', 'views/MainView', 'c
 		    // We currently use jQuery Mobile for our application UI
 		    // so need to wait untill "mobileinit" will be fired
 		    $(document).bind("mobileinit", function() {
-	    		self.initApp();
 
 	    		// see http://knutkj.wordpress.com/2012/01/23/jquery-mobile-and-client-generated-pages/
 		        // $.mobile.autoInitializePage = false;
@@ -46,7 +45,7 @@ define(['jquery', 'backbone', 'utils', 'views/PaymentView', 'views/MainView', 'c
 		        $.mobile.linkBindingEnabled = false;
 		        $.mobile.hashListeningEnabled = false;
 
-
+		        self.initApp();
 		    });
 			require(['jquery-mobile']);
 		},
@@ -87,18 +86,21 @@ define(['jquery', 'backbone', 'utils', 'views/PaymentView', 'views/MainView', 'c
 		runApp: function() {
 			var self = this;
 
-			// this will hold the link to view that is currently displayed on screen
 			this.MainView.on('navigate', function(url) {
 				self.navidateHandler(url);
-			}).render();
+			});
 
 			this.PaymentView.on('navigate', function(url) {
 				self.navidateHandler(url);
 			});
 
+			// this will hold the link to view that is currently displayed on screen
 			this.CurrentView = this.MainView;
 
 			Backbone.history.start();
+
+			// initiate default view render
+			this.CurrentView.render();
 		},
 
 		navidateHandler: function(url) {

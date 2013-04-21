@@ -1,11 +1,11 @@
-define(['i18n!app/nls/messages', 'text!tpl/members.html'], function(i18n, tplPayments){
+define(['text!tpl/members.html', 'backbone'], function(tplMembers){
 	return Backbone.View.extend({
 		events: {
 			'change #member': 'memberChangeHandler',
 			'click div.list-item': 'removeHandler'
 		},
 
-		template: _.template(tplPayments),
+		template: _.template(tplMembers),
 
 		initialise: function() {
 
@@ -14,21 +14,12 @@ define(['i18n!app/nls/messages', 'text!tpl/members.html'], function(i18n, tplPay
 		},
 
 		render: function() {
-	        // TODO: move focus to #member
 	        this.$el.html(this.template({
-	        	't': i18n,
-	        	'members': this.collection
-	        }))
+	        	'items': this.collection
+	        }));
 
 	        this.$el.trigger("create"); // jQuery Mobile "create" event required to initialize UI elements
-	        console.log(this.$('#member'));
-
-	        this.$('#member').focus();
 		},
-
-
-
-
 
 		memberChangeHandler: function(e) {
 			var elem = e.target;
@@ -43,8 +34,6 @@ define(['i18n!app/nls/messages', 'text!tpl/members.html'], function(i18n, tplPay
 	            return;
 	        }
 
-	        console.log(this.collection);
-
 	        // if particular member already exists, do nothing
 	        if (this.collection.findWhere({'name': memberName})) {
 	            return;
@@ -54,6 +43,8 @@ define(['i18n!app/nls/messages', 'text!tpl/members.html'], function(i18n, tplPay
 	        this.collection.add({
 	        	'name': memberName
 	        });
+
+	        this.$('#member').focus();
 		},
 
 		removeHandler: function(e) {

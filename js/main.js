@@ -17,12 +17,13 @@ requirejs.config({
 		'tpl': '../app/templates'
 	},
 	shim: {
-		'app/events': {
-			deps: ['jquery']
-		},
 		'backbone': {
-			deps: ['underscore'],
+			deps: ['underscore', 'jquery'],
 			exports: 'Backbone'
+		},
+		'i18n': {
+			deps: ['require'],
+			exports: 't'
 		}
 	},
     //Set the config for the i18n module
@@ -30,7 +31,11 @@ requirejs.config({
 });
 
 // load initial set of libraries
-require(['app/routers/mobileRouter'], function(MobileRouter) {
+require(['app/routers/mobileRouter', 'i18n!app/nls/messages'], function(MobileRouter, i18n) {
+
+	// load i18n module into global namespase TODO: requirejs shim export?
+	// so that it can be accessed from both views and templates
+	window.t = i18n;
 
 	// Instantiate Mobile Router
     this.router = new MobileRouter();

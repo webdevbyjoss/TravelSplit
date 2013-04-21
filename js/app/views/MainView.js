@@ -1,15 +1,17 @@
 define([
-    'i18n!app/nls/messages',
     'app/models/Spendings',
     'collection/Members',
+    'collection/Payments',
     'app/views/MembersView',
+    'app/views/PaymentsView',
     'text!tpl/main.html',
     'text!tpl/payment.html'
 ], function(
-    i18n,
     Spendings,
     MembersCollection,
+    PaymentsCollection,
     MembersView,
+    PaymentsView,
     tplMain,
     tplPayment
 ){
@@ -17,22 +19,10 @@ define([
 
 return Backbone.View.extend({
 	events: {
-		'change #payment': 'paymentChangeHandler',
 		'change #select-all': 'selectallChangeHandler',
         'click #payment-details-save': 'saveClickHandler',
         'click #payment-details-cancel': 'cancelClickHandler'
 	},
-
-	/**
-	 * Transactions that were made by the members
-	 * fields:
-	 * - description
-	 * - total
-	 * - spending object {'John': 100, 'Alex': 20, 'Ann':0, 'Mark': 0}
-	 * 
-	 * @type {Array}
-	 */
-	SpendingsUI: [],
 
 	/**
 	 * Main page template
@@ -46,37 +36,53 @@ return Backbone.View.extend({
      * Sub-views
      */
     MembersView: null,
+    PaymentsView: null,
 
 	initialize: function() {
         var self = this;
 
         this.MembersCollection = new MembersCollection();
+        this.PaymentsCollection = new PaymentsCollection();
 
         this.MembersView = new MembersView({
             'collection': this.MembersCollection
         });
 
-        this.MembersCollection.on('add remove reset', function() {
+        this.PaymentsView = new PaymentsView({
+            'collection': this.PaymentsCollection
+        });
+
+
+        // setup collection events
+        this.MembersCollection.on('add remove update', function() {
             this.save();
-            self.recalculateBudgets();
             self.renderMembersList();
         });
 
-        this.MembersCollection.on('update', function(){
-            this.save();
-            self.renderMembersList();
+        this.PaymentsCollection.on('add remove update', function(){
+            self.recalculateBudgets();
         });
+
+        // setup coordination between views
+        this.PaymentsView.on('newItem', function(name) {
+            console.log(name);
+            self.showDetails();
+        });
+
+        this.loadData();
 	},
 
 	render: function() {
-		this.$el.html( this.template({'t':i18n}) ).trigger("create");
+		this.$el.html(this.template()).trigger("create");
 
         this.MembersView
             .setElement(this.$('#members'));
-        this.loadData();
+
+        this.PaymentsView
+            .setElement(this.$('#payments'));
 
         // render payment details view
-        $('#payment-details').html( this.templatePayment({'t':i18n}));
+        $('#payment-details').html( this.templatePayment());
 
         this.recalculateBudgets();
 	},
@@ -84,85 +90,26 @@ return Backbone.View.extend({
     loadData: function () {
         // force data load
         this.MembersCollection.load();
+        this.PaymentsCollection.load();
     },
 
     saveData: function() {
         // force data save
         this.MembersCollection.save();
+        this.PaymentsCollection.save();
     },
 
     renderMembersList: function() {
         // render the members list
         this.MembersView.render();
 
-        // display mayments form only if 2 and more members are available
+        // display payments form only if 2 and more members are available
         if (this.MembersCollection.length >= 2) {
-            this.renderPayments();
+            this.PaymentsView.render();
         } else {
-            this.hidePayments();
+            this.PaymentsView.hidePayments();
         }
     },
-
-	renderPayments: function() {
-        // render payments log data
-        var template = "";
-        var self = this;
-
-        if (this.SpendingsUI.length === 0) {
-            // render message about empty list
-            template = '<div class="list-none">you can add payments now</div>';
-            $('#spendings-list').html(template);
-            $('#payments').show();
-            return;
-        }
-
-        this.SpendingsUI.forEach(function(item, index){
-            
-            var members = [];
-            $.each(item.spendings, function(key, value) {
-                if (value === 0) {
-                    return;
-                }
-                members.push(key + ' $' + value);
-            });
-
-            template += '<div class="list-item"><div class="money-none">$' + item.total + '</div>'
-                      + '<div class="list-user" data-id="' + index + '">' + item.description 
-                      + ' <span class="description">' + members.join(', ') + '</span></div></div>';
-        });
-
-        $('#spendings-list').html(template).trigger("create");
-
-        // addign events to newly generated DOM elemets
-        $('#spendings-list div.list-item').click(function(){
-            var el = $('.list-user', this);
-            var title = $(el).text();
-            var id = $(el).data('id');
-            
-            if (confirm('Are you sure to remove "' + title + '"?')) {
-                /*
-                var index = self.Members.indexOf(member);
-                if (index !== -1) {
-                    self.Members.splice(self.Members.indexOf(member), 1);
-                    self.renderMembersList();
-                }
-                */
-               self.SpendingsUI.splice(id, 1);
-               self.recalculateBudgets();
-               console.log('Remove ' + id + ': ' + title);
-            }
-        });
-
-        $('#payments').show();
-    },
-
-
-
-    hidePayments: function() {
-        $('#payments').hide();
-    },
-
-
 
     showDetails: function() {
 
@@ -238,17 +185,18 @@ return Backbone.View.extend({
         // save data into log
         var logItem = {
             'description': $('#payment').val(),
-            'total': total,
-            'spendings': spendingObj,
+            'total': total,  // TODO: this can be dinamically calculated inside model
+                             // including validation
+            'shares': spendingObj,
         };
 
-        this.SpendingsUI.push(logItem);
+        this.PaymentsCollection.add(logItem);
 
         // recalculate member budget and re-render members list
         this.recalculateBudgets();
 
         $('#payment').val('')
-        this.renderPayments();
+        this.PaymentsView.render();
 
         this.trigger('navigate', '');
     },
@@ -258,12 +206,12 @@ return Backbone.View.extend({
     	var self = this;
         var log = [];
 
-        this.SpendingsUI.forEach(function(item) {
-            log.push(item.spendings);
+        this.PaymentsCollection.forEach(function(item) {
+            log.push(item.get('shares'));
         });
 
-        var t = new Spendings();
-        var data = t.run(log);
+        var sp = new Spendings();
+        var data = sp.run(log);
 
         // update member spendings array
         this.MembersCollection.forEach(function(member) {
@@ -274,20 +222,10 @@ return Backbone.View.extend({
             member.set('money', memberMoney, {silent:true});
         });
 
-        this.MembersCollection.trigger('change');
+        // this.MembersCollection.trigger('change');
+        this.renderMembersList();
+        this.saveData();
     },
-
-
-	paymentChangeHandler: function(e) {
-		var elem = e.target;
-
-	    var payment = $(elem).val();
-        if (payment === "") {
-            return;
-        }
-        this.showDetails();
-	},
-
 
 	selectallChangeHandler: function(e) {
 		var elem = e.target;
