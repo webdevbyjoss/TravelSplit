@@ -11,7 +11,7 @@ requirejs.config({
 });
 
 // load initial set of libraries
-require(['app/Spendings'], function(Spendings) {
+require(['app/models/Spendings'], function(Spendings) {
 
 	test("Group 1", function(){
 	    var t = new Spendings();

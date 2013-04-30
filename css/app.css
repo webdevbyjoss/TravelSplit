@@ -2,10 +2,6 @@
     border: 0!important;
 }
 
-#members h2 {
-    margin: 0;
-}
-
 /* List of members */
 
 #members-list {
@@ -95,4 +91,13 @@ input::-webkit-inner-spin-button {
     /* display: none; <- Crashes Chrome on hover */
     -webkit-appearance: none;
     margin: 0; /* <-- Apparently some margin are still there even though it's hidden */
+}
+
+
+#members h2 {
+    margin: 0;
+}
+
+#payments h2 {
+    margin-bottom: 0;
 }
