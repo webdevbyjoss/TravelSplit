@@ -17,7 +17,7 @@ define(['simplesets'], function(simplesets) {
             // calculate total for each meber by adding results from each log
             var totalsByMember = {}; // use hash to map members to spendings
             result.forEach(function(r) {
-                for (member in r.solution) {
+                for (var member in r.solution) {
                     // get the number of money spend by each team member
                     if (typeof totalsByMember[member] === 'undefined') {
                         totalsByMember[member] = r.solution[member];

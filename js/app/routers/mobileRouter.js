@@ -10,7 +10,7 @@ define(['jquery', 'backbone', 'utils', 'views/PaymentView', 'views/MainView', 'c
 
 		home: function () {
 
-			if ($.mobile.activePage) {
+			if ($.mobile.activePage) { // Avoid active page assignment on load (leave default one)
 				// Programatically changes to the jQuery mobile page only when everything is initialized
 				$.mobile.changePage( $("#main"), { changeHash: false } );
 			}
@@ -18,17 +18,30 @@ define(['jquery', 'backbone', 'utils', 'views/PaymentView', 'views/MainView', 'c
 			this.CurrentView = this.MainView;
 		},
 
-		payment: function (id) {
+		payment: function (urlId) {
 			// Programatically changes to the jQuery mobile page
 			$.mobile.changePage( $("#payment-details"), { changeHash: false } );
 			this.CurrentView = this.PaymentView;
+
+			// load appropriate payment
+			var id = parseInt(urlId, 10);
+			if (isNaN(id)) {
+				alert('Error: wrong payment ID:' + id);
+				return;
+			}
+
+			var payment = this.MainView.PaymentsView.model.get(id);
+			this.PaymentView.model.reset(payment);
 		},
 
 		initialize: function () {
 			var self = this;
 
 			this.MainView = new MainView({el:'body'});
-			this.PaymentView = new PaymentView({el:'#payment-details'});
+			this.PaymentView = new PaymentView({
+				el:'#payment-details'// ,
+//				model: new Payment()
+			});
 
 		    // We currently use jQuery Mobile for our application UI
 		    // so need to wait untill "mobileinit" will be fired
@@ -66,10 +79,10 @@ define(['jquery', 'backbone', 'utils', 'views/PaymentView', 'views/MainView', 'c
 				self.runApp();
 
 	            // Initialize Cordova specific application events
-	            document.addEventListener("pause", function(e) { // Application minimised/paused
+	            document.addEventListener("pause", function (e) { // Application minimised/paused
 	            	self.MainView.saveData();
 	            }, false);
-	            document.addEventListener("resume", function(e) { // Application resumed
+	            document.addEventListener("resume", function (e) { // Application resumed
 					self.MainView.loadData();
 	            }, false);
 	            document.addEventListener("backbutton", function (e) { // Device back button pressed

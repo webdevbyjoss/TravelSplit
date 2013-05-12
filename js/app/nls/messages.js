@@ -11,8 +11,8 @@ define({
 		'Who\'s in your team?': 'Who\'s in your team?',
 		'Where you spend the money?': 'Where you spend the money?',
 		'Team requires at least two members': 'Team requires at least two members',
-		'Team': 'Team',
-		'Costs': 'Costs'
+		'People': 'People',
+		'Group Payments': 'Group Payments'
 	},
 	'uk-ua': true
 });

@@ -10,6 +10,7 @@
 
 .list-item {
     padding: 10px;
+    padding-bottom: 15px;
     padding-left: 40px;
     padding-right: 13px;
 
@@ -18,13 +19,16 @@
     background-image: url('../img/monotone_delete_small.png');
     
     background-repeat: no-repeat;
-    background-position: 7px 5px;
+    background-position: 7px 7px;
+    font-size: 1.2em;
 }
 
+/*
 .list-item:hover {
     background-color: #fdfdfd;
     border-radius: 15px;
 }
+*/
 
 .money-plus, .money-minus, .money-none {
     float: right;
