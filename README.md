@@ -11,6 +11,6 @@ Suitable to be wrapped with Apache Cordiva for any supported mobile platform.
 * i18n friendly
 * qunit
 
-Screnshot
+Screenshot
 
 ![Screenshot](img/screenshot.png?raw=true)
