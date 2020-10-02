@@ -1,0 +1,19 @@
+.App {
+    display: block;
+}
+
+.payments_details {
+    display: block;
+}
+
+.payments_details h3 {
+    color: white;
+}
+
+.main_content {
+    display: block;
+}
+
+.form-check-input {
+    margin-top: 20px;
+}

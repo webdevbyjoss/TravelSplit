@@ -8,25 +8,25 @@ export default class Header extends React.Component {
         this.state = {
             text : ' '
         };
-
-        this.pressEnter = this.pressEnter.bind(this);
-        this.onChangeValue = this.onChangeValue.bind(this);
     }
 
-    onChangeValue(e) {
+    onChange = e => {
         this.setState({
             text: e.target.value
         })}
 
 
-   pressEnter (e) {
+   pressEnter = e => {
         if (e.key === 'Enter') {
             e.preventDefault();
             if (this.state.text === '') {
                 return;
             }
-            console.log(this.state.text);
+            this.props.onAdd(this.state.text);
             e.target.value = '';
+            this.setState({
+                text: ''
+            })
 
         } else
             return
@@ -42,7 +42,7 @@ export default class Header extends React.Component {
                         className="form-control input-lg"
                         type="text"
                         placeholder='John, Lisa or any other name...'
-                        onChange={this.onChangeValue}
+                        onChange={this.onChange}
                     />
                     </form>
                 </div>

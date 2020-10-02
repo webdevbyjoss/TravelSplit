@@ -1,14 +1,16 @@
 import React from 'react';
 
 
-const SingleUser = ({users}) => {
+const UsersBalance = ({users}) => {
 
     return users.map((item) => (
-        <li key={item.name} className='flex-row'>
+        <ul>
+        <li key={item.id} className='flex-row'>
                 <div style={{float: 'left'}}> {item.name} </div>
                 <div style={{float: 'right'}}> {item.finalSpendings} $</div>
         </li>
+        </ul>
     ));
 };
 
-export default SingleUser;
+export default UsersBalance;
