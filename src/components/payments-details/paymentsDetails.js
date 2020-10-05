@@ -2,18 +2,33 @@ import React from 'react';
 import PaymentsDetailsUsers from '../payments-details-users/paymentsDetailsUsers'
 import {Link} from 'react-router-dom';
 
-const PaymentsDetails = ({users, getAmount}) => {
+const PaymentsDetails = ({users, getAmount, getObjOfSpendings, countTotalSpendings, changeColorOfSpends}) => {
 
-    function  onSubmit() {
+    async function  onSubmit() {
         let spentSum = 0;
+        let arr = [];
         let inputs = document.querySelectorAll('.amount_spent');
-        inputs.forEach((item) => {
+        let div = document.querySelectorAll('.payments_try');
+        await div.forEach((item)=>{
+            let newObj = {};
+            users.forEach((user) => {
+                if (user.name === item.innerText) {
+                    newObj.name = user.name;
+                    newObj.id = user.id;
+                    newObj.totalSpendings = +user.totalSpendings + +item.querySelector('.amount_spent').value;
+                    newObj.finalSpendings = users.finalSpendings;
+                    arr.push(newObj);
+                }
+            })
+        });
+
+        await inputs.forEach((item) => {
             spentSum += +item.value;
         });
-        /*users.map((item)=>{
-            obj.id = item.id
-        });*/
-        getAmount(spentSum);
+
+        await getObjOfSpendings(arr);
+        await getAmount(spentSum);
+        await countTotalSpendings();
     }
 
     return (

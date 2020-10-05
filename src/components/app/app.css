@@ -17,3 +17,18 @@
 .form-check-input {
     margin-top: 20px;
 }
+
+.debt {
+    color: red;
+    float: right;
+}
+
+.noDebt {
+    color: cornflowerblue;
+    float: right;
+}
+
+.neutral {
+    color: gray;
+    float: right;
+}

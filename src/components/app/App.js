@@ -33,7 +33,8 @@ export default class App extends React.Component {
     this.onAdd = this.onAdd.bind(this);
     this.addItem = this.addItem.bind(this);
     this.getAmount = this.getAmount.bind(this);
-
+    this.getObjOfSpendings = this.getObjOfSpendings.bind(this);
+    this.countTotalSpendings = this.countTotalSpendings.bind(this);
   }
 
   onAdd(text) {
@@ -54,7 +55,7 @@ export default class App extends React.Component {
           title: this.state.spendings[this.state.spendings.length-1].title,
           amount: amount
       };
-      let cleanedItem = this.state.spendings.slice(0, this.state.spendings.length-2);
+      let cleanedItem = this.state.spendings.slice(0, this.state.spendings.length-1);
       this.setState(({spendings}) => {
          let updatedSpendings = [...cleanedItem, newItem];
          return {
@@ -65,17 +66,38 @@ export default class App extends React.Component {
 
 
   addItem(title) {
+      let newSpendings = {
+          title: title,
+          amount: 0
+      };
       this.setState(({spendings}) => {
-          let newSpendings = {
-              title: title,
-              amount: 0
-          };
           let newArr = [...this.state.spendings, newSpendings];
           return {
               spendings: newArr
           }
       })
 
+  }
+
+  getObjOfSpendings(arr){
+      this.setState(({users}) => {
+          return {
+              users: arr
+          }
+      })
+  }
+
+  countTotalSpendings() {
+      let totalGroupSpent = 0;
+      this.state.users.forEach((item) => {
+          totalGroupSpent += item.totalSpendings
+      });
+      this.setState(({sumOfGroupSpent})=> {
+          return {
+              sumOfGroupSpent: totalGroupSpent
+          };
+      })
+      console.log(this.state.sumOfGroupSpent);
   }
 
   render() {
@@ -90,6 +112,7 @@ export default class App extends React.Component {
                                                users={this.state.users}
                                                spendings={this.state.spendings}
                                                addItem={this.addItem}
+                                               sumOfGroupSpent={this.state.sumOfGroupSpent}
                                   />} />
                        <Route
                            path='/payments'
@@ -97,6 +120,8 @@ export default class App extends React.Component {
                            <PaymentsDetails
                                users={this.state.users}
                                getAmount={this.getAmount}
+                               getObjOfSpendings={this.getObjOfSpendings}
+                               countTotalSpendings={this.countTotalSpendings}
                            />
                        </Route>
                    </Switch>

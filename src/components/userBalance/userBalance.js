@@ -1,13 +1,19 @@
 import React from 'react';
+import './userBalance.css';
 
 
-const UsersBalance = ({users}) => {
-
+const UsersBalance = ({users, sumOfGroupSpent}) => {
+    function f(a, b) {
+        if (a === 0)
+            return a;
+        else
+        return a - b;
+    }
     return users.map((item) => (
         <ul>
         <li key={item.id} className='flex-row'>
-                <div style={{float: 'left'}}> {item.name} </div>
-                <div style={{float: 'right'}}> {item.finalSpendings} $</div>
+                <div className='users_names'> {item.name} </div>
+                <div className='users_spends'> {f(+item.totalSpendings, +sumOfGroupSpent/users.length)} $</div>
         </li>
         </ul>
     ));
