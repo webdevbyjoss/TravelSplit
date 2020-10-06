@@ -16,7 +16,7 @@ export default class Header extends React.Component {
         })}
 
 
-   pressEnter = e => {
+    pressEnter = e => {
         if (e.key === 'Enter') {
             e.preventDefault();
             if (this.state.text === '') {
@@ -38,12 +38,12 @@ export default class Header extends React.Component {
                 <h2>People</h2>
                 <div className="form-group">
                     <form onKeyPress={this.pressEnter} >
-                    <input
-                        className="form-control input-lg"
-                        type="text"
-                        placeholder='John, Lisa or any other name...'
-                        onChange={this.onChange}
-                    />
+                        <input
+                            className="form-control input-lg"
+                            type="text"
+                            placeholder='John, Lisa or any other name...'
+                            onChange={this.onChange}
+                        />
                     </form>
                 </div>
             </div>

@@ -2,12 +2,12 @@ import React from 'react';
 import PaymentsDetailsUsers from '../payments-details-users/paymentsDetailsUsers'
 import {Link} from 'react-router-dom';
 
-const PaymentsDetails = ({users, getAmount, getObjOfSpendings, countTotalSpendings, changeColorOfSpends}) => {
+const PaymentsDetails = ({users, getAmount, getObjOfSpendings, countTotalSpendings, onCancel}) => {
 
     async function  onSubmit() {
         let spentSum = 0;
         let arr = [];
-        let inputs = document.querySelectorAll('.amount_spent');
+        let inputs = document.querySelectorAll('.textarea');
         let div = document.querySelectorAll('.payments_try');
         await div.forEach((item)=>{
             let newObj = {};
@@ -15,7 +15,7 @@ const PaymentsDetails = ({users, getAmount, getObjOfSpendings, countTotalSpendin
                 if (user.name === item.innerText) {
                     newObj.name = user.name;
                     newObj.id = user.id;
-                    newObj.totalSpendings = +user.totalSpendings + +item.querySelector('.amount_spent').value;
+                    newObj.totalSpendings = +user.totalSpendings + +item.querySelector('.textarea').value;
                     newObj.finalSpendings = users.finalSpendings;
                     arr.push(newObj);
                 }
@@ -43,7 +43,7 @@ const PaymentsDetails = ({users, getAmount, getObjOfSpendings, countTotalSpendin
                     <PaymentsDetailsUsers users={users}/>
 
                     <Link to='/'><button type='button' onClick={onSubmit}>Ok</button></Link>
-                    <button type='button'>Close</button>
+                    <Link to='/'><button type='button' onClick={onCancel}>Close</button></Link>
                 </form>
             </div>
         </div>

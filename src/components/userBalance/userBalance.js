@@ -1,22 +1,31 @@
 import React from 'react';
-import './userBalance.css';
 
-
-const UsersBalance = ({users, sumOfGroupSpent}) => {
+const UsersBalance = ({users, sumOfGroupSpent, onRemoveUsers}) => {
     function f(a, b) {
         if (a === 0)
             return a;
         else
-        return a - b;
+            return a - b;
     }
-    return users.map((item) => (
+
+    function Render () {
+        return users.map((item) => (
+                <li className='row' key={item.id} onClick={(e)=>onRemoveUsers(item.name, item.id)}>
+                    <i className="far fa-times-circle"></i>
+                    <div className='col'> {item.name} </div>
+                    <div className='col'>
+                        <div className='float-right'>{f(+item.totalSpendings, +sumOfGroupSpent/users.length)} $</div>
+                    </div>
+                </li>
+        ));
+    }
+
+
+    return (
         <ul>
-        <li key={item.id} className='flex-row'>
-                <div className='users_names'> {item.name} </div>
-                <div className='users_spends'> {f(+item.totalSpendings, +sumOfGroupSpent/users.length)} $</div>
-        </li>
+        <Render />
         </ul>
-    ));
+    )
 };
 
 export default UsersBalance;

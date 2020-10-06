@@ -3,25 +3,44 @@ import React from 'react';
 
 const PaymentsDetailsUsers = ({users}) => {
 
-    return users.map((item) => (
-        <div className='payments_try'>
-        <div className='w-100' key={item.id}>
-            <input
-                type="checkbox"
-                name="sameadr"
-            />
-            {item.name}
-            <input
-                className='amount_spent'
-                type='text'
-                placeholder='0'
-                key={item.id}
-            />
-        </div>
-        </div>
-    ));
+    function checked() {
+        const div = document.querySelectorAll('.w-100');
+        div.forEach((elem) => {
+            const checkbox = elem.querySelector('.checkbox');
+            const text = elem.querySelector('.textarea');
+           if (checkbox.checked) {
+               text.disabled = true;
+           } else
+               text.disabled = false;
+        })
+    }
+
+    function Render () {
+        return (
+            users.map((item) => (
+                <div className='payments_try' key={item.id} >
+                    <div className='w-100'>
+                        <input
+                            className='checkbox'
+                            type="checkbox"
+                            name="sameadr"
+                            onChange={checked}
+                        />
+                        {item.name}
+                        <input
+                            className='textarea'
+                            type="text"
+                            name="sameadr"
+                        />
+                </div>
+                </div>
+        ))
+        )
+    }
+
+    return (
+        <Render />
+    );
 };
 
 export default PaymentsDetailsUsers;
-
-

@@ -8,9 +8,7 @@ class PaymentsPage extends React.Component {
 
         this.state = {
             title : '',
-            amount: 0,
-            isClicked: true
-        }
+        };
         this.pressEnter = this.pressEnter.bind(this);
         this.onChangeValue = this.onChangeValue.bind(this);
     }
@@ -23,7 +21,7 @@ class PaymentsPage extends React.Component {
                 return;
             }
             e.preventDefault();
-            this.props.addItem(this.state.title, this.state.amount);
+            this.props.addItem(this.state.title);
             history.push('/payments')
             this.setState({
                 title: ''
@@ -56,11 +54,12 @@ class PaymentsPage extends React.Component {
                     <ul>
                         <PaymentsList
                             spendings={this.props.spendings}
+                            onRemoveItems={this.props.onRemoveItems}
                         />
                     </ul>
                 </div>
             </div>
-            )
+        )
     }
 }
 
