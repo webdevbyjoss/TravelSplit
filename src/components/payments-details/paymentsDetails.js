@@ -2,33 +2,57 @@ import React from 'react';
 import PaymentsDetailsUsers from '../payments-details-users/paymentsDetailsUsers'
 import {Link} from 'react-router-dom';
 
-const PaymentsDetails = ({users, getAmount, getObjOfSpendings, countTotalSpendings, onCancel}) => {
 
-    async function  onSubmit() {
+const PaymentsDetails = ({users, getObjOfSpendings, countTotalSpendings, onCancel, getArrOfUsersSpends, spendings}) => {
+
+        function  onSubmit() {
         let spentSum = 0;
         let arr = [];
+        let arrOfUsersSpends = [];
         let inputs = document.querySelectorAll('.textarea');
         let div = document.querySelectorAll('.payments_try');
-        await div.forEach((item)=>{
+        let userDiv = document.querySelectorAll('.w-100');
+        div.forEach((item)=>{
             let newObj = {};
-            users.forEach((user) => {
+             users.forEach((user) => {
                 if (user.name === item.innerText) {
                     newObj.name = user.name;
                     newObj.id = user.id;
-                    newObj.totalSpendings = +user.totalSpendings + +item.querySelector('.textarea').value;
+                    newObj.lastSpendingsAmount = +item.querySelector('.textarea').value;
+                    newObj.totalSpendings = user.totalSpendings + +item.querySelector('.textarea').value;
                     newObj.finalSpendings = users.finalSpendings;
                     arr.push(newObj);
                 }
             })
         });
 
-        await inputs.forEach((item) => {
+        inputs.forEach((item) => {
             spentSum += +item.value;
         });
 
-        await getObjOfSpendings(arr);
-        await getAmount(spentSum);
-        await countTotalSpendings();
+            function getRandomBetween(min, max) {
+                return Math.random() * (max - min) + min;
+            }
+
+        userDiv.forEach((item)=>{
+            let objOfSpends = {};
+            objOfSpends.name = item.innerText;
+            objOfSpends.id = getRandomBetween(1, 500)
+            objOfSpends.amount = item.lastChild.value;
+            arrOfUsersSpends.push(objOfSpends)
+        });
+        getArrOfUsersSpends(arrOfUsersSpends, spentSum);
+
+    /*    userDiv.forEach((item)=>{
+                let objOfSpends = {};
+                objOfSpends.name = item.innerText;
+                objOfSpends.amount = item.lastChild.value;
+                arrOfUsersSpends.push(objOfSpends)
+        });*/
+
+        getObjOfSpendings(arr);
+
+        countTotalSpendings();
     }
 
     return (

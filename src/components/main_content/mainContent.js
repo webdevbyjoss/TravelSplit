@@ -4,7 +4,7 @@ import UsersBalance from '../userBalance/userBalance';
 import Payments from '../payments/payments';
 import './mainContent.css';
 
-const MainContent = ({onAdd, users, spendings, addItem, sumOfGroupSpent,onRemoveUsers, onRemoveItems }) => {
+const MainContent = ({onAdd, users, spendings, addItem, sumOfGroupSpent,onRemoveUsers, onRemoveItems, }) => {
     return (
         <div className='main_content'>
             <Header onAdd={onAdd}/>
@@ -16,7 +16,8 @@ const MainContent = ({onAdd, users, spendings, addItem, sumOfGroupSpent,onRemove
                 users={users}
                 spendings={spendings}
                 addItem={addItem}
-                onRemoveItems={onRemoveItems}/>}
+                onRemoveItems={onRemoveItems}
+            />}
         </div>
     )
 };

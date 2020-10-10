@@ -9,7 +9,7 @@ class PaymentsPage extends React.Component {
         this.state = {
             title : '',
         };
-        this.pressEnter = this.pressEnter.bind(this);
+        this.pressEnter  = this.pressEnter.bind(this);
         this.onChangeValue = this.onChangeValue.bind(this);
     }
 
@@ -55,6 +55,7 @@ class PaymentsPage extends React.Component {
                         <PaymentsList
                             spendings={this.props.spendings}
                             onRemoveItems={this.props.onRemoveItems}
+                            getArrOfUsersSpends={this.props.getArrOfUsersSpends}
                         />
                     </ul>
                 </div>

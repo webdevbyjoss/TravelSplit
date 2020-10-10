@@ -15,29 +15,28 @@ export default class App extends React.Component {
 
         this.state = {
             users: [
-                {name: 'Bohdan', id: 1, totalSpendings: 0, finalSpendings: 0},
-                {name: 'Kate', id: 2, totalSpendings: 0, finalSpendings: 0},
-                {name: 'Victor', id: 3, totalSpendings: 0, finalSpendings: 0},
-                {name: 'Lara', id:4, totalSpendings: 0, finalSpendings: 0}
+                {name: 'Bohdan', id: 1, totalSpendings: 0, finalSpendings: 0, lastSpendingsAmount: 10},
+                {name: 'Kate', id: 2, totalSpendings: 0, finalSpendings: 0, lastSpendingsAmount: 0},
+                {name: 'Victor', id: 3, totalSpendings: 0, finalSpendings: 0, lastSpendingsAmount: 2},
+                {name: 'Lara', id:4, totalSpendings: 0, finalSpendings: 0, lastSpendingsAmount: 30}
             ],
             spendings: [
-               {title: "Taxi", amount: 100, id: 1},
-                {title: "Bar", amount: 110, id: 2},
-                {title: "Sport", amount: 10, id: 3}
+                {title: "Taxi", amount: 100, id: 1, users: [{name: 'Greg', amount: 10, id: 1}, {name: 'John', amount: 20, id:2}] },
+                {title: "SMTH", amount: 100, id: 1, users: [{name: 'Kate', amount: 10, id: 1}, {name: 'Lisa', amount: 20, id:2}] }
             ],
 
-            sumOfGroupSpent : 0
-
-        };
+            sumOfGroupSpent : 0,
+        }
+        ;
 
         this.onAdd = this.onAdd.bind(this);
         this.addItem = this.addItem.bind(this);
-        this.getAmount = this.getAmount.bind(this);
         this.getObjOfSpendings = this.getObjOfSpendings.bind(this);
         this.countTotalSpendings = this.countTotalSpendings.bind(this);
         this.onRemoveUsers = this.onRemoveUsers.bind(this);
         this.onRemoveItems = this.onRemoveItems.bind(this);
         this.onCancel = this.onCancel.bind(this);
+        this.getArrOfUsersSpends = this.getArrOfUsersSpends.bind(this);
     }
 
     async onAdd(text) {
@@ -67,21 +66,6 @@ export default class App extends React.Component {
 
         await console.log(this.state.users);
     }
-
-    getAmount (amount) {
-        let newItem = {
-            title: this.state.spendings[this.state.spendings.length-1].title,
-            amount: amount
-        };
-        let cleanedItem = this.state.spendings.slice(0, this.state.spendings.length-1);
-        this.setState(({spendings}) => {
-            let updatedSpendings = [...cleanedItem, newItem];
-            return {
-                spendings: updatedSpendings
-            }
-        })
-    };
-
 
     addItem(title) {
         let id = 1;
@@ -113,7 +97,7 @@ export default class App extends React.Component {
             return {
                 users: arr
             }
-        })
+        });
     }
 
     countTotalSpendings() {
@@ -169,6 +153,18 @@ export default class App extends React.Component {
         });
     }
 
+    getArrOfUsersSpends(arr, amount) {
+        let newArr = [];
+        let lastSpendItem = this.state.spendings.pop();
+        lastSpendItem.users = arr;
+        lastSpendItem.amount = amount;
+        newArr = [...this.state.spendings];
+        newArr.push(lastSpendItem);
+        this.setState(({spendings})=>{
+            return {spendings: newArr}
+        });
+    }
+
     render() {
         return (
             <BrowserRouter>
@@ -191,10 +187,11 @@ export default class App extends React.Component {
                         >
                             <PaymentsDetails
                                 users={this.state.users}
-                                getAmount={this.getAmount}
                                 getObjOfSpendings={this.getObjOfSpendings}
                                 countTotalSpendings={this.countTotalSpendings}
                                 onCancel={this.onCancel}
+                                spendings={this.state.spendings}
+                                getArrOfUsersSpends={this.getArrOfUsersSpends}
                             />
                         </Route>
                     </Switch>
