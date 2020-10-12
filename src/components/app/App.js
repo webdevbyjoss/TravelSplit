@@ -14,16 +14,8 @@ export default class App extends React.Component {
         super(props);
 
         this.state = {
-            users: [
-                {name: 'Bohdan', id: 1, totalSpendings: 0, finalSpendings: 0, lastSpendingsAmount: 10},
-                {name: 'Kate', id: 2, totalSpendings: 0, finalSpendings: 0, lastSpendingsAmount: 0},
-                {name: 'Victor', id: 3, totalSpendings: 0, finalSpendings: 0, lastSpendingsAmount: 2},
-                {name: 'Lara', id:4, totalSpendings: 0, finalSpendings: 0, lastSpendingsAmount: 30}
-            ],
-            spendings: [
-                {title: "Taxi", amount: 100, id: 1, users: [{name: 'Greg', amount: 10, id: 1}, {name: 'John', amount: 20, id:2}] },
-                {title: "SMTH", amount: 100, id: 1, users: [{name: 'Kate', amount: 10, id: 1}, {name: 'Lisa', amount: 20, id:2}] }
-            ],
+            users: [],
+            spendings: [],
 
             sumOfGroupSpent : 0,
         }
@@ -59,12 +51,9 @@ export default class App extends React.Component {
                 finalSpendings: 0
             };
         }
-
         await this.setState({
             users: [...this.state.users, newUser]
-        })
-
-        await console.log(this.state.users);
+        });
     }
 
     addItem(title) {
@@ -163,6 +152,21 @@ export default class App extends React.Component {
         this.setState(({spendings})=>{
             return {spendings: newArr}
         });
+    }
+
+    componentWillMount() {
+        let users = localStorage.getItem('users');
+        if (users) {
+            this.setState({
+                users: JSON.parse(localStorage.getItem('users')),
+                spendings: JSON.parse(localStorage.getItem('spendings'))
+            });
+        }
+    }
+
+    componentDidUpdate() {
+        localStorage.setItem('users', JSON.stringify(this.state.users));
+        localStorage.setItem('spendings', JSON.stringify(this.state.spendings));
     }
 
     render() {
