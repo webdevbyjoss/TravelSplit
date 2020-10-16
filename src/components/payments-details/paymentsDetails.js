@@ -3,11 +3,11 @@ import PaymentsDetailsUsers from '../payments-details-users/paymentsDetailsUsers
 import {Link} from 'react-router-dom';
 
 
-const PaymentsDetails = ({users, getObjOfSpendings, countTotalSpendings, onCancel, getArrOfUsersSpends, spendings}) => {
+const PaymentsDetails = ({users, updateStateOfUsers, countTotalSpendings, onCancel, getArrOfUsersSpends}) => {
 
-        function  onSubmit() {
+    function onSubmit() {
         let spentSum = 0;
-        let arr = [];
+        let newArrOfUsers = [];
         let arrOfUsersSpends = [];
         let inputs = document.querySelectorAll('.textarea');
         let div = document.querySelectorAll('.payments_try');
@@ -20,8 +20,8 @@ const PaymentsDetails = ({users, getObjOfSpendings, countTotalSpendings, onCance
                     newObj.id = user.id;
                     newObj.lastSpendingsAmount = +item.querySelector('.textarea').value;
                     newObj.totalSpendings = user.totalSpendings + +item.querySelector('.textarea').value;
-                    newObj.finalSpendings = users.finalSpendings;
-                    arr.push(newObj);
+                    newObj.userDebt = user.userDebt;
+                    newArrOfUsers.push(newObj);
                 }
             })
         });
@@ -30,29 +30,19 @@ const PaymentsDetails = ({users, getObjOfSpendings, countTotalSpendings, onCance
             spentSum += +item.value;
         });
 
-            function getRandomBetween(min, max) {
+        function getRandomBetween(min, max) {
                 return Math.random() * (max - min) + min;
             }
 
-        userDiv.forEach((item)=>{
+            userDiv.forEach((item)=>{
             let objOfSpends = {};
             objOfSpends.name = item.innerText;
             objOfSpends.id = getRandomBetween(1, 500)
             objOfSpends.amount = item.lastChild.value;
             arrOfUsersSpends.push(objOfSpends)
         });
-        getArrOfUsersSpends(arrOfUsersSpends, spentSum);
-
-    /*    userDiv.forEach((item)=>{
-                let objOfSpends = {};
-                objOfSpends.name = item.innerText;
-                objOfSpends.amount = item.lastChild.value;
-                arrOfUsersSpends.push(objOfSpends)
-        });*/
-
-        getObjOfSpendings(arr);
-
-        countTotalSpendings();
+            getArrOfUsersSpends(arrOfUsersSpends, spentSum);
+            updateStateOfUsers(newArrOfUsers);
     }
 
     return (

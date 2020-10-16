@@ -10,37 +10,32 @@ const PaymentsDetailsUsers = ({users}) => {
             const text = elem.querySelector('.textarea');
            if (checkbox.checked) {
                text.disabled = true;
+               text.value = 0;
            } else
                text.disabled = false;
         })
     }
-
-    function Render () {
-        return (
-            users.map((item) => (
-                <div className='payments_try' key={item.id} >
-                    <div className='w-100'>
-                        <input
-                            className='checkbox'
-                            type="checkbox"
-                            name="sameadr"
-                            onChange={checked}
-                        />
-                        {item.name}
-                        <input
-                            className='textarea'
-                            type="text"
-                            name="sameadr"
-                        />
-                </div>
-                </div>
-        ))
-        )
-    }
-
     return (
-        <Render />
-    );
+        users.map((item) => (
+            <div className='payments_try' key={item.id} >
+                <div className='w-100'>
+                    <input
+                        className='checkbox'
+                        type="checkbox"
+                        name="sameadr"
+                        onChange={checked}
+                    />
+                    {item.name}
+                    <input
+                        className='textarea'
+                        type="number"
+                        name="sameadr"
+                        min='1'
+                    />
+                </div>
+            </div>
+        ))
+    )
 };
 
 export default PaymentsDetailsUsers;

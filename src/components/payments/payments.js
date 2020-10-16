@@ -54,7 +54,7 @@ class PaymentsPage extends React.Component {
                     <ul>
                         <PaymentsList
                             spendings={this.props.spendings}
-                            onRemoveItems={this.props.onRemoveItems}
+                            onRemoveItem={this.props.onRemoveItem}
                             getArrOfUsersSpends={this.props.getArrOfUsersSpends}
                         />
                     </ul>

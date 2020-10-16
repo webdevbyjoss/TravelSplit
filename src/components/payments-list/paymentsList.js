@@ -5,7 +5,7 @@ export default class PaymentsList extends React.Component {
 
     render() {
         return this.props.spendings.map((item) => (
-            <li className="row" key={item.title} onClick={(e)=>this.props.onRemoveItems(item.title, item.id)}>
+            <li className="row" key={item.title} onClick={(e)=>this.props.onRemoveItem(item.title, item.id)}>
                 <div><i className="far fa-times-circle close_item"></i></div>
                 <div className='col'>
                     <div className='row'>
