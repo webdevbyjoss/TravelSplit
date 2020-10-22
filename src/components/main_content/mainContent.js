@@ -3,23 +3,30 @@ import Header from '../header/header';
 import UsersBalance from '../userBalance/userBalance';
 import Payments from '../payments/payments';
 import './mainContent.css';
+import {connect} from 'react-redux';
+import {bindActionCreators} from "redux";
+import * as actions from "../../actions";
 
-const MainContent = ({onAdd, users, spendings, addItem, sumOfGroupSpent,onRemoveUser, onRemoveItem}) => {
+const MainContent = ({onAdd,users}) => {
     return (
         <div className='main_content'>
-            <Header onAdd={onAdd} />
-            <UsersBalance users={users}
-                          sumOfGroupSpent={sumOfGroupSpent}
-                          onRemoveUser={onRemoveUser}
+            <Header/>
+            <UsersBalance
             />
             {users.length > 1 && <Payments
-                users={users}
-                spendings={spendings}
-                addItem={addItem}
-                onRemoveItem={onRemoveItem}
             />}
         </div>
     )
 };
 
-export default MainContent;
+const mapStateToProps = (state) => {
+    return {
+        users: state.users
+    }
+};
+
+const mapDispatchToProps = (dispatch) => {
+    return bindActionCreators(actions, dispatch);
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(MainContent);

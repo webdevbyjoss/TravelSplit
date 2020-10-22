@@ -1,11 +1,15 @@
 import React from 'react';
 import './paymentsList.css';
 
-export default class PaymentsList extends React.Component {
+import {connect} from 'react-redux';
+import {bindActionCreators} from "redux";
+import * as actions from "../../actions";
+
+class PaymentsList extends React.Component {
 
     render() {
         return this.props.spendings.map((item) => (
-            <li className="row" key={item.title} onClick={(e)=>this.props.onRemoveItem(item.title, item.id)}>
+            <li className="row" key={item.title} onClick={(e)=>this.props.ON_REMOVE_SPENDINGS(item.title, item.id)}>
                 <div><i className="far fa-times-circle close_item"></i></div>
                 <div className='col'>
                     <div className='row'>
@@ -22,6 +26,18 @@ export default class PaymentsList extends React.Component {
         ))
     }
 };
+
+const mapStateToProps = (state) => {
+    return {
+        spendings: state.spendings
+    }
+};
+
+const mapDispatchToProps = (dispatch) => {
+    return bindActionCreators(actions, dispatch);
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(PaymentsList)
 
 
 

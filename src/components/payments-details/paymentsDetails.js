@@ -1,9 +1,12 @@
 import React from 'react';
 import PaymentsDetailsUsers from '../payments-details-users/paymentsDetailsUsers'
 import {Link} from 'react-router-dom';
+import {connect} from 'react-redux';
+import {bindActionCreators} from "redux";
+import * as actions from "../../actions";
 
 
-const PaymentsDetails = ({users, updateStateOfUsers, countTotalSpendings, onCancel, getArrOfUsersSpends}) => {
+const PaymentsDetails = ({users, UPDATE_STATE_OF_USERS, ON_CANCEL, GET_ARR_OF_USERS_SPENDS}) => {
 
     function onSubmit() {
         let spentSum = 0;
@@ -14,7 +17,7 @@ const PaymentsDetails = ({users, updateStateOfUsers, countTotalSpendings, onCanc
         let userDiv = document.querySelectorAll('.w-100');
         div.forEach((item)=>{
             let newObj = {};
-             users.forEach((user) => {
+            users.forEach((user) => {
                 if (user.name === item.innerText) {
                     newObj.name = user.name;
                     newObj.id = user.id;
@@ -25,24 +28,25 @@ const PaymentsDetails = ({users, updateStateOfUsers, countTotalSpendings, onCanc
                 }
             })
         });
+        console.log(newArrOfUsers);
 
         inputs.forEach((item) => {
             spentSum += +item.value;
         });
 
         function getRandomBetween(min, max) {
-                return Math.random() * (max - min) + min;
-            }
+            return Math.random() * (max - min) + min;
+        }
 
-            userDiv.forEach((item)=>{
+        userDiv.forEach((item)=>{
             let objOfSpends = {};
             objOfSpends.name = item.innerText;
             objOfSpends.id = getRandomBetween(1, 500)
             objOfSpends.amount = item.lastChild.value;
             arrOfUsersSpends.push(objOfSpends)
         });
-            getArrOfUsersSpends(arrOfUsersSpends, spentSum);
-            updateStateOfUsers(newArrOfUsers);
+        GET_ARR_OF_USERS_SPENDS(arrOfUsersSpends, spentSum);
+        UPDATE_STATE_OF_USERS(newArrOfUsers);
     }
 
     return (
@@ -57,11 +61,21 @@ const PaymentsDetails = ({users, updateStateOfUsers, countTotalSpendings, onCanc
                     <PaymentsDetailsUsers users={users}/>
 
                     <Link to='/'><button type='button' onClick={onSubmit}>Ok</button></Link>
-                    <Link to='/'><button type='button' onClick={onCancel}>Close</button></Link>
+                    <Link to='/'><button type='button' onClick={ON_CANCEL}>Close</button></Link>
                 </form>
             </div>
         </div>
     )
 };
 
-export default PaymentsDetails;
+const mapStateToProps = (state) => {
+    return {
+        users: state.users
+    }
+};
+
+const mapDispatchToProps = (dispatch) => {
+    return bindActionCreators(actions, dispatch);
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(PaymentsDetails);

@@ -1,9 +1,12 @@
 import React from 'react';
+import {connect} from "react-redux";
+import * as actions from '../../actions';
+import { bindActionCreators} from 'redux';
 
 
-export default class Header extends React.Component {
-    constructor () {
-        super()
+class Header extends React.Component {
+    constructor (props) {
+        super(props)
 
         this.state = {
             text : ' '
@@ -22,7 +25,9 @@ export default class Header extends React.Component {
             if (this.state.text === '') {
                 return;
             }
-            this.props.onAdd(this.state.text);
+
+            this.props.ON_ADD(this.state.text);
+
             e.target.value = '';
             this.setState({
                 text: ''
@@ -50,3 +55,9 @@ export default class Header extends React.Component {
         )
     }
 }
+
+const mapDispatchToProps = (dispatch) => {
+    return bindActionCreators(actions, dispatch);
+};
+
+export default connect(null, mapDispatchToProps)(Header);

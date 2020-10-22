@@ -1,6 +1,10 @@
 import React from 'react';
+import {connect} from "react-redux";
+import * as actions from "../../actions";
+import {bindActionCreators} from "redux";
 
-const UsersBalance = ({users, onRemoveUser}) => {
+const UsersBalance = ({users, ON_REMOVE}) => {
+
     let sumOfGroupSpent = 0;
     users.forEach((item =>{
         sumOfGroupSpent += +item.totalSpendings
@@ -14,24 +18,33 @@ const UsersBalance = ({users, onRemoveUser}) => {
     }
 
     function Render () {
-            return users.map((item) => (
+        return users.map((item) => (
 
-                <li className='row' key={item.id} onClick={(e)=>onRemoveUser(item.name, item.id)} >
-                    <i className="far fa-times-circle"></i>
-                    <div className='col'> {item.name} </div>
-                    <div className='col'>
-                        <div className='float-right'>{countDebt(+item.totalSpendings, +sumOfGroupSpent/users.length)} $</div>
-                    </div>
-                </li>
-            ));
+            <li className='row' key={item.id} onClick={()=>ON_REMOVE(item.id, item.name)}>
+                <i className="far fa-times-circle"></i>
+                <div className='col' onClick={()=>console.log(users)}> {item.name} </div>
+                <div className='col'>
+                    <div className='float-right'>{countDebt(+item.totalSpendings, +sumOfGroupSpent/users.length)} $</div>
+                </div>
+            </li>
+        ));
     }
-
 
     return (
         <ul>
-        <Render />
+            <Render />
         </ul>
     )
 };
 
-export default UsersBalance;
+const mapStateToProps = (state) => {
+    return {
+        users: state.users
+    }
+};
+
+const mapDispatchToProps = (dispatch) => {
+    return bindActionCreators(actions, dispatch);
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(UsersBalance);

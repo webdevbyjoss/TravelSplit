@@ -1,6 +1,10 @@
 import React from 'react';
-import PaymentsList from '../payments-list/paymentsList'
-import { withRouter } from 'react-router-dom'
+import PaymentsList from '../payments-list/paymentsList';
+import { withRouter } from 'react-router-dom';
+import {connect} from "react-redux";
+import {bindActionCreators} from "redux";
+import * as actions from "../../actions";
+
 
 class PaymentsPage extends React.Component {
     constructor(props) {
@@ -21,11 +25,13 @@ class PaymentsPage extends React.Component {
                 return;
             }
             e.preventDefault();
-            this.props.addItem(this.state.title);
-            history.push('/payments')
+
+            this.props.ON_ADD_SPENDINGS(this.state.title);
+
+            history.push('/payments');
             this.setState({
                 title: ''
-            })
+            });
             e.target.value = '';
         } else
             return
@@ -62,6 +68,16 @@ class PaymentsPage extends React.Component {
             </div>
         )
     }
-}
+};
 
-export default withRouter(PaymentsPage);
+const mapStateToProps = (state) => {
+    return {
+        users: state.users
+    }
+};
+
+const mapDispatchToProps = (dispatch) => {
+    return bindActionCreators(actions, dispatch);
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(withRouter(PaymentsPage));
