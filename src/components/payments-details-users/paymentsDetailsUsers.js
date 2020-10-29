@@ -17,7 +17,7 @@ const PaymentsDetailsUsers = ({users}) => {
     }
     return (
         users.map((item) => (
-            <div className='payments_try' key={item.id} >
+            <div className='payments_try' key={item.name} >
                 <div className='w-100'>
                     <input
                         className='checkbox'

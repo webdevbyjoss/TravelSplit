@@ -13,11 +13,9 @@ class PaymentsPage extends React.Component {
         this.state = {
             title : '',
         };
-        this.pressEnter  = this.pressEnter.bind(this);
-        this.onChangeValue = this.onChangeValue.bind(this);
     }
 
-    pressEnter (e) {
+    pressEnter = (e) => {
         const { history } = this.props;
         if (e.key === 'Enter') {
 
@@ -26,7 +24,7 @@ class PaymentsPage extends React.Component {
             }
             e.preventDefault();
 
-            this.props.ON_ADD_SPENDINGS(this.state.title);
+            this.props.addSpendings(this.state.title);
 
             history.push('/payments');
             this.setState({
@@ -35,13 +33,13 @@ class PaymentsPage extends React.Component {
             e.target.value = '';
         } else
             return
-    }
+    };
 
-    onChangeValue(e) {
+    onChangeValue =(e)=> {
         this.setState({
             title: e.target.value
         })
-    }
+    };
 
     render() {
         return (
@@ -51,7 +49,7 @@ class PaymentsPage extends React.Component {
                     <input
                         className="form-control input-lg"
                         type="text"
-                        placeholder='Piza, taxi, beer...'
+                        placeholder='Pizza, taxi, beer...'
                         onChange={this.onChangeValue}
                     />
                 </form>
@@ -60,8 +58,6 @@ class PaymentsPage extends React.Component {
                     <ul>
                         <PaymentsList
                             spendings={this.props.spendings}
-                            onRemoveItem={this.props.onRemoveItem}
-                            getArrOfUsersSpends={this.props.getArrOfUsersSpends}
                         />
                     </ul>
                 </div>

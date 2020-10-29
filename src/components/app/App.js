@@ -11,19 +11,6 @@ import * as actions from "../../actions";
 
 
 class App extends React.Component {
-    constructor(props) {
-        super(props);
-    };
-
-    componentDidUpdate() {
-        this.props.UPDATE_USAGE_LS();
-        this.props.UPDATE_SPENDING_LS();
-    }
-
-    componentWillMount() {
-        this.props.USERS_WILL_MOUNT();
-        this.props.SPENDINGS_WILL_MOUNT();
-    }
 
     render() {
         return (

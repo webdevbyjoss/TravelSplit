@@ -16,7 +16,7 @@ class Header extends React.Component {
     onChange = e => {
         this.setState({
             text: e.target.value
-        })}
+        })};
 
 
     pressEnter = e => {
@@ -26,7 +26,7 @@ class Header extends React.Component {
                 return;
             }
 
-            this.props.ON_ADD(this.state.text);
+            this.props.addUser(this.state.text);
 
             e.target.value = '';
             this.setState({
@@ -35,7 +35,7 @@ class Header extends React.Component {
 
         } else
             return
-    }
+    };
 
     render () {
         return (
