@@ -1,7 +1,3 @@
-export function confirm (data) {
-    return window.confirm(`Do you really want to remove ${data}?`);
-};
-
 
 export function countAmountSpent(users) {
     let summ = 0;

@@ -6,13 +6,11 @@ import { bindActionCreators} from 'redux';
 
 class Header extends React.Component {
     constructor (props) {
-        super(props)
-
+        super(props);
         this.state = {
-            text : ' '
+            text : ''
         };
     }
-
     onChange = e => {
         this.setState({
             text: e.target.value
@@ -25,16 +23,11 @@ class Header extends React.Component {
             if (this.state.text === '') {
                 return;
             }
-
             this.props.addUser(this.state.text);
-
-            e.target.value = '';
             this.setState({
                 text: ''
             })
-
-        } else
-            return
+        }
     };
 
     render () {
@@ -46,8 +39,9 @@ class Header extends React.Component {
                         <input
                             className="form-control input-lg"
                             type="text"
-                            placeholder='John, Lisa or any other name...'
                             onChange={this.onChange}
+                            value={this.state.text}
+                            placeholder='John, Lisa or any other name...'
                         />
                     </form>
                 </div>

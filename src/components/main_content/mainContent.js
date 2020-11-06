@@ -7,7 +7,7 @@ import {connect} from 'react-redux';
 import {bindActionCreators} from "redux";
 import * as actions from "../../actions";
 
-const MainContent = ({onAdd,users}) => {
+const MainContent = ({users}) => {
     return (
         <div className='main_content'>
             <Header/>

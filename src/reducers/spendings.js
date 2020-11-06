@@ -1,24 +1,13 @@
-import {confirm} from '../functions';
-
-
 export function spendingsReducer(state = [], action) {
     switch (action.type) {
 
         case "ADD_SPENDINGS":
-            let newSpendings = {
-                    title: action.text
-                };
                 return [
-                ...state,
-                newSpendings
+                ...state, {title: action.text}
             ];
 
         case "REMOVE_SPENDINGS":
-            if (confirm(action.title)) {
-                let newArr = state.filter(item => item.title !== action.title);
-                    return [...newArr];
-            }
-            return state;
+            return [...state.filter(item => item.title !== action.title)];
 
         case "ADD_USERS_TO_SPENDS":
             let newArr = [];
@@ -29,7 +18,9 @@ export function spendingsReducer(state = [], action) {
             return [...newArr];
 
         case "UNDO_SPEND":
-            return state.slice(0, state.length - 1);
+
+            console.log(state);
+            return [...state.slice(0, state.length - 1)];
 
         default: return state;
     }

@@ -5,15 +5,9 @@ import MainContent from '../main_content/mainContent'
 import {connect} from 'react-redux';
 import {Route} from 'react-router-dom';
 import './app.css';
-import {bindActionCreators} from "redux";
-import * as actions from "../../actions";
 
-
-
-class App extends React.Component {
-
-    render() {
-        return (
+function App () {
+    return (
             <BrowserRouter>
                 <div className="App">
                     <Switch>
@@ -32,7 +26,6 @@ class App extends React.Component {
                 </div>
             </BrowserRouter>
         )
-    }
 };
 
 const mapStateToProps = (state) => {
@@ -41,8 +34,4 @@ const mapStateToProps = (state) => {
     }
 };
 
-const mapDispatchToProps = (dispatch) => {
-    return bindActionCreators(actions, dispatch);
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(App)
+export default connect(mapStateToProps)(App)

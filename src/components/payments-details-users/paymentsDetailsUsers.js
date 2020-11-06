@@ -1,41 +1,55 @@
 import React from 'react';
 
 
-const PaymentsDetailsUsers = ({users}) => {
+export default class PaymentsDetailsUsers extends React.Component {
+    constructor(props) {
+        super(props);
 
-    function checked() {
-        const div = document.querySelectorAll('.w-100');
-        div.forEach((elem) => {
-            const checkbox = elem.querySelector('.checkbox');
-            const text = elem.querySelector('.textarea');
-           if (checkbox.checked) {
-               text.disabled = true;
-               text.value = 0;
-           } else
-               text.disabled = false;
-        })
+        this.state = {
+            checked : {},
+            value:{}
+        };
     }
-    return (
-        users.map((item) => (
-            <div className='payments_try' key={item.name} >
-                <div className='w-100'>
-                    <input
-                        className='checkbox'
-                        type="checkbox"
-                        name="sameadr"
-                        onChange={checked}
-                    />
-                    {item.name}
-                    <input
-                        className='textarea'
-                        type="number"
-                        name="sameadr"
-                        min='1'
-                    />
-                </div>
-            </div>
-        ))
-    )
-};
 
-export default PaymentsDetailsUsers;
+    checked = (item)=>()=>{
+        this.setState({
+            checked : {...this.state.checked,[item.name]:!this.state.checked[item.name]}
+        });
+    };
+
+    changeValue = (item)=>(event)=>{
+        this.setState({
+            value : {...this.state.value,[item.name]:event.target.value}
+        });
+    };
+
+    render() {
+        return (
+            this.props.users.map((item) => (
+                <div className='payments_try' key={item.name} onClick={()=>{console.log(this.props.props)}}>
+                    <div className='w-100'>
+
+                        <input
+                            className='checkbox'
+                            type="checkbox"
+                            name={item.name}
+                            value={!!this.state.checked[item.name]}
+                            onChange={this.checked(item)}
+                        />
+                        {item.name}
+                        <input
+                            className='textarea'
+                            type="number"
+                            min='1'
+                            disabled={this.state.checked[item.name]}
+                            value={this.state.checked[item.name]?0:
+                                this.state.value[item.name]?this.state.value[item.name]: ''}
+                            onChange={this.changeValue(item)}
+                            onClick={()=>console.log(this.state)}
+                        />
+
+                    </div>
+                </div>
+            ))
+        )}
+};

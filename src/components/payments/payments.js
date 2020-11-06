@@ -30,9 +30,7 @@ class PaymentsPage extends React.Component {
             this.setState({
                 title: ''
             });
-            e.target.value = '';
-        } else
-            return
+        }
     };
 
     onChangeValue =(e)=> {
@@ -51,6 +49,7 @@ class PaymentsPage extends React.Component {
                         type="text"
                         placeholder='Pizza, taxi, beer...'
                         onChange={this.onChangeValue}
+                        value = {this.state.title}
                     />
                 </form>
 
@@ -58,6 +57,7 @@ class PaymentsPage extends React.Component {
                     <ul>
                         <PaymentsList
                             spendings={this.props.spendings}
+                            props={this.state.title}
                         />
                     </ul>
                 </div>

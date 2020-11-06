@@ -7,11 +7,11 @@ import * as actions from "../../actions";
 
 import {countAmountSpent} from '../../functions';
 
-class PaymentsList extends React.Component {
-
-    render() {
-        return this.props.spendings.map((item) => (
-            <li className="row" key={item.title} onClick={(e)=>this.props.removeSpendings(item.title)}>
+function PaymentsList ({spendings, removeSpendings}) {
+    return spendings.map((item) => (
+            <li className="row" key={item.title} onClick={()=>{if (window.confirm(`Do you really want to remove ${item.title}?`)) {
+                removeSpendings(item.title);
+            }}}>
                 <div><i className="far fa-times-circle close_item"></i></div>
                 <div className='col'>
                     <div className='row'>
@@ -26,7 +26,6 @@ class PaymentsList extends React.Component {
                 </div>
             </li>
         ))
-    }
 };
 
 const mapStateToProps = (state) => {
