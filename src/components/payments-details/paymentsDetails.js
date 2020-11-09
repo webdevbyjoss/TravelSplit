@@ -1,9 +1,9 @@
 import React from 'react';
-import PaymentsDetailsUsers from '../payments-details-users/paymentsDetailsUsers'
+import PaymentsDetailsUsers from 'components/payments-details-users/paymentsDetailsUsers'
 import {Link} from 'react-router-dom';
 import {connect} from 'react-redux';
 import {bindActionCreators} from "redux";
-import * as actions from "../../actions";
+import * as actions from "actions";
 
 
 const PaymentsDetails = ({users, undoSpend, addUsersToSpends}) => {

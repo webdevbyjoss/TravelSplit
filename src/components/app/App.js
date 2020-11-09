@@ -1,7 +1,7 @@
 import React from 'react';
-import PaymentsDetails from '../payments-details/paymentsDetails';
+import PaymentsDetails from 'components/payments-details/paymentsDetails';
 import {BrowserRouter, Switch} from 'react-router-dom';
-import MainContent from '../main_content/mainContent'
+import MainContent from 'components/main_content/mainContent'
 import {connect} from 'react-redux';
 import {Route} from 'react-router-dom';
 import './app.css';

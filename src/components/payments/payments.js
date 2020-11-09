@@ -1,9 +1,9 @@
 import React from 'react';
-import PaymentsList from '../payments-list/paymentsList';
+import PaymentsList from 'components/payments-list/paymentsList';
 import { withRouter } from 'react-router-dom';
 import {connect} from "react-redux";
 import {bindActionCreators} from "redux";
-import * as actions from "../../actions";
+import * as actions from "actions";
 
 
 class PaymentsPage extends React.Component {
