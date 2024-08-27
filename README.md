@@ -11,6 +11,14 @@ Suitable to be wrapped with Apache Cordiva for any supported mobile platform.
 * i18n friendly
 * qunit
 
+# Quick Start
+
+```bash
+npm install
+npm start
+```
+open: http://localhost:8080/
+
 Screnshot
 
 ![Screenshot](img/screenshot.png?raw=true)
