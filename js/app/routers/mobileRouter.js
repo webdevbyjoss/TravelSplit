@@ -30,8 +30,11 @@ define(['jquery', 'backbone', 'utils', 'views/PaymentView', 'views/MainView', 'c
 				return;
 			}
 
-			var payment = this.MainView.PaymentsView.model.get(id);
-			this.PaymentView.model.reset(payment);
+			// load payment details on editing and do nothing on new payment
+			if (this.MainView.PaymentsView.model) {
+				var payment = this.MainView.PaymentsView.model.get(id);
+				this.PaymentView.model.reset(payment);
+			}
 		},
 
 		initialize: function () {
@@ -49,7 +52,7 @@ define(['jquery', 'backbone', 'utils', 'views/PaymentView', 'views/MainView', 'c
 
 	    		// see http://knutkj.wordpress.com/2012/01/23/jquery-mobile-and-client-generated-pages/
 		        // $.mobile.autoInitializePage = false;
-		        
+
 		        // update default settings
 		        $.mobile.defaultPageTransition = 'none';
 

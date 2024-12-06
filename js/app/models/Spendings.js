@@ -2,20 +2,20 @@ define(['simplesets'], function(simplesets) {
 
     var Spendings = function() {
 
-        // Run through the spendings data
-        // filter into separate logs and produce the spendings tables
+        // Run through the spending data
+        // filter into separate logs and produce the spending tables
         this.run = function(log) {
             var groupedLogs = this.filterLogs(log);
 
-            // run through each log and calculate the total spendings for each member
+            // run through each log and calculate the total spending for each member
             var result = [];
             var self = this;
             groupedLogs.forEach(function(log, i) {
                 result[i] = self.calculateSpendings(log);
             });
 
-            // calculate total for each meber by adding results from each log
-            var totalsByMember = {}; // use hash to map members to spendings
+            // calculate total for each member by adding results from each log
+            var totalsByMember = {}; // use hash to map members to spending
             result.forEach(function(r) {
                 for (var member in r.solution) {
                     // get the number of money spend by each team member
@@ -31,12 +31,12 @@ define(['simplesets'], function(simplesets) {
 
         var log = [];
 
-        // Adds new spending option into spendings log
-        // 
+        // Adds new spending option into spending log
+        //
         // arguments description:
         // spendings : object - money spend by each member, for example {'Mark': 40.00, 'John': 700.00}
         //                      note that all team members participating in this spending should be mentioned
-        //                      for example if 'Ann' have not spend money but participated 
+        //                      for example if 'Ann' have not spent money but participated
         //                      it should be mentioned like: {'Mark': 40.00, 'John': 700.00, 'Ann':0}
         this.add = function (spendings) {
             // add spending to appropriate log
@@ -44,7 +44,7 @@ define(['simplesets'], function(simplesets) {
         }
 
         // Supports only participation of all team members
-        // no support fpr partial participation possible for now
+        // no support for partial participation possible for now
         this.totals = function () {
             return this.calculateSpendings(log);
         }
@@ -101,7 +101,7 @@ define(['simplesets'], function(simplesets) {
         this.filterLogs = function (log) {
             // the Array of Array where each hold logs filterred by groups
             var logs = [];
-            // the Array of sets where each set identified by id and 
+            // the Array of sets where each set identified by id and
             // set of members that correspond appropriate log record from logs array
             var logsMembers = [];
 

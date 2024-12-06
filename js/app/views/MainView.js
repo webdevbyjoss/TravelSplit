@@ -26,7 +26,7 @@ return Backbone.View.extend({
 
 	/**
 	 * Main page template
-	 * 
+	 *
 	 * @type {String}
 	 */
 	template: _.template(tplMain),
@@ -117,7 +117,7 @@ return Backbone.View.extend({
         this.MembersCollection.forEach(function(member, index) {
             template += '<tr><td><input checked="checked" id="member-' + index + '" type="checkbox" value=' + index + '>'
                       + '<label for="member-' + index + '">' + member.get('name') + '</label></td>'
-                      + '<td class="money-value"><input tabindex="' + (index + 1) +'" data-id="' + index 
+                      + '<td class="money-value"><input tabindex="' + (index + 1) +'" data-id="' + index
                       + '" name="member-money[' + index + ']" type="number" min="0" max="5000" step="0.01" placeholder="0" />'
                       + '</td></tr>';
         });
@@ -146,10 +146,8 @@ return Backbone.View.extend({
         this.trigger('navigate', 'payment/111');
     },
 
-
-
     hideDetails: function() {
-    	
+
     	var self = this;
 
         // get money values and add to the transactions log as separate records
@@ -163,12 +161,12 @@ return Backbone.View.extend({
                 return true;
             }
 
-            var value = parseInt($(this).val(), 10);
+            var value = parseFloat($(this).val());
             if (isNaN(value)) {
                 value = 0;
             }
 
-            var id = parseInt($(this).data('id'), 10);
+            var id = parseFloat($(this).data('id'));
 
             // create records in spending object
             // TODO: migrate this to ID instead of index
@@ -185,7 +183,7 @@ return Backbone.View.extend({
         // save data into log
         var logItem = {
             'description': $('#payment').val(),
-            'total': total,  // TODO: this can be dinamically calculated inside model
+            'total': total,  // TODO: this can be dynamically calculated inside model
                              // including validation
             'shares': spendingObj,
         };

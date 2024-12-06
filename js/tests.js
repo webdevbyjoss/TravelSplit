@@ -81,8 +81,6 @@ require(['app/models/Spendings'], function(Spendings) {
 	    deepEqual(r.solution, {John: 20, Ann: -10, Mark: -10});
 	});
 
-
-
 	test('Zero-values recognision test', function() {
 
 	    var t = new Spendings();
@@ -143,10 +141,8 @@ require(['app/models/Spendings'], function(Spendings) {
 	    // recognize groups
 	    var t = new Spendings();
 	    var data = t.run(log);
-	    
+
 	    deepEqual(data, {Ann: -265.8333333333333, John: 424.1666666666667, Mark: -285.8333333333333, Alex: 127.5});
 	});
-
-
 
 });

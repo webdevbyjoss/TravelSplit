@@ -18,3 +18,10 @@ open: http://localhost:8080/
 ## Screenshot
 
 ![Screenshot](img/screenshot.png?raw=true)
+
+## Development Guide
+
+### Run unit tests
+
+open: http://localhost:8080/tests.html
+
