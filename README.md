@@ -21,7 +21,16 @@ open: http://localhost:8080/
 
 ## Development Guide
 
+### Setup Authorship
+
+Please setup commits authorship right after cloning the Git repository.
+
+```bash
+git config user.name "<Your Name>"
+git config user.email "<Your Email>@gmail.com"
+```
+
+
 ### Run unit tests
 
 open: http://localhost:8080/tests.html
-
