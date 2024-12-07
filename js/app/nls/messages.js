@@ -12,7 +12,7 @@ define({
 		'Where you spend the money?': 'Where you spend the money?',
 		'Team requires at least two members': 'Team requires at least two members',
 		'People': 'People',
-		'Group Payments': 'Group Payments'
+		'Expenses': 'Expenses'
 	},
 	'uk-ua': true
 });
