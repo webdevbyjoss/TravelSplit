@@ -12,6 +12,7 @@
 export type PaymentShares = Map<string, number>;
 
 export type Payment = {
+  id: number,
   title: string,
   shares: PaymentShares
 }
@@ -21,7 +22,8 @@ export type Person = {
   amount?: number
 }
 
-export type Expenses = {
+export type TripExpenses = {
+  id: number,
   title: string,
   team: Person[],
   payments: Payment[]
@@ -29,14 +31,14 @@ export type Expenses = {
 
 /**
  * Calculate the total amount paid by each person in the team
- * @param payments
+ * @param expenses
  */
-export function calculateExpenses(payments: Expenses): PaymentShares {
+export function calculateExpenses(expenses: TripExpenses): PaymentShares {
   const total: PaymentShares = new Map();
-  payments.team.forEach(person => total.set(person.name, person.amount || 0));
+  expenses.team.forEach(person => total.set(person.name, person.amount || 0));
 
   // Calculate the total amount paid and adjust individual balances
-  payments.payments.map(payment => paymentToShares(payment)).forEach(shares => {
+  expenses.payments.map(payment => paymentToShares(payment)).forEach(shares => {
     Array.from(shares.keys()).forEach(personName => {
       const totalAmount = shares.get(personName) || 0;
       const currentAmount = total.get(personName) || 0;

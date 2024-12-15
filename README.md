@@ -8,7 +8,7 @@ Simplifies tracking and splitting trip expenses.
 
 ```bash
 npm install
-npm dev
+npm run dev
 ```
 open: http://localhost:8080/
 

@@ -11,18 +11,21 @@
     "test": "jest"
   },
   "dependencies": {
+    "@reduxjs/toolkit": "^2.5.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "react-router": "^7.0.2"
+    "react-redux": "^9.2.0",
+    "react-router": "^7.0.2",
+    "redux-persist": "^6.0.0"
   },
   "devDependencies": {
-    "@eslint/js": "^9.15.0",
+    "@eslint/js": "^9.17.0",
     "@testing-library/react": "^16.1.0",
     "@types/jest": "^29.5.14",
-    "@types/react": "^19.0.1",
-    "@types/react-dom": "^18.3.1",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
     "@vitejs/plugin-react": "^4.3.4",
-    "eslint": "^9.15.0",
+    "eslint": "^9.17.0",
     "eslint-plugin-react-hooks": "^5.0.0",
     "eslint-plugin-react-refresh": "^0.4.14",
     "globals": "^15.12.0",
