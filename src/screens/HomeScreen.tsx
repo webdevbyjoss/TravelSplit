@@ -39,7 +39,7 @@ const HomeScreen: React.FC = () => {
           <div className="column is-four-fifths">Trips</div>
           <div className="column has-text-right">
             <button className="button is-primary mb-4" onClick={() => navigate(`/trip/`)}>
-              Add trip
+              New trip
             </button>
           </div>
         </div>
