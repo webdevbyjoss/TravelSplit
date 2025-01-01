@@ -1,29 +1,98 @@
-import React from 'react';
-import { useSelector } from 'react-redux';
-import { RootState } from '../app/store';
-import { useParams } from 'react-router';
+import React, { useState, useEffect } from 'react';
 
-const PaymentDetailsScreen: React.FC = () => {
-  const { tripId, paymentId } = useParams<{ tripId: string; paymentId: string }>();
-  const trip = useSelector((state: RootState) => state.tripExpenses.find(t => t.id === Number(tripId)));
-  const payment = trip?.payments.find(p => p.id === Number(paymentId));
+type PaymentDetailsScreenProps = {
+  team: { name: string }[];
+  onSave: (paymentTitle: string, paymentShares: Map<string, number>) => void;
+  initialTitle?: string; // Optional initial payment title
+  initialShares?: Map<string, number>; // Optional initial shares
+};
+const PaymentDetailsScreen: React.FC<PaymentDetailsScreenProps> = ({
+                                                                     team,
+                                                                     onSave,
+                                                                     initialTitle = '',
+                                                                     initialShares = new Map(),
+                                                                   }) => {
+  const [paymentTitle, setPaymentTitle] = useState(initialTitle);
+  const [paymentShares, setPaymentShares] = useState<Map<string, string>>(() =>
+    new Map(Array.from(initialShares).map(([key, value]) => [key, value.toString()]))
+  );
 
-  if (!trip || !payment) {
-    return <div>Payment not found</div>;
-  }
+  useEffect(() => {
+    // Populate form when initial values change (e.g., when editing)
+    setPaymentTitle(initialTitle);
+    setPaymentShares(
+      new Map(Array.from(initialShares).map(([key, value]) => [key, value.toString()]))
+    );
+  }, [initialTitle, initialShares]);
+
+  const handleSave = () => {
+    const parsedShares = new Map<string, number>();
+    for (const [key, value] of paymentShares) {
+      const parsedValue = parseFloat(value);
+      if (!isNaN(parsedValue)) {
+        parsedShares.set(key, parsedValue);
+      }
+    }
+
+    onSave(paymentTitle, parsedShares);
+    setPaymentTitle('');
+    setPaymentShares(new Map());
+  };
+
+  const validateAndFormatInput = (input: string): string => {
+    let sanitizedInput = input.replace(/[^0-9.]/g, '');
+    const parts = sanitizedInput.split('.');
+    if (parts.length > 2) {
+      sanitizedInput = `${parts[0]}.${parts.slice(1).join('')}`;
+    }
+    return sanitizedInput;
+  };
+
+  const handleInputChange = (name: string, value: string) => {
+    const sanitizedValue = validateAndFormatInput(value);
+    setPaymentShares((prevShares) => {
+      const updatedShares = new Map(prevShares);
+      updatedShares.set(name, sanitizedValue);
+      return updatedShares;
+    });
+  };
 
   return (
     <div>
-      <h1>Payment Details</h1>
-  <h2>{payment.title}</h2>
-  <p>Shares:</p>
-  <ul>
-  {Array.from(payment.shares.entries()).map(([name, amount]) => (
-      <li key={name}>{name}: {amount}</li>
-))}
-  </ul>
-  </div>
-);
+      <div className="field">
+        <label className="label">Payment Title</label>
+        <div className="control">
+          <input
+            className="input"
+            type="text"
+            placeholder="Payment title"
+            value={paymentTitle}
+            onChange={(e) => setPaymentTitle(e.target.value)}
+          />
+        </div>
+      </div>
+      <h2 className="subtitle">Shares</h2>
+      {team.map((member) => (
+        <div key={member.name} className="field">
+          <label className="label">{member.name}</label>
+          <div className="control">
+            <input
+              className="input"
+              type="text"
+              placeholder="Amount"
+              value={paymentShares.get(member.name) || ''}
+              onChange={(e) => handleInputChange(member.name, e.target.value)}
+            />
+          </div>
+        </div>
+      ))}
+      <div className="buttons mt-4">
+        <button className="button is-primary" onClick={handleSave}>
+          Save Payment
+        </button>
+      </div>
+    </div>
+  );
 };
 
 export default PaymentDetailsScreen;
