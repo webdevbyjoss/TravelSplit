@@ -12,18 +12,21 @@ export const tripExpensesSlice = createSlice({
   initialState,
   reducers: {
     // Add a new trip
-    addTrip: (state, action: PayloadAction<{ id: number, title: string }>) => {
-      state.push({
-        id: action.payload.id,
-        title: action.payload.title,
-        team: [],
-        payments: []
-      });
+    addTrip(state, action: PayloadAction<TripExpenses>) {
+      state.push(action.payload);
     },
 
     // Remove a trip by ID
     removeTrip: (state, action: PayloadAction<{ id: number }>) => {
       return state.filter(trip => trip.id !== action.payload.id);
+    },
+
+    // Update a trip by ID
+    updateTrip(state, action: PayloadAction<TripExpenses>) {
+      const tripIndex = state.findIndex(trip => trip.id === action.payload.id);
+      if (tripIndex !== -1) {
+        state[tripIndex] = action.payload;
+      }
     },
 
     // Add a team member to a specific trip
@@ -68,6 +71,7 @@ export const tripExpensesSlice = createSlice({
 
 export const {
   addTrip,
+  updateTrip,
   removeTrip,
   addTeamMember,
   removeTeamMember,
