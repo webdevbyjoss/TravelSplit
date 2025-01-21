@@ -99,7 +99,7 @@ const TripDetailsScreen: React.FC = () => {
         <div className="column">
           <h1 className="title has-text-left">
             <input
-              className="input is-inline"
+              className="input is-large is-fullwidth"
               type="text"
               placeholder="Trip title"
               value={title}
@@ -119,7 +119,9 @@ const TripDetailsScreen: React.FC = () => {
               className="button is-small is-danger is-light ml-2"
               onClick={() => handleRemoveTeamMember(member.name)}
             >
-              Remove
+              <span className="icon">
+                <i className="fa-solid fa-trash-can"></i>
+              </span>
             </button>
           </li>
         ))}
@@ -150,7 +152,10 @@ const TripDetailsScreen: React.FC = () => {
           <div className="column has-text-right">
             <button
               className="button is-primary mb-4"
-              onClick={() => setIsPaymentModalOpen(true)}
+              onClick={() => {
+                setPaymentToEdit(null);
+                setIsPaymentModalOpen(true);
+              }}
             >
               New Payment
             </button>
@@ -163,27 +168,37 @@ const TripDetailsScreen: React.FC = () => {
           {trip.payments.map((payment) => (
             <li key={payment.id} className="list-item">
               <div className="content">
-                <strong>{payment.title}</strong>
-                <ul>
+                <div className="level mb-2">
+                  <div className="level-left">
+                    <strong>{payment.title}</strong>
+                  </div>
+                  <div className="level-right">
+                    <button
+                      className="button is-warning is-light is-small"
+                      onClick={() => handleEditPayment(payment)}
+                    >
+                      <span className="icon">
+                        <i className="fa-solid fa-pencil"></i>
+                      </span>
+                    </button>
+                    <button
+                      className="button is-danger is-light is-small ml-2"
+                      onClick={() => handleRemovePayment(payment.id)}
+                    >
+                      <span className="icon">
+                        <i className="fa-solid fa-trash-can"></i>
+                      </span>
+                    </button>
+                  </div>
+                </div>
+                <div className="tags">
                   {Array.from(payment.shares).map(([user, amount]) => (
-                    <li key={user}>
-                      {user}: {amount.toFixed(2)}
-                    </li>
+                    <span key={user} className="tag is-info is-light">
+                      {user}: ${amount.toFixed(2)}
+                    </span>
                   ))}
-                </ul>
+                </div>
               </div>
-              <button
-                className="button is-warning is-light"
-                onClick={() => handleEditPayment(payment)}
-              >
-                Edit
-              </button>
-              <button
-                className="button is-danger is-light ml-2"
-                onClick={() => handleRemovePayment(payment.id)}
-              >
-                Remove
-              </button>
             </li>
           ))}
         </ul>
@@ -193,8 +208,8 @@ const TripDetailsScreen: React.FC = () => {
         <div className="modal is-active">
           <div className="modal-background" onClick={() => setIsPaymentModalOpen(false)}></div>
           <div className="modal-card">
-            <header className="modal-card-head">
-              <p className="modal-card-title">{paymentToEdit ? 'Edit Payment' : 'New Payment'}</p>
+            <header className="modal-card-head py-4">
+              <p className="modal-card-title is-size-6">{paymentToEdit ? 'Edit Payment' : 'New Payment'}</p>
               <button
                 className="delete"
                 aria-label="close"

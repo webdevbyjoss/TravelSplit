@@ -16,6 +16,7 @@ const PaymentDetailsScreen: React.FC<PaymentDetailsScreenProps> = ({
   const [paymentShares, setPaymentShares] = useState<Map<string, string>>(() =>
     new Map(Array.from(initialShares).map(([key, value]) => [key, value.toString()]))
   );
+  const [formError, setFormError] = useState<string>('');
 
   useEffect(() => {
     // Populate form when initial values change (e.g., when editing)
@@ -26,17 +27,36 @@ const PaymentDetailsScreen: React.FC<PaymentDetailsScreenProps> = ({
   }, [initialTitle, initialShares]);
 
   const handleSave = () => {
+    // Clear previous error
+    setFormError('');
+
+    // Validate title
+    if (!paymentTitle.trim()) {
+      setFormError('Please enter a payment title');
+      return;
+    }
+
     const parsedShares = new Map<string, number>();
+    let totalAmount = 0;
+
     for (const [key, value] of paymentShares) {
       const parsedValue = parseFloat(value);
       if (!isNaN(parsedValue)) {
         parsedShares.set(key, parsedValue);
+        totalAmount += parsedValue;
       }
+    }
+
+    // Validate total amount
+    if (totalAmount === 0) {
+      setFormError('Total payment amount cannot be zero');
+      return;
     }
 
     onSave(paymentTitle, parsedShares);
     setPaymentTitle('');
     setPaymentShares(new Map());
+    setFormError('');
   };
 
   const validateAndFormatInput = (input: string): string => {
@@ -57,39 +77,76 @@ const PaymentDetailsScreen: React.FC<PaymentDetailsScreenProps> = ({
     });
   };
 
+  const calculateTotal = (): number => {
+    let total = 0;
+    for (const value of paymentShares.values()) {
+      const amount = parseFloat(value);
+      if (!isNaN(amount)) {
+        total += amount;
+      }
+    }
+    return total;
+  };
+
   return (
     <div>
       <div className="field">
-        <label className="label">Payment Title</label>
         <div className="control">
           <input
-            className="input"
+            className={`input ${formError && !paymentTitle.trim() ? 'is-danger' : ''}`}
             type="text"
-            placeholder="Payment title"
+            placeholder="Taxi, Hotel, Grocery, etc."
             value={paymentTitle}
             onChange={(e) => setPaymentTitle(e.target.value)}
           />
         </div>
       </div>
-      <h2 className="subtitle">Shares</h2>
+      <h2 className="subtitle">Who paid for this?</h2>
       {team.map((member) => (
-        <div key={member.name} className="field">
-          <label className="label">{member.name}</label>
-          <div className="control">
-            <input
-              className="input"
-              type="text"
-              placeholder="Amount"
-              value={paymentShares.get(member.name) || ''}
-              onChange={(e) => handleInputChange(member.name, e.target.value)}
-            />
+        <div key={member.name} className="field is-horizontal">
+          <div className="field-label is-normal is-expanded">
+            <label className="label is-size-5">{member.name}</label>
+          </div>
+          <div className="field-body is-narrow">
+            <div className="field has-addons">
+              <p className="control">
+                <span className="button is-static is-small">$</span>
+              </p>
+              <p className="control" style={{width: "120px"}}>
+                <input
+                  className={`input is-small ${formError && formError.includes('amount') ? 'is-danger' : ''}`}
+                  type="text"
+                  placeholder="0.00"
+                  min={0}
+                  max={1000000}
+                  value={paymentShares.get(member.name) || ''}
+                  onChange={(e) => handleInputChange(member.name, e.target.value)}
+                />
+              </p>
+            </div>
           </div>
         </div>
       ))}
+      <div className="field is-horizontal mt-4 has-background-primary-light p-3">
+        <div className="field-label is-normal is-expanded">
+          <label className="label is-size-5 has-text-weight-bold">Total</label>
+        </div>
+        <div className="field-body is-narrow">
+          <div className="field has-addons">
+            <p className="control">
+              <span className="has-text-weight-bold is-size-5">$</span>
+              <span className="has-text-weight-bold is-size-4 has-text-primary">
+                {calculateTotal().toFixed(2)}
+              </span>
+            </p>
+          </div>
+        </div>
+      </div>
+      {formError && (
+        <p className="help is-danger mb-2">{formError}</p>
+      )}
       <div className="buttons mt-4">
-        <button className="button is-primary" onClick={handleSave}>
-          Save Payment
-        </button>
+        <button className="button is-primary" onClick={handleSave}>Save</button>
       </div>
     </div>
   );
