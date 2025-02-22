@@ -41,6 +41,9 @@ Create a production build:
 npm build
 ```
 
-# Contributing
+## Contributing
+
+We welcome contributions to TravelSplit! Whether you want to fix bugs, improve documentation, 
+or add new features, your help is appreciated.
 
 Please see the [CONTRIBUTING.md](CONTRIBUTING.md) file for more information on how to contribute to this project.

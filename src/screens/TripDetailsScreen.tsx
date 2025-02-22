@@ -152,6 +152,7 @@ const TripDetailsScreen: React.FC = () => {
           <div className="column has-text-right">
             <button
               className="button is-primary mb-4"
+              type="button"
               onClick={() => {
                 setPaymentToEdit(null);
                 setIsPaymentModalOpen(true);

@@ -387,7 +387,7 @@ describe('calculateExpenses', () => {
       ],
       payments: [
         { id: 1, title: 'No Payment 1', shares: new Map([['John', 0], ['Ann', 0], ['Mark', 0]]) },
-        { id: 1, title: 'No Payment 2', shares: new Map([['John', 0], ['Ann', 0], ['Mark', 0]]) },
+        { id: 2, title: 'No Payment 2', shares: new Map([['John', 0], ['Ann', 0], ['Mark', 0]]) },
       ],
     };
 

@@ -40,8 +40,8 @@ const PaymentDetailsScreen: React.FC<PaymentDetailsScreenProps> = ({
     let totalAmount = 0;
 
     for (const [key, value] of paymentShares) {
-      const parsedValue = parseFloat(value);
-      if (!isNaN(parsedValue)) {
+      const parsedValue = Number.parseFloat(value);
+      if (!Number.isNaN(parsedValue)) {
         parsedShares.set(key, parsedValue);
         totalAmount += parsedValue;
       }
@@ -80,8 +80,8 @@ const PaymentDetailsScreen: React.FC<PaymentDetailsScreenProps> = ({
   const calculateTotal = (): number => {
     let total = 0;
     for (const value of paymentShares.values()) {
-      const amount = parseFloat(value);
-      if (!isNaN(amount)) {
+      const amount = Number.parseFloat(value);
+      if (!Number.isNaN(amount)) {
         total += amount;
       }
     }
@@ -114,7 +114,7 @@ const PaymentDetailsScreen: React.FC<PaymentDetailsScreenProps> = ({
               </p>
               <p className="control" style={{width: "120px"}}>
                 <input
-                  className={`input is-small ${formError && formError.includes('amount') ? 'is-danger' : ''}`}
+                  className={`input is-small ${formError?.includes('amount') ? 'is-danger' : ''}`}
                   type="text"
                   placeholder="0.00"
                   min={0}
@@ -146,7 +146,13 @@ const PaymentDetailsScreen: React.FC<PaymentDetailsScreenProps> = ({
         <p className="help is-danger mb-2">{formError}</p>
       )}
       <div className="buttons mt-4">
-        <button className="button is-primary" onClick={handleSave}>Save</button>
+        <button
+          className="button is-success"
+          type="button"
+          onClick={handleSave}
+        >
+          Save Payment
+        </button>
       </div>
     </div>
   );
