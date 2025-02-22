@@ -1,5 +1,6 @@
 import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import tripExpensesSlice from '../features/expenses/expensesSlice';
+import TripExpensesPersistTransform from './transform';
 
 import { persistStore, persistReducer } from 'redux-persist'
 import storage from 'redux-persist/lib/storage' // defaults to localStorage for web
@@ -7,6 +8,7 @@ import storage from 'redux-persist/lib/storage' // defaults to localStorage for 
 const persistConfig = {
   key: 'TravelSplit', // Key to persist the store under
   storage,
+  transforms: [TripExpensesPersistTransform],
 }
 
 const rootReducer = combineReducers({
@@ -14,7 +16,7 @@ const rootReducer = combineReducers({
   // Add other reducers here if necessary
 });
 
-const persistedReducer = persistReducer(persistConfig, rootReducer);
+const persistedReducer = persistReducer<RootState>(persistConfig, rootReducer);
 
 export const store = configureStore({
   reducer: persistedReducer,
@@ -26,5 +28,6 @@ export const store = configureStore({
 
 export const persistor = persistStore(store);
 
-export type RootState = ReturnType<typeof store.getState>;
+export type RootState = ReturnType<typeof rootReducer>;
 export type AppDispatch = typeof store.dispatch;
+export default rootReducer;
