@@ -22,6 +22,21 @@ const TripDetailsScreen: React.FC = () => {
   const [title, setTitle] = useState(trip?.title || '');
   const [currency, setCurrency] = useState(trip?.currency || 'USD');
   const [hasChanged, setHasChanged] = useState(false);
+  const [activePanel, setActivePanel] = useState<'split' | 'team'>('split');
+
+  // Default to team panel if there are no payments yet or no trip exists
+  useEffect(() => {
+    if ((!trip || (trip && trip.payments.length === 0)) && activePanel !== 'team') {
+      setActivePanel('team');
+    }
+  }, [trip, activePanel]);
+
+  // Switch to Split panel when the first payment is added
+  useEffect(() => {
+    if (trip && trip.payments.length === 1 && activePanel === 'team') {
+      setActivePanel('split');
+    }
+  }, [trip, activePanel]);
 
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
   const [paymentToEdit, setPaymentToEdit] = useState<{ title: string; shares: Map<string, number> } | null>(null);
@@ -34,14 +49,15 @@ const TripDetailsScreen: React.FC = () => {
       'USD': '$',
       'EUR': '€',
       'GBP': '£',
+      'UAH': '₴',
+      'PLN': 'zł',
       'JPY': '¥',
-      'CAD': 'C$',
-      'AUD': 'A$',
-      'CHF': 'CHF',
       'CNY': '¥',
       'INR': '₹',
-      'BRL': 'R$',
-      'UAH': '₴'
+      'CHF': 'CHF',
+      'NOK': 'kr',
+      'SEK': 'kr',
+      'CZK': 'Kč',
     };
     const symbol = currencySymbols[currency] || '$';
     return `${symbol}${amount.toFixed(2)}`;
@@ -58,7 +74,7 @@ const TripDetailsScreen: React.FC = () => {
         navigate(`/trip/${newTripId}`);
       }
     }
-  }, [isNewTrip, hasChanged, trip, title, dispatch, navigate]);
+  }, [isNewTrip, hasChanged, trip, title, currency, dispatch, navigate]);
 
   const handleTitleChange = (newTitle: string) => {
     setTitle(newTitle);
@@ -164,7 +180,7 @@ const TripDetailsScreen: React.FC = () => {
           <input
             className="input is-small-mobile"
             type="text"
-            placeholder="Where are we going?"
+            placeholder="How do you name this trip?"
             value={title}
             onChange={(e) => handleTitleChange(e.target.value)}
             onFocus={() => setHasChanged(true)}
@@ -173,163 +189,191 @@ const TripDetailsScreen: React.FC = () => {
         </div>
       </div>
 
-      {trip && trip.payments.length > 0 && (
-        <div className="box">
-          <h2 className="subtitle has-text-weight-normal has-text-grey-dark">
-            <div className="columns is-mobile is-vcentered">
-              <div className="column">
-                <span className="icon-text">
-                  <span className="icon">
-                    <i className="fa-solid fa-calculator"></i>
-                  </span>
-                  <span>Split</span>
-                </span>
-              </div>
-              <div className="column is-narrow">
-                <div className="select is-small">
-                  <select value={currency} onChange={(e) => handleCurrencyChange(e.target.value)}>
-                    <option value="USD">USD ($)</option>
-                    <option value="EUR">EUR (€)</option>
-                    <option value="GBP">GBP (£)</option>
-                    <option value="JPY">JPY (¥)</option>
-                    <option value="CAD">CAD (C$)</option>
-                    <option value="AUD">AUD (A$)</option>
-                    <option value="CHF">CHF (CHF)</option>
-                    <option value="CNY">CNY (¥)</option>
-                    <option value="INR">INR (₹)</option>
-                    <option value="BRL">BRL (R$)</option>
-                    <option value="UAH">UAH (₴)</option>
-                  </select>
+      {/* Panel Switcher: Split (balances) or Team */}
+      {(trip || isNewTrip) && (
+        activePanel === 'split' ? (
+          trip && (
+            <div className="box">
+              <h2 className="subtitle has-text-weight-normal has-text-grey-dark">
+                <div className="columns is-mobile is-vcentered">
+                  <div className="column">
+                    <span className="icon-text">
+                      <span className="icon">
+                        <i className="fa-solid fa-calculator"></i>
+                      </span>
+                      <span>Split</span>
+                    </span>
+                  </div>
+                                  <div className="column is-narrow">
+                  <div className="buttons are-small">
+                    <button
+                      className="button is-info is-light is-small-mobile mr-1"
+                      onClick={() => setActivePanel('team')}
+                    >
+                      <span className="icon">
+                        <i className="fa-solid fa-users fa-xl"></i>
+                      </span>
+                    </button>
+                    <div className="select is-small">
+                      <select value={currency} onChange={(e) => handleCurrencyChange(e.target.value)}>
+                        <option value="USD">USD ($)</option>
+                        <option value="EUR">EUR (€)</option>
+                        <option value="GBP">GBP (£)</option>
+                        <option value="CHF">CHF (CHF)</option>
+                        <option value="NOK">NOK (kr)</option>
+                        <option value="SEK">SEK (kr)</option>
+                        <option value="CZK">CZK (Kč)</option>
+                        <option value="PLN">PLN (zł)</option>
+                        <option value="UAH">UAH (₴)</option>
+                        <option value="JPY">JPY (¥)</option>
+                        <option value="CNY">CNY (¥)</option>
+                        <option value="INR">INR (₹)</option>
+                      </select>
+                    </div>
+                  </div>
+                  </div>
                 </div>
-              </div>
-            </div>
-          </h2>
-          <div className="columns is-mobile">
-            {/* Left Column - Users with negative balance (need to pay) */}
-            <div className="column">
-              <h3 className="title is-6-mobile is-5 has-text-danger">
-                <span className="icon-text">
-                  <span className="icon">
-                    <i className="fa-solid fa-arrow-down"></i>
-                  </span>
-                  <span>Give</span>
-                </span>
-              </h3>
-              {usersWithNegativeBalance.length > 0 ? (
-                <div className="tags">
-                  {usersWithNegativeBalance.map(([userName, balance]) => (
-                    <span key={userName} className="tag is-danger is-light is-small-mobile is-medium">
-                      {userName}: {formatCurrency(Math.abs(balance))}
-                    </span>
-                  ))}
-                </div>
-              ) : (
-                <p className="has-text-grey">
-                  <span className="icon-text">
-                    <span className="icon">
-                      <i className="fa-solid fa-check"></i>
-                    </span>
-                    <span>No one needs to pay</span>
-                  </span>
-                </p>
-              )}
-            </div>
-            
-            {/* Right Column - Users with positive balance (will receive) */}
-            <div className="column">
-              <h3 className="title is-6-mobile is-5 has-text-success">
-                <span className="icon-text">
-                  <span className="icon">
-                    <i className="fa-solid fa-arrow-up"></i>
-                  </span>
-                  <span>Take</span>
-                </span>
-              </h3>
-              {usersWithPositiveBalance.length > 0 ? (
-                <div className="tags">
-                  {usersWithPositiveBalance.map(([userName, balance]) => (
-                    <span key={userName} className="tag is-success is-light is-small-mobile is-medium">
-                      {userName}: {formatCurrency(balance)}
-                    </span>
-                  ))}
-                </div>
-              ) : (
-                <p className="has-text-grey">
-                  <span className="icon-text">
-                    <span className="icon">
-                      <i className="fa-solid fa-check"></i>
-                    </span>
-                    <span>No one will receive money</span>
-                  </span>
-                </p>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
-
-      {trip && trip.team.length > 1 && (
-      <h2 className="subtitle has-text-weight-normal has-text-grey-dark">
-        <div className="columns is-mobile is-vcentered">
-          <div className="column">Expenses</div>
-          <div className="column is-narrow">
-            <button
-              className="button is-primary is-small-mobile"
-              type="button"
-              onClick={() => {
-                setPaymentToEdit(null);
-                setIsPaymentModalOpen(true);
-              }}
-            >
-              <span className="icon">
-                <i className="fas fa-plus"></i>
-              </span>
-            </button>
-          </div>
-        </div>
-      </h2>)}
-
-      {trip && (trip.payments.length > 0) && (
-        <div className="box">
-          {trip.payments.map((payment, index) => (
-            <div key={payment.id} className={`${index > 0 ? 'pt-3' : ''} ${index < trip.payments.length - 1 ? 'pb-3 border-bottom' : ''}`}>
-              <div className="columns is-mobile is-vcentered">
+              </h2>
+              {/* Balances summary */}
+              <div className="columns is-mobile">
+                {/* Left Column - Users with negative balance (need to pay) */}
                 <div className="column">
-                  <div className="is-flex is-align-items-center is-flex-wrap-wrap">
-                    <strong className="is-size-6-mobile mr-2">{payment.title}</strong>
+                  <h3 className="title is-6-mobile is-5 has-text-danger">
+                    <span className="icon-text">
+                      <span className="icon">
+                        <i className="fa-solid fa-arrow-down"></i>
+                      </span>
+                      <span>Give</span>
+                    </span>
+                  </h3>
+                  {usersWithNegativeBalance.length > 0 ? (
                     <div className="tags">
-                      {Array.from(payment.shares).map(([user, amount]) => (
-                        <span key={user} className="tag is-info is-light is-small-mobile">
-                          {user}{amount > 0 ? `: ${formatCurrency(amount)}` : ''}
+                      {usersWithNegativeBalance.map(([userName, balance]) => (
+                        <span key={userName} className="tag is-danger is-light is-small-mobile is-medium">
+                          {userName}: {formatCurrency(Math.abs(balance))}
                         </span>
                       ))}
                     </div>
-                  </div>
+                  ) : (
+                    <p className="has-text-grey">
+                      <span className="icon-text">
+                        <span className="icon">
+                          <i className="fa-solid fa-check"></i>
+                        </span>
+                        <span>No one needs to pay</span>
+                      </span>
+                    </p>
+                  )}
                 </div>
-                <div className="column is-narrow">
-                  <div className="buttons are-small">
-                    <button
-                      className="button is-warning is-light is-small-mobile"
-                      onClick={() => handleEditPayment(payment)}
-                    >
+                {/* Right Column - Users with positive balance (will receive) */}
+                <div className="column">
+                  <h3 className="title is-6-mobile is-5 has-text-success">
+                    <span className="icon-text">
                       <span className="icon">
-                        <i className="fa-solid fa-pencil"></i>
+                        <i className="fa-solid fa-arrow-up"></i>
                       </span>
-                    </button>
-                    <button
-                      className="button is-danger is-light is-small-mobile"
-                      onClick={() => handleRemovePayment(payment.id)}
-                    >
-                      <span className="icon">
-                        <i className="fa-solid fa-trash-can"></i>
+                      <span>Take</span>
+                    </span>
+                  </h3>
+                  {usersWithPositiveBalance.length > 0 ? (
+                    <div className="tags">
+                      {usersWithPositiveBalance.map(([userName, balance]) => (
+                        <span key={userName} className="tag is-success is-light is-small-mobile is-medium">
+                          {userName}: {formatCurrency(balance)}
+                        </span>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="has-text-grey">
+                      <span className="icon-text">
+                        <span className="icon">
+                          <i className="fa-solid fa-check"></i>
+                        </span>
+                        <span>No one will receive money</span>
                       </span>
-                    </button>
-                  </div>
+                    </p>
+                  )}
                 </div>
               </div>
             </div>
-          ))}
-        </div>
+          )
+        ) : (
+          <TeamSection
+            team={trip?.team || []}
+            onAddTeamMember={handleAddTeamMember}
+            onRemoveTeamMember={handleRemoveTeamMember}
+            onFocus={() => setHasChanged(true)}
+            onSwitchToSplit={() => setActivePanel('split')}
+            showSplitButton={trip && trip.payments.length > 0}
+          />
+        )
+      )}
+
+      {/* Expenses section always visible if trip and team */}
+      {trip && trip.team.length > 1 && (
+        <>
+          <h2 className="subtitle has-text-weight-normal has-text-grey-dark">
+            <div className="columns is-mobile is-vcentered">
+              <div className="column">Expenses</div>
+              <div className="column is-narrow">
+                <button
+                  className="button is-primary is-small-mobile"
+                  type="button"
+                  onClick={() => {
+                    setPaymentToEdit(null);
+                    setIsPaymentModalOpen(true);
+                  }}
+                >
+                  <span className="icon">
+                    <i className="fas fa-plus"></i>
+                  </span>
+                </button>
+              </div>
+            </div>
+          </h2>
+          {trip.payments.length > 0 && (
+            <div className="box">
+              {trip.payments.map((payment, index) => (
+                <div key={payment.id} className={`${index > 0 ? 'pt-3' : ''} ${index < trip.payments.length - 1 ? 'pb-3 border-bottom' : ''}`}>
+                  <div className="columns is-mobile is-vcentered">
+                    <div className="column">
+                      <div className="is-flex is-align-items-center is-flex-wrap-wrap">
+                        <strong className="is-size-6-mobile mr-2">{payment.title}</strong>
+                        <div className="tags">
+                          {Array.from(payment.shares).map(([user, amount]) => (
+                            <span key={user} className="tag is-info is-light is-small-mobile">
+                              {user}{amount > 0 ? `: ${formatCurrency(amount)}` : ''}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="column is-narrow">
+                      <div className="buttons are-small">
+                        <button
+                          className="button is-warning is-light is-small-mobile"
+                          onClick={() => handleEditPayment(payment)}
+                        >
+                          <span className="icon">
+                            <i className="fa-solid fa-pencil"></i>
+                          </span>
+                        </button>
+                        <button
+                          className="button is-danger is-light is-small-mobile"
+                          onClick={() => handleRemovePayment(payment.id)}
+                        >
+                          <span className="icon">
+                            <i className="fa-solid fa-trash-can"></i>
+                          </span>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </>
       )}
 
       {isPaymentModalOpen && (
@@ -363,13 +407,6 @@ const TripDetailsScreen: React.FC = () => {
           </div>
         </div>
       )}
-
-      <TeamSection
-        team={trip?.team || []}
-        onAddTeamMember={handleAddTeamMember}
-        onRemoveTeamMember={handleRemoveTeamMember}
-        onFocus={() => setHasChanged(true)}
-      />
 
     </div>
   );

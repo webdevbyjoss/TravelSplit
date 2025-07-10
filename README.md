@@ -14,7 +14,7 @@ open: http://localhost:5173/
 
 ## Screenshot
 
-![Screenshot](docs/screenshot.png?raw=true)
+![Screenshot](docs/screenshot2.png?raw=true)
 
 ## Development Guide
 

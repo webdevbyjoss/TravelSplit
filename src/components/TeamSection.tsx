@@ -6,13 +6,17 @@ interface TeamSectionProps {
   onAddTeamMember: (member: Person) => void;
   onRemoveTeamMember: (memberName: string) => void;
   onFocus?: () => void;
+  onSwitchToSplit?: () => void;
+  showSplitButton?: boolean;
 }
 
 const TeamSection: React.FC<TeamSectionProps> = ({
   team,
   onAddTeamMember,
   onRemoveTeamMember,
-  onFocus
+  onFocus,
+  onSwitchToSplit,
+  showSplitButton
 }) => {
   const [teamMember, setTeamMember] = useState('');
 
@@ -32,7 +36,23 @@ const TeamSection: React.FC<TeamSectionProps> = ({
 
   return (
     <>
-      <h2 className="subtitle is-6-mobile has-text-weight-normal has-text-grey-dark">Team</h2>
+      <h2 className="subtitle is-6-mobile has-text-weight-normal has-text-grey-dark">
+        <div className="columns is-mobile is-vcentered">
+          <div className="column">Team</div>
+          {onSwitchToSplit && showSplitButton && (
+            <div className="column is-narrow">
+              <button
+                className="button is-info is-light is-small-mobile"
+                onClick={onSwitchToSplit}
+              >
+                <span className="icon">
+                  <i className="fa-solid fa-calculator"></i>
+                </span>
+              </button>
+            </div>
+          )}
+        </div>
+      </h2>
       <div className="box">
         <div className="tags">
           {team.map((member) => (
