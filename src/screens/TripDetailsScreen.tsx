@@ -164,7 +164,7 @@ const TripDetailsScreen: React.FC = () => {
           <input
             className="input is-small-mobile"
             type="text"
-            placeholder="Trip title"
+            placeholder="Where are we going?"
             value={title}
             onChange={(e) => handleTitleChange(e.target.value)}
             onFocus={() => setHasChanged(true)}
@@ -182,7 +182,7 @@ const TripDetailsScreen: React.FC = () => {
                   <span className="icon">
                     <i className="fa-solid fa-calculator"></i>
                   </span>
-                  <span>Summary</span>
+                  <span>Split</span>
                 </span>
               </div>
               <div className="column is-narrow">
@@ -212,7 +212,7 @@ const TripDetailsScreen: React.FC = () => {
                   <span className="icon">
                     <i className="fa-solid fa-arrow-down"></i>
                   </span>
-                  <span>Put</span>
+                  <span>Give</span>
                 </span>
               </h3>
               {usersWithNegativeBalance.length > 0 ? (
@@ -242,7 +242,7 @@ const TripDetailsScreen: React.FC = () => {
                   <span className="icon">
                     <i className="fa-solid fa-arrow-up"></i>
                   </span>
-                  <span>Get</span>
+                  <span>Take</span>
                 </span>
               </h3>
               {usersWithPositiveBalance.length > 0 ? (
@@ -271,7 +271,7 @@ const TripDetailsScreen: React.FC = () => {
       {trip && trip.team.length > 1 && (
       <h2 className="subtitle has-text-weight-normal has-text-grey-dark">
         <div className="columns is-mobile is-vcentered">
-          <div className="column">Payments</div>
+          <div className="column">Expenses</div>
           <div className="column is-narrow">
             <button
               className="button is-primary is-small-mobile"
@@ -292,10 +292,19 @@ const TripDetailsScreen: React.FC = () => {
       {trip && (trip.payments.length > 0) && (
         <div className="box">
           {trip.payments.map((payment, index) => (
-            <div key={payment.id} className={`${index > 0 ? 'pt-3 mt-3' : ''} ${index < trip.payments.length - 1 ? 'pb-3 border-bottom' : ''}`}>
-              <div className="columns is-mobile is-vcentered mb-1">
+            <div key={payment.id} className={`${index > 0 ? 'pt-3' : ''} ${index < trip.payments.length - 1 ? 'pb-3 border-bottom' : ''}`}>
+              <div className="columns is-mobile is-vcentered">
                 <div className="column">
-                  <strong className="is-size-6-mobile">{payment.title}</strong>
+                  <div className="is-flex is-align-items-center is-flex-wrap-wrap">
+                    <strong className="is-size-6-mobile mr-2">{payment.title}</strong>
+                    <div className="tags">
+                      {Array.from(payment.shares).map(([user, amount]) => (
+                        <span key={user} className="tag is-info is-light is-small-mobile">
+                          {user}{amount > 0 ? `: ${formatCurrency(amount)}` : ''}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
                 </div>
                 <div className="column is-narrow">
                   <div className="buttons are-small">
@@ -317,13 +326,6 @@ const TripDetailsScreen: React.FC = () => {
                     </button>
                   </div>
                 </div>
-              </div>
-              <div className="tags">
-                {Array.from(payment.shares).map(([user, amount]) => (
-                  <span key={user} className="tag is-info is-light is-small-mobile">
-                    {user}{amount > 0 ? `: ${formatCurrency(amount)}` : ''}
-                  </span>
-                ))}
               </div>
             </div>
           ))}
@@ -362,7 +364,7 @@ const TripDetailsScreen: React.FC = () => {
         </div>
       )}
 
-<TeamSection
+      <TeamSection
         team={trip?.team || []}
         onAddTeamMember={handleAddTeamMember}
         onRemoveTeamMember={handleRemoveTeamMember}

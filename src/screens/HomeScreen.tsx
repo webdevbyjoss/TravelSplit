@@ -58,8 +58,9 @@ const HomeScreen: React.FC = () => {
           <li key={trip.id} className="box mb-3">
             <div className="columns is-mobile is-vcentered">
               <div 
-                className="column is-clickable" 
+                className="column" 
                 onClick={() => navigate(`/trip/${trip.id}`)}
+                style={{ cursor: 'pointer' }}
               >
                 <h2 className="title is-5-mobile is-4 has-text-weight-normal has-text-grey-dark has-text-left mb-2">{trip.title}</h2>
                 <div className="tags has-addons mt-2" style={{ flexWrap: 'wrap', gap: '0.25rem' }}>

@@ -52,13 +52,15 @@ const PaymentDetailsScreen: React.FC<PaymentDetailsScreenProps> = ({
     const parsedShares = new Map<string, number>();
     let totalAmount = 0;
 
-    // Include all team members in shares, with 0 for those not included or with empty values
+    // Only include checked team members in shares
     team.forEach(member => {
       const isIncluded = includedMembers.has(member.name);
-      const value = paymentShares.get(member.name) || '';
-      const parsedValue = isIncluded ? Number.parseFloat(value) || 0 : 0;
-      parsedShares.set(member.name, parsedValue);
-      totalAmount += parsedValue;
+      if (isIncluded) {
+        const value = paymentShares.get(member.name) || '';
+        const parsedValue = Number.parseFloat(value) || 0;
+        parsedShares.set(member.name, parsedValue);
+        totalAmount += parsedValue;
+      }
     });
 
     // Validate total amount
@@ -173,7 +175,7 @@ const PaymentDetailsScreen: React.FC<PaymentDetailsScreenProps> = ({
           </div>
         </div>
       ))}
-      <div className="field mt-4 has-background-primary-light p-3">
+      <div className="field mt-4 has-background-light p-3" style={{ borderRadius: '8px', border: '1px solid #f0f0f0' }}>
         <div className="columns is-mobile is-vcentered">
           <div className="column">
             <label className="label is-6-mobile has-text-weight-normal has-text-grey-dark">Total</label>
@@ -181,7 +183,7 @@ const PaymentDetailsScreen: React.FC<PaymentDetailsScreenProps> = ({
           <div className="column is-narrow">
             <div className="field has-addons">
               <p className="control">
-                <span className="has-text-weight-bold">$</span>
+                <span className="has-text-weight-bold has-text-grey-dark">$</span>
                 <span className="has-text-weight-bold is-size-5-mobile is-size-4 has-text-primary">
                   {calculateTotal().toFixed(2)}
                 </span>

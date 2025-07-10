@@ -1,5 +1,5 @@
 .border-bottom {
-  border-bottom: 1px solid #dbdbdb;
+  border-bottom: 1px dashed rgb(213, 213, 213);
 }
 
 .has-shadow-light {
