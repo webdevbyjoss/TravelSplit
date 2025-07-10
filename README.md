@@ -10,7 +10,7 @@ Simplifies tracking and splitting trip expenses.
 npm install
 npm run dev
 ```
-open: http://localhost:8080/
+open: http://localhost:5173/
 
 ## Screenshot
 

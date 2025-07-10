@@ -16,6 +16,14 @@ const PaymentDetailsScreen: React.FC<PaymentDetailsScreenProps> = ({
   const [paymentShares, setPaymentShares] = useState<Map<string, string>>(() =>
     new Map(Array.from(initialShares).map(([key, value]) => [key, value.toString()]))
   );
+  const [includedMembers, setIncludedMembers] = useState<Set<string>>(() => {
+    // Initialize with all team members if editing, or just those with non-zero amounts
+    if (initialShares.size > 0) {
+      return new Set(Array.from(initialShares.keys()));
+    } else {
+      return new Set(team.map(member => member.name));
+    }
+  });
   const [formError, setFormError] = useState<string>('');
 
   useEffect(() => {
@@ -24,7 +32,12 @@ const PaymentDetailsScreen: React.FC<PaymentDetailsScreenProps> = ({
     setPaymentShares(
       new Map(Array.from(initialShares).map(([key, value]) => [key, value.toString()]))
     );
-  }, [initialTitle, initialShares]);
+    if (initialShares.size > 0) {
+      setIncludedMembers(new Set(Array.from(initialShares.keys())));
+    } else {
+      setIncludedMembers(new Set(team.map(member => member.name)));
+    }
+  }, [initialTitle, initialShares, team]);
 
   const handleSave = () => {
     // Clear previous error
@@ -39,13 +52,14 @@ const PaymentDetailsScreen: React.FC<PaymentDetailsScreenProps> = ({
     const parsedShares = new Map<string, number>();
     let totalAmount = 0;
 
-    for (const [key, value] of paymentShares) {
-      const parsedValue = Number.parseFloat(value);
-      if (!Number.isNaN(parsedValue)) {
-        parsedShares.set(key, parsedValue);
-        totalAmount += parsedValue;
-      }
-    }
+    // Include all team members in shares, with 0 for those not included or with empty values
+    team.forEach(member => {
+      const isIncluded = includedMembers.has(member.name);
+      const value = paymentShares.get(member.name) || '';
+      const parsedValue = isIncluded ? Number.parseFloat(value) || 0 : 0;
+      parsedShares.set(member.name, parsedValue);
+      totalAmount += parsedValue;
+    });
 
     // Validate total amount
     if (totalAmount === 0) {
@@ -56,6 +70,7 @@ const PaymentDetailsScreen: React.FC<PaymentDetailsScreenProps> = ({
     onSave(paymentTitle, parsedShares);
     setPaymentTitle('');
     setPaymentShares(new Map());
+    setIncludedMembers(new Set(team.map(member => member.name)));
     setFormError('');
   };
 
@@ -77,12 +92,32 @@ const PaymentDetailsScreen: React.FC<PaymentDetailsScreenProps> = ({
     });
   };
 
+  const handleMemberToggle = (memberName: string) => {
+    setIncludedMembers(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(memberName)) {
+        newSet.delete(memberName);
+        // Clear the amount when removing member
+        setPaymentShares(prevShares => {
+          const updatedShares = new Map(prevShares);
+          updatedShares.set(memberName, '');
+          return updatedShares;
+        });
+      } else {
+        newSet.add(memberName);
+      }
+      return newSet;
+    });
+  };
+
   const calculateTotal = (): number => {
     let total = 0;
-    for (const value of paymentShares.values()) {
-      const amount = Number.parseFloat(value);
-      if (!Number.isNaN(amount)) {
-        total += amount;
+    for (const [memberName, value] of paymentShares) {
+      if (includedMembers.has(memberName)) {
+        const amount = Number.parseFloat(value);
+        if (!Number.isNaN(amount)) {
+          total += amount;
+        }
       }
     }
     return total;
@@ -101,44 +136,57 @@ const PaymentDetailsScreen: React.FC<PaymentDetailsScreenProps> = ({
           />
         </div>
       </div>
-      <h2 className="subtitle">Who paid for this?</h2>
+      <h2 className="subtitle is-6-mobile has-text-weight-normal has-text-grey-dark">Who participated in this payment?</h2>
       {team.map((member) => (
-        <div key={member.name} className="field is-horizontal">
-          <div className="field-label is-normal is-expanded">
-            <label className="label is-size-5">{member.name}</label>
-          </div>
-          <div className="field-body is-narrow">
-            <div className="field has-addons">
-              <p className="control">
-                <span className="button is-static is-small">$</span>
-              </p>
-              <p className="control" style={{width: "120px"}}>
+        <div key={member.name} className="field">
+          <div className="columns is-mobile is-vcentered">
+            <div className="column">
+              <label className="checkbox">
                 <input
-                  className={`input is-small ${formError?.includes('amount') ? 'is-danger' : ''}`}
-                  type="text"
-                  placeholder="0.00"
-                  min={0}
-                  max={1000000}
-                  value={paymentShares.get(member.name) || ''}
-                  onChange={(e) => handleInputChange(member.name, e.target.value)}
+                  type="checkbox"
+                  checked={includedMembers.has(member.name)}
+                  onChange={() => handleMemberToggle(member.name)}
                 />
-              </p>
+                <span className="ml-2">{member.name}</span>
+              </label>
+            </div>
+            <div className="column is-narrow">
+              <div className="field has-addons">
+                <p className="control">
+                  <span className="button is-static is-small">$</span>
+                </p>
+                <p className="control">
+                  <input
+                    className={`input is-small ${formError?.includes('amount') ? 'is-danger' : ''}`}
+                    type="text"
+                    placeholder="0.00"
+                    min={0}
+                    max={1000000}
+                    value={paymentShares.get(member.name) || ''}
+                    onChange={(e) => handleInputChange(member.name, e.target.value)}
+                    disabled={!includedMembers.has(member.name)}
+                    style={{width: "120px"}}
+                  />
+                </p>
+              </div>
             </div>
           </div>
         </div>
       ))}
-      <div className="field is-horizontal mt-4 has-background-primary-light p-3">
-        <div className="field-label is-normal is-expanded">
-          <label className="label is-size-5 has-text-weight-bold">Total</label>
-        </div>
-        <div className="field-body is-narrow">
-          <div className="field has-addons">
-            <p className="control">
-              <span className="has-text-weight-bold is-size-5">$</span>
-              <span className="has-text-weight-bold is-size-4 has-text-primary">
-                {calculateTotal().toFixed(2)}
-              </span>
-            </p>
+      <div className="field mt-4 has-background-primary-light p-3">
+        <div className="columns is-mobile is-vcentered">
+          <div className="column">
+            <label className="label is-6-mobile has-text-weight-normal has-text-grey-dark">Total</label>
+          </div>
+          <div className="column is-narrow">
+            <div className="field has-addons">
+              <p className="control">
+                <span className="has-text-weight-bold">$</span>
+                <span className="has-text-weight-bold is-size-5-mobile is-size-4 has-text-primary">
+                  {calculateTotal().toFixed(2)}
+                </span>
+              </p>
+            </div>
           </div>
         </div>
       </div>
@@ -147,7 +195,7 @@ const PaymentDetailsScreen: React.FC<PaymentDetailsScreenProps> = ({
       )}
       <div className="buttons mt-4">
         <button
-          className="button is-success"
+          className="button is-success is-small-mobile"
           type="button"
           onClick={handleSave}
         >

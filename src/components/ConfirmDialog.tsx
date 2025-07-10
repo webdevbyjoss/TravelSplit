@@ -13,7 +13,7 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({ title, message, onConfirm
       <div className="modal-background" onClick={onCancel}></div>
       <div className="modal-card">
         <header className="modal-card-head py-4">
-          <p className="modal-card-title is-size-5">{title}</p>
+          <p className="modal-card-title">{title}</p>
           <button className="delete" aria-label="close" onClick={onCancel}></button>
         </header>
         <section className="modal-card-body">

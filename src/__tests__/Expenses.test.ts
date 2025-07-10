@@ -5,6 +5,7 @@ describe('calculateExpenses', () => {
     const expenses = {
       id: 1,
       title: 'Trip',
+      currency: 'USD',
       team: [
         { name: 'John' },
         { name: 'Alex' },
@@ -41,6 +42,7 @@ describe('calculateExpenses', () => {
     const expenses = {
       id: 1,
       title: 'Dinner',
+      currency: 'USD',
       team: [
         { name: 'John' },
         { name: 'Alex' },
@@ -77,6 +79,7 @@ describe('calculateExpenses', () => {
     const expenses = {
       id: 1,
       title: 'Vacation',
+      currency: 'USD',
       team: [
         { name: 'John' },
         { name: 'Alex' },
@@ -123,6 +126,7 @@ describe('calculateExpenses', () => {
     const expenses = {
       id: 1,
       title: 'No Payments',
+      currency: 'USD',
       team: [
         { name: 'John' },
         { name: 'Alex' },

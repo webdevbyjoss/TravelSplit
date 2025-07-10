@@ -34,56 +34,56 @@ const HomeScreen: React.FC = () => {
 
   return (
     <div className="container">
-      <h1 className="title">
-        <div className="columns">
-          <div className="column is-four-fifths is-size-4">Trips</div>
-          <div className="column has-text-right">
-            <button className="button is-primary mb-4" onClick={() => navigate(`/trip/`)}>
-              <span className="icon">
-                <i className="fas fa-plus"></i>
-              </span>
-            </button>
-          </div>
+      <div className="columns is-mobile is-vcentered mb-5">
+        <div className="column">
+          <h1 className="title is-4-mobile has-text-weight-normal has-text-grey-dark">Trips</h1>
         </div>
-      </h1>
+        <div className="column is-narrow">
+          <button className="button is-primary is-small-mobile" onClick={() => navigate(`/trip/`)}>
+            <span className="icon">
+              <i className="fas fa-plus"></i>
+            </span>
+          </button>
+        </div>
+      </div>
 
       {trips.length === 0 && (
         <div className="notification">
-          <p className="subtitle">No trips found</p>
-          </div>
-        )}
+          <p className="subtitle has-text-weight-normal has-text-grey">No trips found</p>
+        </div>
+      )}
 
-        <ul className="list">
-          {trips.map((trip) => (
-            <li key={trip.id} className="box mb-3">
-              <div className="columns">
-                <div 
-                  className="column is-four-fifths is-clickable" 
-                  onClick={() => navigate(`/trip/${trip.id}`)}
-                >
-                  <h1 className="is-4 has-text-black has-text-left mb-2">{trip.title}</h1>
-                  <div className="mt-2">
-                    {trip.team.map(member => (
-                      <span key={member.name} className="tag is-info is-light mr-1">
-                        {member.name}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-                <div className="column has-text-right">
-                  <button
-                    className="button is-danger is-light"
-                    onClick={() => handleRemoveTrip(trip.id)}
-                  >
-                    <span className="icon">
-                      <i className="fas fa-trash"></i>
+      <ul className="list">
+        {trips.map((trip) => (
+          <li key={trip.id} className="box mb-3">
+            <div className="columns is-mobile is-vcentered">
+              <div 
+                className="column is-clickable" 
+                onClick={() => navigate(`/trip/${trip.id}`)}
+              >
+                <h2 className="title is-5-mobile is-4 has-text-weight-normal has-text-grey-dark has-text-left mb-2">{trip.title}</h2>
+                <div className="tags has-addons mt-2" style={{ flexWrap: 'wrap', gap: '0.25rem' }}>
+                  {trip.team.map(member => (
+                    <span key={member.name} className="tag is-info is-light is-small-mobile">
+                      {member.name}
                     </span>
-                  </button>
+                  ))}
                 </div>
               </div>
-            </li>
-          ))}
-        </ul>
+              <div className="column is-narrow">
+                <button
+                  className="button is-danger is-light is-small-mobile"
+                  onClick={() => handleRemoveTrip(trip.id)}
+                >
+                  <span className="icon">
+                    <i className="fas fa-trash"></i>
+                  </span>
+                </button>
+              </div>
+            </div>
+          </li>
+        ))}
+      </ul>
 
       {confirmDialog.show && (
         <ConfirmDialog

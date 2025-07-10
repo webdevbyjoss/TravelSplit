@@ -11,6 +11,7 @@ export type SerializedPayment = {
 export type SerializedTripExpenses = {
   id: number;
   title: string;
+  currency: string;
   team: Person[];
   payments: SerializedPayment[];
 };
