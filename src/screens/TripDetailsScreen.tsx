@@ -23,20 +23,26 @@ const TripDetailsScreen: React.FC = () => {
   const [currency, setCurrency] = useState(trip?.currency || 'USD');
   const [hasChanged, setHasChanged] = useState(false);
   const [activePanel, setActivePanel] = useState<'split' | 'team'>('split');
+  const [userManuallyToggled, setUserManuallyToggled] = useState(false);
+
+  // Reset manual toggle when trip changes (navigation to different trip)
+  useEffect(() => {
+    setUserManuallyToggled(false);
+  }, [tripId]);
 
   // Default to team panel if there are no payments yet or no trip exists
   useEffect(() => {
-    if ((!trip || (trip && trip.payments.length === 0)) && activePanel !== 'team') {
+    if ((!trip || (trip && trip.payments.length === 0)) && activePanel !== 'team' && !userManuallyToggled) {
       setActivePanel('team');
     }
-  }, [trip, activePanel]);
+  }, [trip, activePanel, userManuallyToggled]);
 
-  // Switch to Split panel when the first payment is added
+  // Switch to Split panel when the first payment is added (only if user hasn't manually toggled)
   useEffect(() => {
-    if (trip && trip.payments.length === 1 && activePanel === 'team') {
+    if (trip && trip.payments.length === 1 && activePanel === 'team' && !userManuallyToggled) {
       setActivePanel('split');
     }
-  }, [trip, activePanel]);
+  }, [trip, activePanel, userManuallyToggled]);
 
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
   const [paymentToEdit, setPaymentToEdit] = useState<{ title: string; shares: Map<string, number> } | null>(null);
@@ -208,7 +214,10 @@ const TripDetailsScreen: React.FC = () => {
                   <div className="buttons are-small">
                     <button
                       className="button is-info is-light is-small-mobile mr-1"
-                      onClick={() => setActivePanel('team')}
+                      onClick={() => {
+                        setActivePanel('team');
+                        setUserManuallyToggled(true);
+                      }}
                     >
                       <span className="icon">
                         <i className="fa-solid fa-users fa-xl"></i>
@@ -303,7 +312,10 @@ const TripDetailsScreen: React.FC = () => {
             onAddTeamMember={handleAddTeamMember}
             onRemoveTeamMember={handleRemoveTeamMember}
             onFocus={() => setHasChanged(true)}
-            onSwitchToSplit={() => setActivePanel('split')}
+            onSwitchToSplit={() => {
+              setActivePanel('split');
+              setUserManuallyToggled(true);
+            }}
             showSplitButton={trip && trip.payments.length > 0}
           />
         )

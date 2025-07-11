@@ -150,6 +150,7 @@ describe('calculateExpenses', () => {
 
   it('should handle multiple payments with uneven contributions', () => {
     const expenses: TripExpenses = {
+      currency: "USD",
       id: 1,
       title: 'Group Event',
       team: [
@@ -180,6 +181,7 @@ describe('calculateExpenses', () => {
 
   it('should handle uneven splits with a small group', () => {
     const expenses: TripExpenses = {
+      currency: "USD",
       id: 1,
       title: 'Small Group',
       team: [
@@ -205,6 +207,7 @@ describe('calculateExpenses', () => {
 
   it('should handle single payment with zero contributions', () => {
     const expenses: TripExpenses = {
+      currency: "USD",
       id: 1,
       title: 'Single Payment',
       team: [
@@ -230,6 +233,7 @@ describe('calculateExpenses', () => {
 
   it('should recognize zero-value payments and calculate totals correctly', () => {
     const expenses: TripExpenses = {
+      currency: "USD",
       id: 1,
       title: 'Zero-Value Test',
       team: [
@@ -260,6 +264,7 @@ describe('calculateExpenses', () => {
 
   it('should calculate aggregated totals across groups', () => {
     const expenses: TripExpenses = {
+      currency: "USD",
       id: 1,
       title: 'Mixed Groups',
       team: [
@@ -292,6 +297,7 @@ describe('calculateExpenses', () => {
 
   it('should handle a single member team', () => {
     const expenses: TripExpenses = {
+      currency: "USD",
       id: 1,
       title: 'Solo Trip',
       team: [{ name: 'John' }],
@@ -307,6 +313,7 @@ describe('calculateExpenses', () => {
 
   it('should handle negative payment values gracefully', () => {
     const expenses: TripExpenses = {
+      currency: "USD",
       id: 1,
       title: 'Refund Event',
       team: [
@@ -334,6 +341,7 @@ describe('calculateExpenses', () => {
 
   it('should handle equal payments by all members', () => {
     const expenses: TripExpenses = {
+      currency: "USD",
       id: 1,
       title: 'Even Contribution',
       team: [
@@ -364,7 +372,13 @@ describe('calculateExpenses', () => {
       { id: 2, title: 'Payment 2', shares: new Map(team.map(person => [person.name, (person.name === 'Person1') ? 200 : 0])) }, // One person pays a lot
     ];
 
-    const expenses: TripExpenses = { id: 1, title: 'Large Group', team, payments };
+    const expenses: TripExpenses = {
+      currency: "USD",
+      id: 1,
+      title: 'Large Group',
+      team,
+      payments,
+    };
 
     const result = calculateExpenses(expenses);
 
@@ -382,6 +396,7 @@ describe('calculateExpenses', () => {
 
   it('should handle multiple zero payments', () => {
     const expenses: TripExpenses = {
+      currency: "USD",
       id: 1,
       title: 'No Contributions',
       team: [
@@ -408,6 +423,7 @@ describe('calculateExpenses', () => {
 
   it('should handle floating-point precision correctly', () => {
     const expenses: TripExpenses = {
+      currency: "USD",
       id: 1,
       title: 'Precision Test',
       team: [

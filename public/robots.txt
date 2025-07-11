@@ -1,0 +1,17 @@
+User-agent: *
+Allow: /
+
+# Allow indexing of the home page and main routes
+Allow: /index.html
+Allow: /trip/
+Allow: /manifest.json
+
+# Disallow admin or private areas (if any are added in the future)
+# Disallow: /admin/
+# Disallow: /private/
+
+# Sitemap location (if you create one in the future)
+# Sitemap: https://travelsplit.app/sitemap.xml
+
+# Crawl delay (optional - helps with server load)
+Crawl-delay: 1 

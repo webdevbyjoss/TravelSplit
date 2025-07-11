@@ -3,6 +3,8 @@
 Simplifies tracking and splitting trip expenses.
 - Add expenses and split them among the group members.
 - See summary of the total expenses and the amount each person owes or is owed.
+- Install as a native app on your mobile device or desktop.
+- Works offline with automatic updates.
 
 ## Quick Start
 
