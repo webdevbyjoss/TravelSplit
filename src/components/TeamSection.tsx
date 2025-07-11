@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
 import { Person } from '../domain/Expenses';
+import Icon from './Icon';
 
 interface TeamSectionProps {
   team: Person[];
+  // eslint-disable-next-line no-unused-vars
   onAddTeamMember: (member: Person) => void;
+  // eslint-disable-next-line no-unused-vars
   onRemoveTeamMember: (memberName: string) => void;
   onFocus?: () => void;
   onSwitchToSplit?: () => void;
@@ -46,7 +49,7 @@ const TeamSection: React.FC<TeamSectionProps> = ({
                 onClick={onSwitchToSplit}
               >
                 <span className="icon">
-                  <i className="fa-solid fa-calculator"></i>
+                  <Icon name="fa-solid fa-calculator" />
                 </span>
               </button>
             </div>
@@ -79,7 +82,7 @@ const TeamSection: React.FC<TeamSectionProps> = ({
             <div className="control">
               <button className="button is-info is-small-mobile" onClick={handleAddTeamMember}>
                 <span className="icon">
-                  <i className="fas fa-plus"></i>
+                  <Icon name="fas fa-plus" />
                 </span>
               </button>
             </div>

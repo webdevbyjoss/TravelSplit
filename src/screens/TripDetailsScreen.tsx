@@ -5,6 +5,7 @@ import { useParams, useNavigate } from 'react-router';
 import PaymentDetailsScreen from './PaymentDetailsScreen';
 import TeamSection from '../components/TeamSection';
 import { calculateExpenses } from '../domain/Expenses';
+import Icon from '../components/Icon';
 import {
   addTrip,
   updateTrip,
@@ -178,7 +179,7 @@ const TripDetailsScreen: React.FC = () => {
         <div className="column is-narrow">
           <button className="button is-small-mobile" onClick={() => navigate(`/`)}>
             <span className="icon">
-              <i className="fas fa-arrow-left"></i>
+              <Icon name="fas fa-arrow-left" />
             </span>
           </button>
         </div>
@@ -205,7 +206,7 @@ const TripDetailsScreen: React.FC = () => {
                   <div className="column">
                     <span className="icon-text">
                       <span className="icon">
-                        <i className="fa-solid fa-calculator"></i>
+                        <Icon name="fa-solid fa-calculator" />
                       </span>
                       <span>Split</span>
                     </span>
@@ -219,9 +220,9 @@ const TripDetailsScreen: React.FC = () => {
                         setUserManuallyToggled(true);
                       }}
                     >
-                      <span className="icon">
-                        <i className="fa-solid fa-users fa-xl"></i>
-                      </span>
+                    <span className="icon">
+                      <Icon name="fa-solid fa-users" size={20} />
+                    </span>
                     </button>
                     <div className="select is-small">
                       <select value={currency} onChange={(e) => handleCurrencyChange(e.target.value)}>
@@ -250,7 +251,7 @@ const TripDetailsScreen: React.FC = () => {
                   <h3 className="title is-6-mobile is-5 has-text-danger">
                     <span className="icon-text">
                       <span className="icon">
-                        <i className="fa-solid fa-arrow-down"></i>
+                        <Icon name="fa-solid fa-arrow-down" />
                       </span>
                       <span>Give</span>
                     </span>
@@ -267,7 +268,7 @@ const TripDetailsScreen: React.FC = () => {
                     <p className="has-text-grey">
                       <span className="icon-text">
                         <span className="icon">
-                          <i className="fa-solid fa-check"></i>
+                          <Icon name="fa-solid fa-check" />
                         </span>
                         <span>No one needs to pay</span>
                       </span>
@@ -279,7 +280,7 @@ const TripDetailsScreen: React.FC = () => {
                   <h3 className="title is-6-mobile is-5 has-text-success">
                     <span className="icon-text">
                       <span className="icon">
-                        <i className="fa-solid fa-arrow-up"></i>
+                        <Icon name="fa-solid fa-arrow-up" />
                       </span>
                       <span>Take</span>
                     </span>
@@ -296,7 +297,7 @@ const TripDetailsScreen: React.FC = () => {
                     <p className="has-text-grey">
                       <span className="icon-text">
                         <span className="icon">
-                          <i className="fa-solid fa-check"></i>
+                          <Icon name="fa-solid fa-check" />
                         </span>
                         <span>No one will receive money</span>
                       </span>
@@ -337,7 +338,7 @@ const TripDetailsScreen: React.FC = () => {
                   }}
                 >
                   <span className="icon">
-                    <i className="fas fa-plus"></i>
+                    <Icon name="fas fa-plus" />
                   </span>
                 </button>
               </div>
@@ -367,7 +368,7 @@ const TripDetailsScreen: React.FC = () => {
                           onClick={() => handleEditPayment(payment)}
                         >
                           <span className="icon">
-                            <i className="fa-solid fa-pencil"></i>
+                            <Icon name="fa-solid fa-pencil" />
                           </span>
                         </button>
                         <button
@@ -375,7 +376,7 @@ const TripDetailsScreen: React.FC = () => {
                           onClick={() => handleRemovePayment(payment.id)}
                         >
                           <span className="icon">
-                            <i className="fa-solid fa-trash-can"></i>
+                            <Icon name="fa-solid fa-trash-can" />
                           </span>
                         </button>
                       </div>

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 
 type PaymentDetailsScreenProps = {
   team: { name: string }[];
+  // eslint-disable-next-line no-unused-vars
   onSave: (paymentTitle: string, paymentShares: Map<string, number>) => void;
   initialTitle?: string; // Optional initial payment title
   initialShares?: Map<string, number>; // Optional initial shares

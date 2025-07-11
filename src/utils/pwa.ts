@@ -7,7 +7,7 @@ export const registerServiceWorker = async (): Promise<ServiceWorkerRegistration
         scope: '/'
       });
       
-      console.log('Service Worker registered successfully:', registration);
+      console.warn('Service Worker registered successfully:', registration);
       return registration;
     } catch (error) {
       console.error('Service Worker registration failed:', error);
@@ -75,36 +75,4 @@ export const addOnlineOfflineListeners = (
     window.removeEventListener('online', handleOnline);
     window.removeEventListener('offline', handleOffline);
   };
-};
-
-export const getPWAInstallPrompt = (): Promise<Event | null> => {
-  return new Promise((resolve) => {
-    const handleBeforeInstallPrompt = (e: Event) => {
-      e.preventDefault();
-      resolve(e);
-    };
-
-    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
-    
-    // If no prompt is available, resolve with null after a timeout
-    setTimeout(() => resolve(null), 1000);
-  });
-};
-
-interface BeforeInstallPromptEvent extends Event {
-  readonly platforms: string[];
-  readonly userChoice: Promise<{
-    outcome: 'accepted' | 'dismissed';
-    platform: string;
-  }>;
-  prompt(): Promise<void>;
-}
-
-export const showInstallPrompt = async (promptEvent: Event): Promise<'accepted' | 'dismissed'> => {
-  const beforeInstallPromptEvent = promptEvent as BeforeInstallPromptEvent;
-  
-  beforeInstallPromptEvent.prompt();
-  const { outcome } = await beforeInstallPromptEvent.userChoice;
-  
-  return outcome;
 }; 

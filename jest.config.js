@@ -5,4 +5,4 @@ export default {
     "^.+.tsx?$": ["ts-jest",{tsconfig: './tsconfig.json'}],
   },
   preset: 'ts-jest'
-};
+}; 

@@ -2,7 +2,7 @@ import { calculateExpenses, TripExpenses, Payment } from '../domain/Expenses';
 
 describe('calculateExpenses', () => {
   it('should return correct shares when payments are evenly distributed', () => {
-    const expenses = {
+    const expenses: TripExpenses = {
       id: 1,
       title: 'Trip',
       currency: 'USD',
@@ -39,8 +39,8 @@ describe('calculateExpenses', () => {
   });
 
   it('should return correct shares when some people did not pay', () => {
-    const expenses = {
-      id: 1,
+    const expenses: TripExpenses = {
+      id: 2,
       title: 'Dinner',
       currency: 'USD',
       team: [
@@ -76,8 +76,8 @@ describe('calculateExpenses', () => {
   });
 
   it('should handle multiple payments correctly', () => {
-    const expenses = {
-      id: 1,
+    const expenses: TripExpenses = {
+      id: 3,
       title: 'Vacation',
       currency: 'USD',
       team: [
@@ -123,8 +123,8 @@ describe('calculateExpenses', () => {
   });
 
   it('should handle no payments gracefully', () => {
-    const expenses = {
-      id: 1,
+    const expenses: TripExpenses = {
+      id: 4,
       title: 'No Payments',
       currency: 'USD',
       team: [
@@ -150,9 +150,9 @@ describe('calculateExpenses', () => {
 
   it('should handle multiple payments with uneven contributions', () => {
     const expenses: TripExpenses = {
-      currency: "USD",
-      id: 1,
+      id: 5,
       title: 'Group Event',
+      currency: 'USD',
       team: [
         { name: 'Ann' },
         { name: 'John' },
@@ -181,9 +181,9 @@ describe('calculateExpenses', () => {
 
   it('should handle uneven splits with a small group', () => {
     const expenses: TripExpenses = {
-      currency: "USD",
-      id: 1,
+      id: 6,
       title: 'Small Group',
+      currency: 'USD',
       team: [
         { name: 'Mark' },
         { name: 'John' },
@@ -207,9 +207,9 @@ describe('calculateExpenses', () => {
 
   it('should handle single payment with zero contributions', () => {
     const expenses: TripExpenses = {
-      currency: "USD",
-      id: 1,
+      id: 7,
       title: 'Single Payment',
+      currency: 'USD',
       team: [
         { name: 'John' },
         { name: 'Ann' },
@@ -233,9 +233,9 @@ describe('calculateExpenses', () => {
 
   it('should recognize zero-value payments and calculate totals correctly', () => {
     const expenses: TripExpenses = {
-      currency: "USD",
-      id: 1,
+      id: 8,
       title: 'Zero-Value Test',
+      currency: 'USD',
       team: [
         { name: 'Ann' },
         { name: 'John' },
@@ -249,7 +249,6 @@ describe('calculateExpenses', () => {
         { id: 4, title: 'Payment 4', shares: new Map([['Alex', 450], ['Ann', 0], ['Mark', 0], ['John', 0]]) },
       ],
     };
-
     const result = calculateExpenses(expenses);
 
     const expected = new Map([
@@ -264,9 +263,9 @@ describe('calculateExpenses', () => {
 
   it('should calculate aggregated totals across groups', () => {
     const expenses: TripExpenses = {
-      currency: "USD",
-      id: 1,
+      id: 9,
       title: 'Mixed Groups',
+      currency: 'USD',
       team: [
         { name: 'Ann' },
         { name: 'John' },
@@ -297,9 +296,9 @@ describe('calculateExpenses', () => {
 
   it('should handle a single member team', () => {
     const expenses: TripExpenses = {
-      currency: "USD",
-      id: 1,
+      id: 10,
       title: 'Solo Trip',
+      currency: 'USD',
       team: [{ name: 'John' }],
       payments: [{ id: 1, title: 'Solo Payment', shares: new Map([['John', 100]]) }],
     };
@@ -313,9 +312,9 @@ describe('calculateExpenses', () => {
 
   it('should handle negative payment values gracefully', () => {
     const expenses: TripExpenses = {
-      currency: "USD",
-      id: 1,
+      id: 11,
       title: 'Refund Event',
+      currency: 'USD',
       team: [
         { name: 'John' },
         { name: 'Ann' },
@@ -341,9 +340,9 @@ describe('calculateExpenses', () => {
 
   it('should handle equal payments by all members', () => {
     const expenses: TripExpenses = {
-      currency: "USD",
-      id: 1,
+      id: 12,
       title: 'Even Contribution',
+      currency: 'USD',
       team: [
         { name: 'John' },
         { name: 'Ann' },
@@ -353,7 +352,6 @@ describe('calculateExpenses', () => {
         { id: 1, title: 'Shared Payment', shares: new Map([['John', 100], ['Ann', 100], ['Mark', 100]]) },
       ],
     };
-
     const result = calculateExpenses(expenses);
 
     const expected = new Map([
@@ -371,15 +369,13 @@ describe('calculateExpenses', () => {
       { id: 1, title: 'Payment 1', shares: new Map(team.map(person => [person.name, 10])) }, // Everyone pays equally
       { id: 2, title: 'Payment 2', shares: new Map(team.map(person => [person.name, (person.name === 'Person1') ? 200 : 0])) }, // One person pays a lot
     ];
-
     const expenses: TripExpenses = {
-      currency: "USD",
-      id: 1,
+      id: 13,
       title: 'Large Group',
+      currency: 'USD',
       team,
       payments,
     };
-
     const result = calculateExpenses(expenses);
 
     const expected = new Map(
@@ -396,9 +392,9 @@ describe('calculateExpenses', () => {
 
   it('should handle multiple zero payments', () => {
     const expenses: TripExpenses = {
-      currency: "USD",
-      id: 1,
+      id: 14,
       title: 'No Contributions',
+      currency: 'USD',
       team: [
         { name: 'John' },
         { name: 'Ann' },
@@ -423,9 +419,9 @@ describe('calculateExpenses', () => {
 
   it('should handle floating-point precision correctly', () => {
     const expenses: TripExpenses = {
-      currency: "USD",
-      id: 1,
+      id: 15,
       title: 'Precision Test',
+      currency: 'USD',
       team: [
         { name: 'John' },
         { name: 'Ann' },

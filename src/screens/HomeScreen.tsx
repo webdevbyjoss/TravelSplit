@@ -6,6 +6,7 @@ import { RootState } from '../app/store';
 import { removeTrip } from '../features/expenses/expensesSlice';
 
 import ConfirmDialog from '../components/ConfirmDialog';
+import Icon from '../components/Icon';
 
 const HomeScreen: React.FC = () => {
   const trips = useSelector((state: RootState) => state.tripExpenses);
@@ -41,7 +42,7 @@ const HomeScreen: React.FC = () => {
         <div className="column is-narrow">
           <button className="button is-primary is-small-mobile" onClick={() => navigate(`/trip/`)}>
             <span className="icon">
-              <i className="fas fa-plus"></i>
+              <Icon name="fas fa-plus" />
             </span>
           </button>
         </div>
@@ -76,9 +77,9 @@ const HomeScreen: React.FC = () => {
                   className="button is-danger is-light is-small-mobile"
                   onClick={() => handleRemoveTrip(trip.id)}
                 >
-                  <span className="icon">
-                    <i className="fas fa-trash"></i>
-                  </span>
+                                      <span className="icon">
+                      <Icon name="fas fa-trash" />
+                    </span>
                 </button>
               </div>
             </div>
