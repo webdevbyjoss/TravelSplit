@@ -1,0 +1,11 @@
+name = "travelsplit"
+compatibility_date = "2025-07-11"
+
+[assets]
+directory = "./dist"
+
+[env.production]
+name = "travelsplit"
+
+[env.staging]
+name = "travelsplit-staging" 
