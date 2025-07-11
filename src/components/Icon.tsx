@@ -9,6 +9,7 @@ import {
   Check,
   ArrowUp,
   Edit3,
+  Download,
 } from 'lucide-react';
 
 interface IconProps {
@@ -31,12 +32,16 @@ const Icon: React.FC<IconProps> = ({ name, size = 16, className = '' }) => {
     'fa-solid fa-arrow-up': ArrowUp,
     'fa-solid fa-pencil': Edit3,
     'fas fa-trash-can': Trash2,
+    'fas fa-download': Download,
+    'fa-solid fa-download': Download,
+    'download': Download,
+    'fa-download': Download,
   };
 
   const IconComponent = iconMap[name];
   
   if (!IconComponent) {
-    console.warn(`Icon "${name}" not found`);
+    console.warn(`Icon "${name}" not found. Available icons:`, Object.keys(iconMap));
     return null;
   }
 

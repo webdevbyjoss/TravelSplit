@@ -39,7 +39,7 @@ const TeamSection: React.FC<TeamSectionProps> = ({
 
   return (
     <>
-      <h2 className="subtitle is-6-mobile has-text-weight-normal has-text-grey-dark">
+      <h2 className="subtitle is-6-mobile has-text-weight-normal has-text-grey-dark mb-2">
         <div className="columns is-mobile is-vcentered">
           <div className="column">Team</div>
           {onSwitchToSplit && showSplitButton && (

@@ -1,8 +1,201 @@
 @import "https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css";
 
-/* Mobile-specific section padding override */
+/* Home screen flexbox layout */
+.home-screen-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100%;
+}
+
+.home-screen-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  min-height: 0;
+}
+
+.home-screen-empty-state {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  flex: 1;
+  min-height: 0;
+  padding: 1rem;
+}
+
+/* Update notification styles */
+.update-notification {
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    transform: translateY(-100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+/* Mobile-specific optimizations */
 @media screen and (max-width: 768px) {
   .section {
-    padding: 0.75rem !important;
+    padding: 0;
+  }
+  
+  .container {
+    padding: 1rem;
+  }
+  
+  .box {
+    padding: 0.75rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  /* Prevent horizontal scroll in home screen content */
+  .home-screen-content {
+    overflow-x: hidden;
+    max-width: 100%;
+  }
+  
+  /* Reduce spacing between elements on mobile */
+  .mb-5 {
+    margin-bottom: 1rem;
+  }
+  
+  .mb-4 {
+    margin-bottom: 0.75rem;
+  }
+  
+  .mb-3 {
+    margin-bottom: 0.5rem;
+  }
+  
+  .mb-2 {
+    margin-bottom: 0.5rem;
+  }
+  
+  /* Optimize list spacing */
+  .list li {
+    margin-bottom: 0.25rem;
+  }
+  
+  /* Better button spacing on mobile */
+  .buttons.are-small .button {
+    margin-bottom: 0.25rem;
+  }
+  
+  /* Full screen modals on mobile */
+  .modal-card {
+    width: 100%;
+    height: 100%;
+    max-height: 100%;
+    margin: 0;
+    border-radius: 0;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .modal-card-head {
+    padding: 0.75rem;
+    border-radius: 0;
+    flex-shrink: 0;
+  }
+  
+  .modal-card-head .modal-card-title {
+    font-size: 1rem;
+  }
+  
+  .modal-card-foot {
+    padding: 0.75rem;
+    border-radius: 0;
+    flex-shrink: 0;
+    justify-content: flex-end;
+  }
+  
+  .modal-card-body {
+    flex: 1;
+    overflow-y: auto;
+    min-height: 0;
+    border-bottom: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .modal-card-foot {
+    padding: 0.75rem;
+    border-radius: 0;
+    flex-shrink: 0;
+  }
+  
+  /* Prevent body scroll when modal is open */
+  .modal.is-active {
+    overflow: hidden;
+  }
+  
+  /* Ensure modals render above install banner */
+  .modal {
+    z-index: 3000;
+  }
+  
+  .modal-background {
+    z-index: 2999;
+  }
+  
+  .modal-card {
+    z-index: 3001;
+  }
+  
+  /* Payment details layout for mobile */
+  .payment-details-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+  
+  .payment-details-content {
+    flex: 1;
+    padding-bottom: 0.75rem;
+  }
+  
+  /* Better field spacing */
+  .field:not(:last-child) {
+    margin-bottom: 0.5rem;
+  }
+  
+
+  
+  /* Reduce tag spacing */
+  .tags .tag {
+    margin-bottom: 0.25rem;
+    margin-right: 0.25rem;
+  }
+  
+  /* Optimize title spacing */
+  .title {
+    margin-bottom: 0.5rem;
+  }
+  
+  .subtitle {
+    margin-bottom: 0.5rem;
+  }
+  
+  /* Mobile home screen optimizations */
+  .home-screen-content {
+    padding: 0;
+  }
+  
+  .home-screen-empty-state {
+    min-height: 0;
+    padding: 0.5rem;
+  }
+  
+  /* Mobile spacing for empty state elements */
+  .home-screen-empty-state .subtitle {
+    margin-bottom: 2rem;
   }
 }

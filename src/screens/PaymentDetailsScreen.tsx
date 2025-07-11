@@ -4,12 +4,14 @@ type PaymentDetailsScreenProps = {
   team: { name: string }[];
   // eslint-disable-next-line no-unused-vars
   onSave: (paymentTitle: string, paymentShares: Map<string, number>) => void;
+  onCancel?: () => void; // Add cancel handler
   initialTitle?: string; // Optional initial payment title
   initialShares?: Map<string, number>; // Optional initial shares
 };
 const PaymentDetailsScreen: React.FC<PaymentDetailsScreenProps> = ({
                                                                      team,
                                                                      onSave,
+                                                                     onCancel,
                                                                      initialTitle = '',
                                                                      initialShares = new Map(),
                                                                    }) => {
@@ -127,97 +129,114 @@ const PaymentDetailsScreen: React.FC<PaymentDetailsScreenProps> = ({
   };
 
   return (
-    <div>
-      <div className="field">
-        <div className="control">
-          <input
-            className={`input ${formError && !paymentTitle.trim() ? 'is-danger' : ''}`}
-            type="text"
-            placeholder="Taxi, Hotel, Grocery, etc."
-            value={paymentTitle}
-            onChange={(e) => setPaymentTitle(e.target.value)}
-          />
+    <div className="payment-details-container">
+      <div className="payment-details-content">
+        <div className="field mb-2">
+          <div className="control">
+            <input
+              className={`input ${formError && !paymentTitle.trim() ? 'is-danger' : ''}`}
+              type="text"
+              placeholder="Taxi, Hotel, Grocery, etc."
+              value={paymentTitle}
+              onChange={(e) => setPaymentTitle(e.target.value)}
+            />
+          </div>
         </div>
+        <h2 className="subtitle is-6-mobile has-text-weight-normal has-text-grey-dark mb-4">Who participated in this payment?</h2>
+        {team.map((member) => (
+          <div key={member.name} className="field mb-3">
+            <div className="columns is-mobile is-vcentered">
+              <div className="column">
+                <label className="checkbox" style={{ display: 'flex', alignItems: 'center', paddingLeft: '0' }}>
+                  <input
+                    type="checkbox"
+                    checked={includedMembers.has(member.name)}
+                    onChange={() => handleMemberToggle(member.name)}
+                    style={{ 
+                      transform: 'scale(1.2)', 
+                      marginRight: '8px',
+                      cursor: 'pointer',
+                      marginLeft: '0'
+                    }}
+                  />
+                  <span 
+                    className="ml-2" 
+                    style={{ 
+                      textDecoration: includedMembers.has(member.name) ? 'none' : 'line-through',
+                      opacity: includedMembers.has(member.name) ? '1' : '0.6',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    {member.name}
+                  </span>
+                </label>
+              </div>
+              <div className="column is-narrow">
+                <div className="field has-addons">
+                  <p className="control">
+                    <span className="button is-static is-small">$</span>
+                  </p>
+                  <p className="control">
+                    <input
+                      className={`input is-small ${formError?.includes('amount') ? 'is-danger' : ''}`}
+                      type="text"
+                      placeholder="0.00"
+                      min={0}
+                      max={1000000}
+                      value={paymentShares.get(member.name) || ''}
+                      onChange={(e) => handleInputChange(member.name, e.target.value)}
+                      disabled={!includedMembers.has(member.name)}
+                      style={{
+                        width: "120px"
+                      }}
+                    />
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        ))}
       </div>
-      <h2 className="subtitle is-6-mobile has-text-weight-normal has-text-grey-dark">Who participated in this payment?</h2>
-      {team.map((member) => (
-        <div key={member.name} className="field">
+      
+      <div className="payment-details-footer">
+        <div className="field has-background-light p-3" style={{ borderRadius: '8px', border: '1px solid #f0f0f0' }}>
           <div className="columns is-mobile is-vcentered">
             <div className="column">
-              <label className="checkbox" style={{ display: 'flex', alignItems: 'center' }}>
-                <input
-                  type="checkbox"
-                  checked={includedMembers.has(member.name)}
-                  onChange={() => handleMemberToggle(member.name)}
-                  style={{ 
-                    transform: 'scale(1.5)', 
-                    marginRight: '12px',
-                    cursor: 'pointer'
-                  }}
-                />
-                <span 
-                  className="ml-2" 
-                  style={{ 
-                    textDecoration: includedMembers.has(member.name) ? 'none' : 'line-through',
-                    opacity: includedMembers.has(member.name) ? '1' : '0.6',
-                    cursor: 'pointer'
-                  }}
-                >
-                  {member.name}
-                </span>
-              </label>
+              <label className="label is-6-mobile has-text-weight-normal has-text-grey-dark">Total</label>
             </div>
             <div className="column is-narrow">
               <div className="field has-addons">
                 <p className="control">
-                  <span className="button is-static is-small">$</span>
-                </p>
-                <p className="control">
-                  <input
-                    className={`input is-small ${formError?.includes('amount') ? 'is-danger' : ''}`}
-                    type="text"
-                    placeholder="0.00"
-                    min={0}
-                    max={1000000}
-                    value={paymentShares.get(member.name) || ''}
-                    onChange={(e) => handleInputChange(member.name, e.target.value)}
-                    disabled={!includedMembers.has(member.name)}
-                    style={{width: "120px"}}
-                  />
+                  <span className="has-text-weight-bold has-text-grey-dark">$</span>
+                  <span className="has-text-weight-bold is-size-5-mobile is-size-4 has-text-primary">
+                    {calculateTotal().toFixed(2)}
+                  </span>
                 </p>
               </div>
             </div>
           </div>
         </div>
-      ))}
-      <div className="field mt-4 has-background-light p-3" style={{ borderRadius: '8px', border: '1px solid #f0f0f0' }}>
-        <div className="columns is-mobile is-vcentered">
-          <div className="column">
-            <label className="label is-6-mobile has-text-weight-normal has-text-grey-dark">Total</label>
-          </div>
-          <div className="column is-narrow">
-            <div className="field has-addons">
-              <p className="control">
-                <span className="has-text-weight-bold has-text-grey-dark">$</span>
-                <span className="has-text-weight-bold is-size-5-mobile is-size-4 has-text-primary">
-                  {calculateTotal().toFixed(2)}
-                </span>
-              </p>
-            </div>
-          </div>
+        {formError && (
+          <p className="help is-danger mb-2">{formError}</p>
+        )}
+        <div className="buttons" style={{ justifyContent: 'flex-end' }}>
+          {onCancel && (
+            <button
+              className="button is-light is-small-mobile mr-2"
+              type="button"
+              onClick={onCancel}
+            >
+              Cancel
+            </button>
+          )}
+          <button
+            className="button is-success is-small-mobile"
+            type="button"
+            onClick={handleSave}
+          >
+            Save Payment
+          </button>
         </div>
-      </div>
-      {formError && (
-        <p className="help is-danger mb-2">{formError}</p>
-      )}
-      <div className="buttons mt-4" style={{ justifyContent: 'flex-end' }}>
-        <button
-          className="button is-success is-small-mobile"
-          type="button"
-          onClick={handleSave}
-        >
-          Save Payment
-        </button>
       </div>
     </div>
   );

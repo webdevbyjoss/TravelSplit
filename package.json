@@ -14,12 +14,12 @@
   "author": "TravelSplit",
   "homepage": "https://travelsplit.app",
   "scripts": {
-    "dev": "vite",
-    "build": "tsc -b && vite build",
+    "dev": "./scripts/update-sw.sh && vite",
+    "build": "BUILD_VERSION=${BUILD_VERSION:-dev} ./scripts/update-sw.sh && tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "jest",
-    "deploy": "npm run build && npx wrangler deploy"
+    "deploy": "BUILD_VERSION=${BUILD_VERSION:-$(date +%s)} npm run build && npx wrangler deploy"
   },
   "dependencies": {
     "@reduxjs/toolkit": "^2.5.0",

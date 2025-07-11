@@ -11,6 +11,11 @@ import App from './App.tsx'
 
 import ErrorBoundary from './components/ErrorBoundary';
 import LoadingSpinner from './components/LoadingSpinner';
+import { registerServiceWorker, setupInstallPrompt } from './utils/pwa';
+
+// Register service worker and setup PWA functionality
+registerServiceWorker();
+setupInstallPrompt();
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

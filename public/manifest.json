@@ -1,7 +1,7 @@
 {
   "name": "TravelSplit",
   "short_name": "TravelSplit",
-  "description": "Split travel expenses with friends and family",
+  "description": "Split travel expenses with friends and family easily",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
@@ -10,6 +10,7 @@
   "scope": "/",
   "lang": "en",
   "categories": ["travel", "utilities", "finance"],
+  "prefer_related_applications": false,
   "icons": [
     {
       "src": "/icon-192x192.png",
@@ -65,7 +66,7 @@
       "name": "New Trip",
       "short_name": "New Trip",
       "description": "Create a new trip to split expenses",
-      "url": "/trip/new",
+      "url": "/trip/",
       "icons": [
         {
           "src": "/icon-96x96.png",

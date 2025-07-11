@@ -175,7 +175,7 @@ const TripDetailsScreen: React.FC = () => {
 
   return (
     <div className="container">
-      <div className="columns is-mobile is-vcentered">
+      <div className="columns is-mobile is-vcentered mb-2">
         <div className="column is-narrow">
           <button className="button is-small-mobile" onClick={() => navigate(`/`)}>
             <span className="icon">
@@ -200,8 +200,8 @@ const TripDetailsScreen: React.FC = () => {
       {(trip || isNewTrip) && (
         activePanel === 'split' ? (
           trip && (
-            <div className="box">
-              <h2 className="subtitle has-text-weight-normal has-text-grey-dark">
+            <div className="box mb-6">
+              <h2 className="subtitle has-text-weight-normal has-text-grey-dark mb-2">
                 <div className="columns is-mobile is-vcentered">
                   <div className="column">
                     <span className="icon-text">
@@ -248,7 +248,7 @@ const TripDetailsScreen: React.FC = () => {
               <div className="columns is-mobile">
                 {/* Left Column - Users with negative balance (need to pay) */}
                 <div className="column">
-                  <h3 className="title is-6-mobile is-5 has-text-danger">
+                  <h3 className="title is-6-mobile is-5 has-text-danger mb-1">
                     <span className="icon-text">
                       <span className="icon">
                         <Icon name="fa-solid fa-arrow-down" />
@@ -277,7 +277,7 @@ const TripDetailsScreen: React.FC = () => {
                 </div>
                 {/* Right Column - Users with positive balance (will receive) */}
                 <div className="column">
-                  <h3 className="title is-6-mobile is-5 has-text-success">
+                  <h3 className="title is-6-mobile is-5 has-text-success mb-1">
                     <span className="icon-text">
                       <span className="icon">
                         <Icon name="fa-solid fa-arrow-up" />
@@ -325,7 +325,7 @@ const TripDetailsScreen: React.FC = () => {
       {/* Expenses section always visible if trip and team */}
       {trip && trip.team.length > 1 && (
         <>
-          <h2 className="subtitle has-text-weight-normal has-text-grey-dark">
+          <h2 className="subtitle has-text-weight-normal has-text-grey-dark mb-2">
             <div className="columns is-mobile is-vcentered">
               <div className="column">Expenses</div>
               <div className="column is-narrow">
@@ -347,7 +347,7 @@ const TripDetailsScreen: React.FC = () => {
           {trip.payments.length > 0 && (
             <div className="box">
               {trip.payments.map((payment, index) => (
-                <div key={payment.id} className={`${index > 0 ? 'pt-3' : ''} ${index < trip.payments.length - 1 ? 'pb-3 border-bottom' : ''}`}>
+                <div key={payment.id} className={`${index > 0 ? 'pt-2' : ''} ${index < trip.payments.length - 1 ? 'pb-2 border-bottom' : ''}`}>
                   <div className="columns is-mobile is-vcentered">
                     <div className="column">
                       <div className="is-flex is-align-items-center is-flex-wrap-wrap">
@@ -393,7 +393,7 @@ const TripDetailsScreen: React.FC = () => {
         <div className="modal is-active">
           <div className="modal-background" onClick={() => setIsPaymentModalOpen(false)}></div>
           <div className="modal-card">
-            <header className="modal-card-head py-4">
+            <header className="modal-card-head">
               <p className="modal-card-title" style={{ fontSize: '1.2rem' }}>{paymentToEdit ? 'Edit Payment' : 'New Payment'}</p>
               <button
                 className="delete"
@@ -404,7 +404,7 @@ const TripDetailsScreen: React.FC = () => {
             <section className="modal-card-body">
               <PaymentDetailsScreen
                 team={trip?.team || []}
-                onSave={(title, shares) => {
+                onSave={(title: string, shares: Map<string, number>) => {
                     if (paymentToEdit) {
                       handleSavePayment(title, shares);
                     } else {
@@ -413,6 +413,7 @@ const TripDetailsScreen: React.FC = () => {
                     }
                   }
                 }
+                onCancel={() => setIsPaymentModalOpen(false)}
                 initialTitle={paymentToEdit?.title || ''}
                 initialShares={paymentToEdit?.shares || new Map()}
               />
