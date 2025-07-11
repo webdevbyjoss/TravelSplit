@@ -9,11 +9,11 @@ const persistConfig = {
   key: 'TravelSplit', // Key to persist the store under
   storage,
   transforms: [TripExpensesPersistTransform],
+  whitelist: ['tripExpenses'], // Only persist tripExpenses
 }
 
 const rootReducer = combineReducers({
   tripExpenses: tripExpensesSlice.reducer,
-  // Add other reducers here if necessary
 });
 
 const persistedReducer = persistReducer<RootState>(persistConfig, rootReducer);
@@ -22,8 +22,11 @@ export const store = configureStore({
   reducer: persistedReducer,
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
-      serializableCheck: false, // Required for Redux Persist
+      serializableCheck: {
+        ignoredActions: ['persist/PERSIST', 'persist/REHYDRATE'],
+      },
     }),
+  devTools: process.env.NODE_ENV !== 'production',
 });
 
 export const persistor = persistStore(store);
