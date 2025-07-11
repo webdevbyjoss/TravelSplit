@@ -394,7 +394,7 @@ const TripDetailsScreen: React.FC = () => {
           <div className="modal-background" onClick={() => setIsPaymentModalOpen(false)}></div>
           <div className="modal-card">
             <header className="modal-card-head py-4">
-              <p className="modal-card-title">{paymentToEdit ? 'Edit Payment' : 'New Payment'}</p>
+              <p className="modal-card-title" style={{ fontSize: '1.2rem' }}>{paymentToEdit ? 'Edit Payment' : 'New Payment'}</p>
               <button
                 className="delete"
                 aria-label="close"

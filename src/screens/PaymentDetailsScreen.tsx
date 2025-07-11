@@ -144,13 +144,27 @@ const PaymentDetailsScreen: React.FC<PaymentDetailsScreenProps> = ({
         <div key={member.name} className="field">
           <div className="columns is-mobile is-vcentered">
             <div className="column">
-              <label className="checkbox">
+              <label className="checkbox" style={{ display: 'flex', alignItems: 'center' }}>
                 <input
                   type="checkbox"
                   checked={includedMembers.has(member.name)}
                   onChange={() => handleMemberToggle(member.name)}
+                  style={{ 
+                    transform: 'scale(1.5)', 
+                    marginRight: '12px',
+                    cursor: 'pointer'
+                  }}
                 />
-                <span className="ml-2">{member.name}</span>
+                <span 
+                  className="ml-2" 
+                  style={{ 
+                    textDecoration: includedMembers.has(member.name) ? 'none' : 'line-through',
+                    opacity: includedMembers.has(member.name) ? '1' : '0.6',
+                    cursor: 'pointer'
+                  }}
+                >
+                  {member.name}
+                </span>
               </label>
             </div>
             <div className="column is-narrow">
@@ -196,7 +210,7 @@ const PaymentDetailsScreen: React.FC<PaymentDetailsScreenProps> = ({
       {formError && (
         <p className="help is-danger mb-2">{formError}</p>
       )}
-      <div className="buttons mt-4">
+      <div className="buttons mt-4" style={{ justifyContent: 'flex-end' }}>
         <button
           className="button is-success is-small-mobile"
           type="button"
