@@ -643,6 +643,61 @@
     flex: 1;
     padding-bottom: 0.75rem;
   }
+
+  /* Payment details screen improvements */
+  .payment-details-screen {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+
+  .payment-details-screen .section:last-child {
+    margin-top: auto;
+    padding-top: 1rem;
+    background-color: var(--bg-primary);
+  }
+
+  .payment-details-screen .input.is-medium {
+    font-size: 1.1rem;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+  }
+
+  .payment-details-screen .button.is-fullwidth {
+    border-radius: 8px;
+    font-weight: 500;
+    padding: 0.75rem 1rem;
+    transition: all 0.2s ease;
+  }
+
+  .payment-details-screen .button.is-fullwidth:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .payment-details-screen .label {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+
+  .payment-details-screen .field.mb-3 {
+    padding: 0.5rem 0;
+    transition: all 0.2s ease;
+  }
+
+  .payment-details-screen .field.mb-3:hover {
+    background-color: var(--bg-hover);
+  }
+
+  .payment-details-screen .field.has-background-light {
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+  }
+
+  .payment-details-screen .notification {
+    margin-top: 1rem;
+    border-radius: 8px;
+  }
   
   /* Better field spacing */
   .field:not(:last-child) {
@@ -687,11 +742,11 @@
 
   .is-clickable {
     cursor: pointer;
-    transition: background-color 0.2s ease;
+    transition: all 0.2s ease;
   }
 
   .is-clickable:hover {
-    background-color: #f8f9fa;
+    background-color: var(--bg-hover);
   }
 
   /* Payment details input styling */

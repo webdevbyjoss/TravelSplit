@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../app/store';
 import { useParams, useNavigate } from 'react-router';
-import PaymentDetailsScreen from './PaymentDetailsScreen';
 import TeamSection from '../components/TeamSection';
 import ConfirmDialog from '../components/ConfirmDialog';
 import { calculateExpenses } from '../domain/Expenses';
@@ -13,7 +12,6 @@ import {
   updateTrip,
   addTeamMember,
   removeTeamMember,
-  addPayment,
   removePayment,
 } from '../features/expenses/expensesSlice';
 
@@ -47,8 +45,6 @@ const TripDetailsScreen: React.FC = () => {
     }
   }, [trip, activePanel, userManuallyToggled]);
 
-  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
-  const [paymentToEdit, setPaymentToEdit] = useState<{ title: string; shares: Map<string, number> } | null>(null);
   const [paymentConfirmDialog, setPaymentConfirmDialog] = useState<{ show: boolean; paymentId: number | null; paymentTitle: string }>({
     show: false,
     paymentId: null,
@@ -113,17 +109,6 @@ const TripDetailsScreen: React.FC = () => {
     }
   };
 
-  const handleAddPayment = (paymentTitle: string, paymentShares: Map<string, number>) => {
-    if (trip) {
-      const payment = {
-        id: Date.now(),
-        title: paymentTitle,
-        shares: paymentShares,
-      };
-      dispatch(addPayment({ tripId: trip.id, payment }));
-    }
-  };
-
   const handleRemovePayment = (paymentId: number, paymentTitle: string) => {
     setPaymentConfirmDialog({ show: true, paymentId, paymentTitle });
   };
@@ -139,23 +124,12 @@ const TripDetailsScreen: React.FC = () => {
     setPaymentConfirmDialog({ show: false, paymentId: null, paymentTitle: '' });
   };
 
-  const handleEditPayment = (payment: { title: string; shares: Map<string, number> }) => {
-    setPaymentToEdit(payment);
-    setIsPaymentModalOpen(true);
+  const handleAddNewPayment = () => {
+    navigate(`/trip/${tripId}/payment`);
   };
 
-  const handleSavePayment = (paymentTitle: string, paymentShares: Map<string, number>) => {
-    if (trip && paymentToEdit) {
-      const updatedPayments = trip.payments.map((payment) =>
-        payment.title === paymentToEdit.title
-          ? { ...payment, title: paymentTitle, shares: paymentShares }
-          : payment
-      );
-
-      dispatch(updateTrip({ ...trip, payments: updatedPayments }));
-      setPaymentToEdit(null);
-      setIsPaymentModalOpen(false);
-    }
+  const handleEditPayment = (payment: { id: number; title: string; shares: Map<string, number> }) => {
+    navigate(`/trip/${tripId}/payment/${payment.id}`);
   };
 
   // Always recalculate balances from the latest trip state
@@ -333,10 +307,7 @@ const TripDetailsScreen: React.FC = () => {
                 <button
                   className="button is-primary is-small-mobile"
                   type="button"
-                  onClick={() => {
-                    setPaymentToEdit(null);
-                    setIsPaymentModalOpen(true);
-                  }}
+                  onClick={handleAddNewPayment}
                 >
                   <span className="icon">
                     <Icon name="fas fa-plus" />
@@ -350,7 +321,7 @@ const TripDetailsScreen: React.FC = () => {
               {trip.payments.map((payment, index) => (
                 <div key={payment.id} className={`${index > 0 ? 'pt-2' : ''} ${index < trip.payments.length - 1 ? 'pb-2 border-bottom' : ''}`}>
                   <div className="columns is-mobile is-vcentered">
-                    <div className="column">
+                    <div className="column is-clickable" onClick={() => handleEditPayment(payment)}>
                       <div className="is-flex is-align-items-center is-flex-wrap-wrap">
                         <span className="is-size-6-mobile mr-3 has-text-weight-normal py-1">{payment.title}</span>
                         <div className="tags">
@@ -368,7 +339,10 @@ const TripDetailsScreen: React.FC = () => {
                       <div className="buttons are-small">
                         <button
                           className="button is-warning is-light is-small-mobile"
-                          onClick={() => handleEditPayment(payment)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleEditPayment(payment);
+                          }}
                         >
                           <span className="icon">
                             <Icon name="fa-solid fa-pencil" />
@@ -376,7 +350,10 @@ const TripDetailsScreen: React.FC = () => {
                         </button>
                         <button
                           className="button is-danger is-light is-small-mobile"
-                          onClick={() => handleRemovePayment(payment.id, payment.title)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleRemovePayment(payment.id, payment.title);
+                          }}
                         >
                           <span className="icon">
                             <Icon name="fa-solid fa-trash-can" />
@@ -390,40 +367,6 @@ const TripDetailsScreen: React.FC = () => {
             </div>
           )}
         </>
-      )}
-
-      {isPaymentModalOpen && (
-        <div className="modal is-active">
-          <div className="modal-background" onClick={() => setIsPaymentModalOpen(false)}></div>
-          <div className="modal-card">
-            <header className="modal-card-head">
-              <p className="modal-card-title is-size-4">{paymentToEdit ? 'Edit Payment' : 'New Payment'}</p>
-              <button
-                className="delete"
-                aria-label="close"
-                onClick={() => setIsPaymentModalOpen(false)}
-              ></button>
-            </header>
-            <section className="modal-card-body">
-              <PaymentDetailsScreen
-                team={trip?.team || []}
-                onSave={(title: string, shares: Map<string, number>) => {
-                    if (paymentToEdit) {
-                      handleSavePayment(title, shares);
-                    } else {
-                      handleAddPayment(title, shares);
-                      setIsPaymentModalOpen(false);
-                    }
-                  }
-                }
-                onCancel={() => setIsPaymentModalOpen(false)}
-                initialTitle={paymentToEdit?.title || ''}
-                initialShares={paymentToEdit?.shares || new Map()}
-                currency={currency}
-              />
-            </section>
-          </div>
-        </div>
       )}
 
       {paymentConfirmDialog.show && (

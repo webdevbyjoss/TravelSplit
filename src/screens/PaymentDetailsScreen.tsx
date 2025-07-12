@@ -1,41 +1,58 @@
 import React, { useState, useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { useParams, useNavigate } from 'react-router';
+import { RootState } from '../app/store';
 import { getCurrencySymbol } from '../utils/validation';
+import { addPayment, updateTrip } from '../features/expenses/expensesSlice';
+import { DEFAULT_CURRENCY } from '../constants';
 
-type PaymentDetailsScreenProps = {
-  team: { name: string }[];
-  // eslint-disable-next-line no-unused-vars
-  onSave: (paymentTitle: string, paymentShares: Map<string, number>) => void;
-  onCancel?: () => void; // Add cancel handler
-  initialTitle?: string; // Optional initial payment title
-  initialShares?: Map<string, number>; // Optional initial shares
-  currency: string; // required
-};
-
-const PaymentDetailsScreen: React.FC<PaymentDetailsScreenProps> = ({
-  team,
-  onSave,
-  onCancel,
-  initialTitle = '',
-  initialShares = new Map(),
-  currency, // required, no default
-}) => {
-  const [paymentTitle, setPaymentTitle] = useState(initialTitle);
+const PaymentDetailsScreen: React.FC = () => {
+  const { tripId, paymentId } = useParams<{ tripId: string; paymentId?: string }>();
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  
+  const trip = useSelector((state: RootState) => 
+    state.tripExpenses.find(t => t.id === Number(tripId))
+  );
+  
+  const paymentToEdit = trip?.payments.find(p => p.id === Number(paymentId));
+  const isEditing = !!paymentId && !!paymentToEdit;
+  
+  const [paymentTitle, setPaymentTitle] = useState(paymentToEdit?.title || '');
   const [paymentShares, setPaymentShares] = useState<Map<string, string>>(new Map());
-  const [includedMembers, setIncludedMembers] = useState<Set<string>>(new Set(team.map(member => member.name)));
+  const [includedMembers, setIncludedMembers] = useState<Set<string>>(new Set());
   const [formError, setFormError] = useState<string>('');
 
+  // Initialize form data
   useEffect(() => {
-    if (initialTitle) {
-      setPaymentTitle(initialTitle);
+    if (!trip) {
+      navigate('/');
+      return;
     }
-    if (initialShares.size > 0) {
+
+    // Initialize included members
+    setIncludedMembers(new Set(trip.team.map(member => member.name)));
+
+    if (isEditing && paymentToEdit) {
+      setPaymentTitle(paymentToEdit.title);
+      
+      // Convert payment shares to string map for form
       const sharesMap = new Map<string, string>();
-      initialShares.forEach((value, key) => {
+      paymentToEdit.shares.forEach((value, key) => {
         sharesMap.set(key, value.toString());
       });
       setPaymentShares(sharesMap);
+      
+      // Set included members based on who has shares
+      const included = new Set<string>();
+      paymentToEdit.shares.forEach((value, key) => {
+        if (value > 0 || trip.team.some(member => member.name === key)) {
+          included.add(key);
+        }
+      });
+      setIncludedMembers(included);
     }
-  }, [initialTitle, initialShares]);
+  }, [trip, paymentToEdit, isEditing, navigate]);
 
   const handleSave = () => {
     // Clear previous error
@@ -47,11 +64,16 @@ const PaymentDetailsScreen: React.FC<PaymentDetailsScreenProps> = ({
       return;
     }
 
+    if (!trip) {
+      setFormError('Trip not found');
+      return;
+    }
+
     const parsedShares = new Map<string, number>();
     let totalAmount = 0;
 
     // Only include checked team members in shares
-    team.forEach(member => {
+    trip.team.forEach(member => {
       const isIncluded = includedMembers.has(member.name);
       if (isIncluded) {
         const value = paymentShares.get(member.name) || '';
@@ -67,11 +89,30 @@ const PaymentDetailsScreen: React.FC<PaymentDetailsScreenProps> = ({
       return;
     }
 
-    onSave(paymentTitle, parsedShares);
-    setPaymentTitle('');
-    setPaymentShares(new Map());
-    setIncludedMembers(new Set(team.map(member => member.name)));
-    setFormError('');
+    if (isEditing && paymentToEdit) {
+      // Update existing payment
+      const updatedPayments = trip.payments.map((payment) =>
+        payment.id === paymentToEdit.id
+          ? { ...payment, title: paymentTitle, shares: parsedShares }
+          : payment
+      );
+      dispatch(updateTrip({ ...trip, payments: updatedPayments }));
+    } else {
+      // Add new payment
+      const newPayment = {
+        id: Date.now(),
+        title: paymentTitle,
+        shares: parsedShares,
+      };
+      dispatch(addPayment({ tripId: trip.id, payment: newPayment }));
+    }
+
+    // Navigate back to trip details
+    navigate(`/trip/${tripId}`);
+  };
+
+  const handleCancel = () => {
+    navigate(`/trip/${tripId}`);
   };
 
   const validateAndFormatInput = (input: string): string => {
@@ -124,68 +165,88 @@ const PaymentDetailsScreen: React.FC<PaymentDetailsScreenProps> = ({
   };
 
   return (
-    <div className="payment-details-container">
-      <div className="payment-details-content">
-        <input
-          className={`input is-fullwidth mb-2 ${formError && !paymentTitle.trim() ? 'is-danger' : ''}`}
-          type="text"
-          placeholder="Taxi, Hotel, Grocery, etc."
-          value={paymentTitle}
-          onChange={(e) => setPaymentTitle(e.target.value)}
-        />
-        <h2 className="subtitle is-6-mobile has-text-weight-normal has-text-grey-dark mb-4">Who participated in this payment?</h2>
-        {team.map((member) => (
-          <div key={member.name} className="field mb-3">
-            <div className="columns is-mobile is-vcentered">
-              <div className="column">
-                <label className="checkbox is-flex is-align-items-center pl-0">
-                  <input
-                    type="checkbox"
-                    checked={includedMembers.has(member.name)}
-                    onChange={() => handleMemberToggle(member.name)}
-                    className="mr-2 ml-0"
-                    style={{ 
-                      transform: 'scale(1.2)', 
-                      cursor: 'pointer'
-                    }}
-                  />
-                  <span 
-                    className={`ml-2 ${includedMembers.has(member.name) ? '' : 'has-text-decoration-line-through has-text-grey-light'}`}
-                    style={{ cursor: 'pointer' }}
-                  >
-                    {member.name}
-                  </span>
-                </label>
-              </div>
-              <div className="column is-narrow">
-                <div className="field has-addons">
-                  <p className="control">
-                    <span className="button is-static is-small">{getCurrencySymbol(currency)}</span>
-                  </p>
-                  <p className="control">
+    <div className="container payment-details-screen">
+      <div className="section">
+
+        {/* Payment Title Input */}
+        <div className="field">
+          <div className="control">
+            <input
+              className={`input is-medium ${formError && !paymentTitle.trim() ? 'is-danger' : ''}`}
+              type="text"
+              placeholder="Taxi, Hotel, Grocery, etc."
+              value={paymentTitle}
+              onChange={(e) => setPaymentTitle(e.target.value)}
+              autoFocus
+            />
+          </div>
+        </div>
+
+        {/* Team Members */}
+        <div className="field">
+          <p className="has-text-grey-dark mb-3 mt-4">Who participated in this payment?</p>
+          {trip?.team.map((member) => (
+            <div key={member.name} className="field mb-3">
+              <div className="columns is-mobile is-vcentered">
+                <div className="column">
+                  <label className="checkbox is-flex is-align-items-center pl-0">
                     <input
-                      className={`input is-small ${formError?.includes('amount') ? 'is-danger' : ''}`}
-                      type="text"
-                      placeholder="0.00"
-                      min={0}
-                      max={1000000}
-                      value={paymentShares.get(member.name) || ''}
-                      onChange={(e) => handleInputChange(member.name, e.target.value)}
-                      disabled={!includedMembers.has(member.name)}
-                      style={{
-                        width: "120px"
+                      type="checkbox"
+                      checked={includedMembers.has(member.name)}
+                      onChange={() => handleMemberToggle(member.name)}
+                      className="mr-2 ml-0"
+                      style={{ 
+                        transform: 'scale(1.2)', 
+                        cursor: 'pointer'
                       }}
                     />
-                  </p>
+                    <span 
+                      className={`ml-2 ${includedMembers.has(member.name) ? '' : 'has-text-decoration-line-through has-text-grey-light'}`}
+                      style={{ cursor: 'pointer' }}
+                    >
+                      {member.name}
+                    </span>
+                  </label>
+                </div>
+                <div className="column is-narrow">
+                  <div className="field has-addons">
+                    <p className="control">
+                      <span className="button is-static is-small">{getCurrencySymbol(trip?.currency || DEFAULT_CURRENCY)}</span>
+                    </p>
+                    <p className="control">
+                      <input
+                        className={`input is-small ${formError?.includes('amount') ? 'is-danger' : ''}`}
+                        type="text"
+                        placeholder="0.00"
+                        min={0}
+                        max={1000000}
+                        value={paymentShares.get(member.name) || ''}
+                        onChange={(e) => handleInputChange(member.name, e.target.value)}
+                        disabled={!includedMembers.has(member.name)}
+                        style={{
+                          width: "120px"
+                        }}
+                      />
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
+          ))}
+        </div>
+
+        {/* Error Message */}
+        {formError && (
+          <div className="notification is-danger is-light">
+            {formError}
           </div>
-        ))}
+        )}
       </div>
-      
-      <div className="payment-details-footer">
-        <div className="field has-background-light p-3 has-radius">
+
+      {/* Footer with Total and buttons */}
+      <div className="section pt-0">
+        {/* Total Section */}
+        <div className="field p-3 has-radius mb-4">
           <div className="columns is-mobile is-vcentered">
             <div className="column">
               <label className="label is-6-mobile has-text-weight-normal has-text-grey-dark">Total</label>
@@ -193,7 +254,7 @@ const PaymentDetailsScreen: React.FC<PaymentDetailsScreenProps> = ({
             <div className="column is-narrow">
               <div className="field has-addons">
                 <p className="control">
-                  <span className="has-text-weight-bold has-text-grey-dark">{getCurrencySymbol(currency)}</span>
+                  <span className="has-text-weight-bold has-text-grey-dark">{getCurrencySymbol(trip?.currency || DEFAULT_CURRENCY)}</span>
                   <span className="has-text-weight-bold is-size-5-mobile is-size-4 has-text-primary">
                     {calculateTotal().toFixed(2)}
                   </span>
@@ -202,26 +263,24 @@ const PaymentDetailsScreen: React.FC<PaymentDetailsScreenProps> = ({
             </div>
           </div>
         </div>
-        {formError && (
-          <p className="help is-danger mb-2">{formError}</p>
-        )}
-        <div className="buttons">
-          {onCancel && (
+
+        <div className="columns is-mobile">
+          <div className="column">
             <button
-              className="button is-light is-small-mobile mr-2"
-              type="button"
-              onClick={onCancel}
+              className="button is-light is-fullwidth"
+              onClick={handleCancel}
             >
               Cancel
             </button>
-          )}
-          <button
-            className="button is-success is-small-mobile"
-            type="button"
-            onClick={handleSave}
-          >
-            Save Payment
-          </button>
+          </div>
+          <div className="column">
+            <button
+              className="button is-success is-fullwidth"
+              onClick={handleSave}
+            >
+              Save
+            </button>
+          </div>
         </div>
       </div>
     </div>
