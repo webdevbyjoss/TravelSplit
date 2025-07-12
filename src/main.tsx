@@ -11,11 +11,10 @@ import App from './App.tsx'
 
 import ErrorBoundary from './components/ErrorBoundary';
 import LoadingSpinner from './components/LoadingSpinner';
-import { registerServiceWorker, setupInstallPrompt } from './utils/pwa';
+import { setupInstallPrompt } from './utils/pwa';
 import { initializeTheme } from './utils/theme';
 
-// Register service worker and setup PWA functionality
-registerServiceWorker();
+// Setup PWA functionality
 setupInstallPrompt();
 
 // Initialize theme system

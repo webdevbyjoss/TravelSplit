@@ -7,42 +7,79 @@ interface BeforeInstallPromptEvent extends Event {
 }
 
 let deferredPrompt: BeforeInstallPromptEvent | null = null;
+let updateAvailable = false;
+let updateCallback: (() => void) | null = null;
 
 export const registerServiceWorker = async (): Promise<void> => {
   if ('serviceWorker' in navigator) {
     try {
-      await navigator.serviceWorker.register('/sw.js');
+      const registration = await navigator.serviceWorker.register('/sw.js');
       
-      // Check for updates
-      checkForUpdates();
+      // Set up update detection
+      setupUpdateDetection(registration);
+      
+      // Check for updates immediately
+      checkForUpdates(registration);
     } catch (error) {
       console.error('Service Worker registration failed:', error);
     }
   }
 };
 
-// Check for app updates
-export const checkForUpdates = (): void => {
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.ready.then((registration) => {
-      // Check for updates every hour
-      setInterval(() => {
-        registration.update();
-      }, 60 * 60 * 1000); // 1 hour
-
-      // Listen for service worker updates
-      registration.addEventListener('updatefound', () => {
-        showUpdateNotification();
+// Set up update detection for the service worker
+const setupUpdateDetection = (registration: ServiceWorkerRegistration): void => {
+  // Listen for service worker updates
+  registration.addEventListener('updatefound', () => {
+    const newWorker = registration.installing;
+    
+    if (newWorker) {
+      newWorker.addEventListener('statechange', () => {
+        if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+          updateAvailable = true;
+          showUpdateNotification();
+        }
       });
+    }
+  });
+
+  // Listen for controller change (when new service worker takes over)
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    updateAvailable = false;
+    if (updateCallback) {
+      updateCallback();
+      updateCallback = null;
+    }
+  });
+};
+
+// Check for app updates
+export const checkForUpdates = (registration?: ServiceWorkerRegistration): void => {
+  if (!registration && 'serviceWorker' in navigator) {
+    navigator.serviceWorker.ready.then((reg) => {
+      checkForUpdates(reg);
     });
+    return;
+  }
+
+  if (registration) {
+    // Check for updates every 30 minutes
+    setInterval(() => {
+      registration.update();
+    }, 30 * 60 * 1000); // 30 minutes
   }
 };
 
-// Show update notification
+// Show update notification with better UX
 export const showUpdateNotification = (): void => {
+  // Remove any existing notification
+  const existingNotification = document.querySelector('.update-notification');
+  if (existingNotification) {
+    existingNotification.remove();
+  }
+
   // Create a notification banner
   const notification = document.createElement('div');
-  notification.className = 'notification is-warning is-light update-notification';
+  notification.className = 'notification is-info is-light update-notification';
   notification.style.cssText = `
     position: fixed;
     top: 0;
@@ -51,7 +88,8 @@ export const showUpdateNotification = (): void => {
     z-index: 3000;
     margin: 0;
     border-radius: 0;
-    border-bottom: 1px solid #ffdd57;
+    border-bottom: 1px solid #3298dc;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
   `;
   
   notification.innerHTML = `
@@ -62,26 +100,59 @@ export const showUpdateNotification = (): void => {
             <span class="icon">
               <i class="fas fa-sync-alt"></i>
             </span>
-            <span>New version available</span>
+            <span><strong>New version available!</strong> Refresh to get the latest features.</span>
           </span>
         </p>
       </div>
       <div class="column is-narrow">
-        <button class="button is-warning is-small" onclick="window.location.reload()">
-          Refresh
-        </button>
+        <div class="buttons">
+          <button class="button is-info is-small" onclick="window.location.reload()">
+            <span class="icon">
+              <i class="fas fa-sync-alt"></i>
+            </span>
+            <span>Update Now</span>
+          </button>
+          <button class="button is-small" onclick="this.closest('.update-notification').remove()">
+            <span class="icon">
+              <i class="fas fa-times"></i>
+            </span>
+          </button>
+        </div>
       </div>
     </div>
   `;
   
   document.body.appendChild(notification);
   
-  // Auto-remove after 10 seconds
+  // Auto-remove after 30 seconds
   setTimeout(() => {
     if (notification.parentNode) {
       notification.parentNode.removeChild(notification);
     }
-  }, 10000);
+  }, 30000);
+};
+
+// Force update by reloading the page
+export const forceUpdate = (): void => {
+  if (updateAvailable) {
+    // Send message to service worker to skip waiting
+    if (navigator.serviceWorker.controller) {
+      navigator.serviceWorker.controller.postMessage({ type: 'SKIP_WAITING' });
+    }
+    
+    // Set callback to reload when new service worker takes over
+    updateCallback = () => {
+      window.location.reload();
+    };
+  } else {
+    // If no update is available, just reload
+    window.location.reload();
+  }
+};
+
+// Check if update is available
+export const isUpdateAvailable = (): boolean => {
+  return updateAvailable;
 };
 
 // Setup install prompt for Android Chrome
