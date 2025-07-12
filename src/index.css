@@ -46,6 +46,11 @@
   --link-hover: #2366d1;
   --payment-total-bg: #f5f5f5;
   --payment-total-border: #f0f0f0;
+  --text-white: #ffffff;
+  --text-dark: #363636;
+  --text-muted: #e0e0e0;
+  --shadow-default: rgba(0, 0, 0, 0.1);
+  --shadow-light: rgba(0, 0, 0, 0.05);
 }
 
 /* Dark mode colors */
@@ -63,36 +68,41 @@
     --shadow-light: rgba(0, 0, 0, 0.2);
     --box-bg: #2d2d2d;
     --input-bg: #363636;
-    --button-primary-bg: #4a9eff;
-    --button-primary-hover: #3a8eff;
-    --button-danger-bg: #ff6b6b;
-    --button-danger-hover: #ff5252;
-    --button-info-bg: #4a9eff;
-    --button-info-hover: #3a8eff;
-    --button-success-bg: #48c774;
-    --button-success-hover: #3ec46d;
-    --button-warning-bg: #ffdd57;
-    --button-warning-hover: #ffd83d;
+    --button-primary-bg: #3498db;
+    --button-primary-hover: #2980b9;
+    --button-danger-bg: #e74c3c;
+    --button-danger-hover: #c0392b;
+    --button-info-bg: #3498db;
+    --button-info-hover: #2980b9;
+    --button-success-bg: #27ae60;
+    --button-success-hover: #229954;
+    --button-warning-bg: #f39c12;
+    --button-warning-hover: #e67e22;
     --tag-info-bg: #1a3a5f;
-    --tag-info-text: #4a9eff;
+    --tag-info-text: #3498db;
     --tag-danger-bg: #5f1a1a;
-    --tag-danger-text: #ff6b6b;
+    --tag-danger-text: #e74c3c;
     --tag-success-bg: #1a5f1a;
-    --tag-success-text: #48c774;
+    --tag-success-text: #27ae60;
     --tag-warning-bg: #5f4a1a;
-    --tag-warning-text: #ffdd57;
+    --tag-warning-text: #f39c12;
     --modal-bg: #2d2d2d;
     --modal-overlay: rgba(0, 0, 0, 0.9);
     --notification-bg: #2d2d2d;
     --notification-danger-bg: #5f1a1a;
-    --notification-danger-text: #ff6b6b;
+    --notification-danger-text: #e74c3c;
     --notification-info-bg: #1a3a5f;
-    --notification-info-text: #4a9eff;
-    --spinner-color: #4a9eff;
-    --link-color: #4a9eff;
-    --link-hover: #3a8eff;
+    --notification-info-text: #3498db;
+    --spinner-color: #3498db;
+    --link-color: #3498db;
+    --link-hover: #2980b9;
     --payment-total-bg: #2d2d2d;
     --payment-total-border: #404040;
+    --text-white: #ffffff;
+    --text-dark: #363636;
+    --text-muted: #e0e0e0;
+    --shadow-default: rgba(0, 0, 0, 0.3);
+    --shadow-light: rgba(0, 0, 0, 0.2);
   }
 }
 
@@ -123,7 +133,7 @@
 
   .input:focus, .textarea:focus, .select select:focus {
     border-color: var(--button-primary-bg);
-    box-shadow: 0 0 0 0.125em rgba(74, 158, 255, 0.25);
+    box-shadow: 0 0 0 0.125em rgba(52, 152, 219, 0.25);
   }
 
   .input::placeholder, .textarea::placeholder {
@@ -169,7 +179,7 @@
 
   .button.is-warning {
     background-color: var(--button-warning-bg);
-    color: #363636;
+    color: var(--text-dark);
   }
 
   .button.is-warning:hover {
@@ -189,22 +199,22 @@
   /* Tags */
   .tag.is-info.is-light {
     background-color: var(--tag-info-bg);
-    color: var(--tag-info-text);
+    color: var(--text-muted);
   }
 
   .tag.is-danger.is-light {
     background-color: var(--tag-danger-bg);
-    color: var(--tag-danger-text);
+    color: var(--text-muted);
   }
 
   .tag.is-success.is-light {
     background-color: var(--tag-success-bg);
-    color: var(--tag-success-text);
+    color: var(--text-muted);
   }
 
   .tag.is-warning.is-light {
     background-color: var(--tag-warning-bg);
-    color: var(--tag-warning-text);
+    color: var(--text-muted);
   }
 
   /* Text colors */
@@ -384,6 +394,39 @@
   .payment-details-footer .buttons {
     justify-content: flex-end;
   }
+
+  /* Enhanced styling for Give/Take labels in dark mode */
+  .title.has-text-danger {
+    color: var(--button-danger-bg) !important;
+    font-weight: 600;
+  }
+
+  .title.has-text-success {
+    color: var(--button-success-bg) !important;
+    font-weight: 600;
+  }
+
+  /* Ensure icon-text inherits the color properly */
+  .title.has-text-danger .icon-text,
+  .title.has-text-success .icon-text {
+    color: inherit;
+  }
+}
+
+/* Enhanced spacing for Give/Take labels in Split panel */
+.title.has-text-danger,
+.title.has-text-success {
+  margin-bottom: 1rem !important;
+  padding-bottom: 0.5rem;
+}
+
+/* Add bottom spacing to the columns in Split panel */
+.columns.is-mobile .column:first-child {
+  padding-bottom: 1rem;
+}
+
+.columns.is-mobile .column:last-child {
+  padding-bottom: 1rem;
 }
 
 /* Home screen flexbox layout */

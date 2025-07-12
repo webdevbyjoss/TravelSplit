@@ -45,7 +45,7 @@ export function getEffectiveTheme(): 'light' | 'dark' {
  * Apply theme-specific meta tags
  */
 export function updateThemeMetaTags(theme: 'light' | 'dark'): void {
-  const themeColor = theme === 'dark' ? '#1a1a1a' : '#3273dc';
+  const themeColor = theme === 'dark' ? '#1a1a1a' : '#3498db';
   
   // Update theme-color meta tag
   let themeColorMeta = document.querySelector('meta[name="theme-color"]');

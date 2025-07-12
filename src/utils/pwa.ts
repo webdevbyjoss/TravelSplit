@@ -88,7 +88,7 @@ export const showUpdateNotification = (): void => {
     z-index: 3000;
     margin: 0;
     border-radius: 0;
-    border-bottom: 1px solid #3298dc;
+    border-bottom: 1px solid var(--button-info-bg);
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
   `;
   

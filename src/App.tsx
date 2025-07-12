@@ -25,7 +25,7 @@ function App() {
           zIndex: 3000,
           margin: 0,
           borderRadius: 0,
-          borderBottom: '1px solid #3298dc',
+          borderBottom: '1px solid var(--button-info-bg)',
           boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
         }}
       />
