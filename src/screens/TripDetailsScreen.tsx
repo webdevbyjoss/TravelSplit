@@ -186,6 +186,10 @@ const TripDetailsScreen: React.FC = () => {
         usersWithPositiveBalance.push([userName, balance]);
       }
     });
+    
+    // Sort by absolute balance amount (largest to smallest)
+    usersWithNegativeBalance.sort((a, b) => Math.abs(b[1]) - Math.abs(a[1]));
+    usersWithPositiveBalance.sort((a, b) => b[1] - a[1]);
   }
 
   return (
@@ -368,7 +372,9 @@ const TripDetailsScreen: React.FC = () => {
                       <div className="is-flex is-align-items-center is-flex-wrap-wrap">
                         <strong className="is-size-6-mobile mr-2">{payment.title}</strong>
                         <div className="tags">
-                          {Array.from(payment.shares).map(([user, amount]) => (
+                          {Array.from(payment.shares)
+                            .sort((a, b) => b[1] - a[1]) // Sort by amount (largest to smallest)
+                            .map(([user, amount]) => (
                             <span key={user} className="tag is-info is-light is-small-mobile">
                               {user}{amount > 0 ? `: ${formatCurrency(amount)}` : ''}
                             </span>
