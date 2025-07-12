@@ -126,41 +126,32 @@ const PaymentDetailsScreen: React.FC<PaymentDetailsScreenProps> = ({
   return (
     <div className="payment-details-container">
       <div className="payment-details-content">
-        <div className="field mb-2">
-          <div className="control">
-            <input
-              className={`input ${formError && !paymentTitle.trim() ? 'is-danger' : ''}`}
-              type="text"
-              placeholder="Taxi, Hotel, Grocery, etc."
-              value={paymentTitle}
-              onChange={(e) => setPaymentTitle(e.target.value)}
-            />
-          </div>
-        </div>
+        <input
+          className={`input is-fullwidth mb-2 ${formError && !paymentTitle.trim() ? 'is-danger' : ''}`}
+          type="text"
+          placeholder="Taxi, Hotel, Grocery, etc."
+          value={paymentTitle}
+          onChange={(e) => setPaymentTitle(e.target.value)}
+        />
         <h2 className="subtitle is-6-mobile has-text-weight-normal has-text-grey-dark mb-4">Who participated in this payment?</h2>
         {team.map((member) => (
           <div key={member.name} className="field mb-3">
             <div className="columns is-mobile is-vcentered">
               <div className="column">
-                <label className="checkbox" style={{ display: 'flex', alignItems: 'center', paddingLeft: '0' }}>
+                <label className="checkbox is-flex is-align-items-center pl-0">
                   <input
                     type="checkbox"
                     checked={includedMembers.has(member.name)}
                     onChange={() => handleMemberToggle(member.name)}
+                    className="mr-2 ml-0"
                     style={{ 
                       transform: 'scale(1.2)', 
-                      marginRight: '8px',
-                      cursor: 'pointer',
-                      marginLeft: '0'
+                      cursor: 'pointer'
                     }}
                   />
                   <span 
-                    className="ml-2" 
-                    style={{ 
-                      textDecoration: includedMembers.has(member.name) ? 'none' : 'line-through',
-                      opacity: includedMembers.has(member.name) ? '1' : '0.6',
-                      cursor: 'pointer'
-                    }}
+                    className={`ml-2 ${includedMembers.has(member.name) ? '' : 'has-text-decoration-line-through has-text-grey-light'}`}
+                    style={{ cursor: 'pointer' }}
                   >
                     {member.name}
                   </span>
@@ -194,7 +185,7 @@ const PaymentDetailsScreen: React.FC<PaymentDetailsScreenProps> = ({
       </div>
       
       <div className="payment-details-footer">
-        <div className="field has-background-light p-3" style={{ borderRadius: '8px', border: '1px solid var(--payment-total-border)' }}>
+        <div className="field has-background-light p-3 has-radius">
           <div className="columns is-mobile is-vcentered">
             <div className="column">
               <label className="label is-6-mobile has-text-weight-normal has-text-grey-dark">Total</label>

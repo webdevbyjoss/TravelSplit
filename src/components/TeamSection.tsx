@@ -67,7 +67,7 @@ const TeamSection: React.FC<TeamSectionProps> = ({
               ></button>
             </span>
           ))}
-          <div className="field has-addons" style={{ display: 'inline-flex', maxWidth: '250px', width: '100%' }}>
+          <div className="field has-addons is-align-items-center" style={{ display: 'inline-flex', maxWidth: '250px', width: '100%' }}>
             <div className="control is-expanded">
               <input
                 className="input is-small-mobile"
@@ -80,7 +80,10 @@ const TeamSection: React.FC<TeamSectionProps> = ({
               />
             </div>
             <div className="control">
-              <button className="button is-info is-small-mobile" onClick={handleAddTeamMember}>
+              <button 
+                className="button is-info is-small-mobile" 
+                onClick={handleAddTeamMember}
+              >
                 <span className="icon">
                   <Icon name="fas fa-plus" />
                 </span>

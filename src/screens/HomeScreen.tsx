@@ -94,24 +94,13 @@ const HomeScreen: React.FC = () => {
                 <h2 className="title is-4 has-text-weight-normal has-text-grey-dark mb-5">
                   Welcome to TravelSplit
                 </h2>
-                <p className="subtitle is-6 has-text-weight-normal has-text-grey mb-6" style={{ marginBottom: '2.5rem' }}>
+                <p className="subtitle is-6 has-text-weight-normal has-text-grey mb-6">
                   Split travel expenses with friends and family easily
                 </p>
                 <div className="mb-4">
                   <button 
                     className="button is-primary is-rounded"
                     onClick={() => navigate(`/trip/`)}
-                    style={{
-                      width: '70%',
-                      minWidth: '240px',
-                      maxWidth: '280px',
-                      margin: '0 auto',
-                      padding: '0.7rem 1.2rem',
-                      fontSize: '0.95rem',
-                      fontWeight: '600',
-                      boxShadow: '0 4px 12px rgba(74, 158, 255, 0.3)',
-                      transition: 'all 0.2s ease'
-                    }}
                   >
                     <span className="icon is-medium mr-2">
                       <Icon name="fas fa-plus" size={16} />
@@ -124,23 +113,22 @@ const HomeScreen: React.FC = () => {
           ) : (
             <ul className="list">
               {trips.map((trip) => (
-                <li key={trip.id} className="box mb-2">
+                <li key={trip.id} className="box mb-4 p-5">
                   <div className="columns is-mobile is-vcentered">
                     <div 
-                      className="column" 
+                      className="column is-clickable p-3" 
                       onClick={() => navigate(`/trip/${trip.id}`)}
-                      style={{ cursor: 'pointer' }}
                     >
-                      <h2 className="title is-5-mobile is-4 has-text-weight-normal has-text-grey-dark has-text-left mb-1">{trip.title}</h2>
-                      <div className="tags has-addons" style={{ flexWrap: 'wrap', gap: '0.25rem' }}>
+                      <h2 className="title is-5-mobile is-4 has-text-weight-normal has-text-grey-dark has-text-left mb-3">{trip.title}</h2>
+                      <div className="tags has-addons is-flex-wrap">
                         {trip.team.map(member => (
-                          <span key={member.name} className="tag is-info is-light is-small-mobile">
+                          <span key={member.name} className="tag is-info is-light is-small-mobile mb-1">
                             {member.name}
                           </span>
                         ))}
                       </div>
                     </div>
-                    <div className="column is-narrow">
+                    <div className="column is-narrow pl-2">
                       <button
                         className="button is-danger is-light is-small-mobile"
                         onClick={() => handleRemoveTrip(trip.id)}

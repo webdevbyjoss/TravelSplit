@@ -7,6 +7,7 @@ import TeamSection from '../components/TeamSection';
 import ConfirmDialog from '../components/ConfirmDialog';
 import { calculateExpenses } from '../domain/Expenses';
 import Icon from '../components/Icon';
+import { CURRENCIES, DEFAULT_CURRENCY } from '../constants';
 import {
   addTrip,
   updateTrip,
@@ -22,7 +23,7 @@ const TripDetailsScreen: React.FC = () => {
   const navigate = useNavigate();
   const trip = useSelector((state: RootState) => state.tripExpenses.find(t => t.id === Number(tripId)));
   const [title, setTitle] = useState(trip?.title || '');
-  const [currency, setCurrency] = useState(trip?.currency || 'USD');
+  const [currency, setCurrency] = useState(trip?.currency || DEFAULT_CURRENCY);
   const [hasChanged, setHasChanged] = useState(false);
   const [activePanel, setActivePanel] = useState<'split' | 'team'>('split');
   const [userManuallyToggled, setUserManuallyToggled] = useState(false);
@@ -58,21 +59,7 @@ const TripDetailsScreen: React.FC = () => {
 
   // Helper function to format currency
   const formatCurrency = (amount: number): string => {
-    const currencySymbols: { [key: string]: string } = {
-      'USD': '$',
-      'EUR': '€',
-      'GBP': '£',
-      'UAH': '₴',
-      'PLN': 'zł',
-      'JPY': '¥',
-      'CNY': '¥',
-      'INR': '₹',
-      'CHF': 'CHF',
-      'NOK': 'kr',
-      'SEK': 'kr',
-      'CZK': 'Kč',
-    };
-    const symbol = currencySymbols[currency] || '$';
+    const symbol = CURRENCIES[currency as keyof typeof CURRENCIES]?.symbol || CURRENCIES[DEFAULT_CURRENCY].symbol;
     return `${symbol}${amount.toFixed(2)}`;
   };
 
@@ -210,7 +197,6 @@ const TripDetailsScreen: React.FC = () => {
             value={title}
             onChange={(e) => handleTitleChange(e.target.value)}
             onFocus={() => setHasChanged(true)}
-            style={{ fontSize: '1.1rem', fontWeight: '600' }}
           />
         </div>
       </div>
@@ -225,15 +211,15 @@ const TripDetailsScreen: React.FC = () => {
                   <div className="column">
                     <span className="icon-text">
                       <span className="icon">
-                        <Icon name="fa-solid fa-calculator" />
+                        <Icon name="fa-solid fa-calculator" size={24} />
                       </span>
                       <span>Split</span>
                     </span>
                   </div>
                                   <div className="column is-narrow">
-                  <div className="buttons are-small">
+                  <div className="buttons are-small is-align-items-center">
                     <button
-                      className="button is-info is-light is-small-mobile mr-1"
+                      className="button is-info is-light is-small-mobile"
                       onClick={() => {
                         setActivePanel('team');
                         setUserManuallyToggled(true);
@@ -244,19 +230,15 @@ const TripDetailsScreen: React.FC = () => {
                     </span>
                     </button>
                     <div className="select is-small">
-                      <select value={currency} onChange={(e) => handleCurrencyChange(e.target.value)}>
-                        <option value="USD">USD ($)</option>
-                        <option value="EUR">EUR (€)</option>
-                        <option value="GBP">GBP (£)</option>
-                        <option value="CHF">CHF (CHF)</option>
-                        <option value="NOK">NOK (kr)</option>
-                        <option value="SEK">SEK (kr)</option>
-                        <option value="CZK">CZK (Kč)</option>
-                        <option value="PLN">PLN (zł)</option>
-                        <option value="UAH">UAH (₴)</option>
-                        <option value="JPY">JPY (¥)</option>
-                        <option value="CNY">CNY (¥)</option>
-                        <option value="INR">INR (₹)</option>
+                      <select 
+                        value={currency} 
+                        onChange={(e) => handleCurrencyChange(e.target.value)}
+                      >
+                        {Object.entries(CURRENCIES).map(([code, currency]) => (
+                          <option key={code} value={code}>
+                            {code} ({currency.symbol})
+                          </option>
+                        ))}
                       </select>
                     </div>
                   </div>
@@ -370,7 +352,7 @@ const TripDetailsScreen: React.FC = () => {
                   <div className="columns is-mobile is-vcentered">
                     <div className="column">
                       <div className="is-flex is-align-items-center is-flex-wrap-wrap">
-                        <strong className="is-size-6-mobile mr-2">{payment.title}</strong>
+                        <span className="is-size-6-mobile mr-3 has-text-weight-normal py-1">{payment.title}</span>
                         <div className="tags">
                           {Array.from(payment.shares)
                             .sort((a, b) => b[1] - a[1]) // Sort by amount (largest to smallest)
@@ -415,7 +397,7 @@ const TripDetailsScreen: React.FC = () => {
           <div className="modal-background" onClick={() => setIsPaymentModalOpen(false)}></div>
           <div className="modal-card">
             <header className="modal-card-head">
-              <p className="modal-card-title" style={{ fontSize: '1.2rem' }}>{paymentToEdit ? 'Edit Payment' : 'New Payment'}</p>
+              <p className="modal-card-title is-size-4">{paymentToEdit ? 'Edit Payment' : 'New Payment'}</p>
               <button
                 className="delete"
                 aria-label="close"

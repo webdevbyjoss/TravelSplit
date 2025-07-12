@@ -476,6 +476,94 @@
   .buttons.are-small .button {
     margin-bottom: 0.25rem;
   }
+
+  /* Make all buttons 1.5x bigger for better mobile usability */
+  .button {
+    font-size: 1.125rem !important; /* 1.5x bigger than default 0.75rem */
+    padding: 0.75rem 1.5rem !important; /* 1.5x bigger padding */
+    min-height: 48px !important; /* Ensure minimum touch target size */
+    min-width: 48px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+
+  /* Adjust small buttons to be proportionally larger */
+  .button.is-small,
+  .button.is-small-mobile {
+    font-size: 1rem !important; /* 1.5x bigger than small 0.75rem */
+    padding: 0.5rem 1rem !important; /* 1.5x bigger padding */
+    min-height: 44px !important;
+    min-width: 44px !important;
+  }
+
+  /* Adjust icon sizes in buttons */
+  .button .icon {
+    font-size: 1.125rem !important;
+  }
+
+  .button.is-small .icon,
+  .button.is-small-mobile .icon {
+    font-size: 1rem !important;
+  }
+
+  /* Make input fields match button sizes for better mobile usability */
+  .input,
+  .textarea,
+  .select select {
+    font-size: 1.125rem !important;
+    padding: 0.75rem 1rem !important;
+    min-height: 48px !important;
+  }
+
+  .input.is-small,
+  .textarea.is-small,
+  .select.is-small select {
+    font-size: 1rem !important;
+    padding: 0.5rem 0.75rem !important;
+    min-height: 44px !important;
+  }
+
+  /* Make static buttons (like currency symbols) match input field sizes */
+  .button.is-static {
+    font-size: 1.125rem !important;
+    padding: 0.75rem 1rem !important;
+    min-height: 48px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+
+  .button.is-static.is-small {
+    font-size: 1rem !important;
+    padding: 0.5rem 0.75rem !important;
+    min-height: 44px !important;
+  }
+
+  /* Ensure select elements match button sizes */
+  .select {
+    min-height: 48px !important;
+    display: flex !important;
+    align-items: center !important;
+  }
+
+  .select.is-small {
+    min-height: 44px !important;
+  }
+
+  .select select {
+    min-height: 48px !important;
+    display: flex !important;
+    align-items: center !important;
+    font-size: 1.125rem !important;
+    padding: 0.75rem 1rem !important;
+  }
+
+  .select.is-small select {
+    min-height: 44px !important;
+    font-size: 1rem !important;
+    padding: 0.5rem 0.75rem !important;
+  }
   
   /* Full screen modals on mobile */
   .modal-card {
@@ -589,5 +677,25 @@
   /* Mobile spacing for empty state elements */
   .home-screen-empty-state .subtitle {
     margin-bottom: 2rem;
+  }
+
+  /* Custom utility classes for common patterns */
+  .has-radius {
+    border-radius: 8px;
+    border: 1px solid var(--payment-total-border);
+  }
+
+  .is-clickable {
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+
+  .is-clickable:hover {
+    background-color: #f8f9fa;
+  }
+
+  /* Payment details input styling */
+  .payment-details-container .field.has-addons .input {
+    width: 120px;
   }
 }
