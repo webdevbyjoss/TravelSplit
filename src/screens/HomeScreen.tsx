@@ -109,7 +109,7 @@ const HomeScreen: React.FC = () => {
                       padding: '0.7rem 1.2rem',
                       fontSize: '0.95rem',
                       fontWeight: '600',
-                      boxShadow: '0 4px 12px rgba(50, 115, 220, 0.3)',
+                      boxShadow: '0 4px 12px rgba(74, 158, 255, 0.3)',
                       transition: 'all 0.2s ease'
                     }}
                   >

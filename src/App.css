@@ -1,9 +1,9 @@
 .border-bottom {
-  border-bottom: 1px dashed rgb(213, 213, 213);
+  border-bottom: 1px dashed var(--border-color);
 }
 
 .has-shadow-light {
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  box-shadow: 0 2px 8px var(--shadow-light);
 }
 
 .is-clickable {
@@ -12,7 +12,7 @@
 
 .is-clickable:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 12px var(--shadow-color);
   transition: all 0.2s ease;
 }
 
@@ -24,4 +24,19 @@
 
 .tags.has-addons .tag {
   margin: 0;
+}
+
+/* Dark mode specific adjustments */
+@media (prefers-color-scheme: dark) {
+  .border-bottom {
+    border-bottom-color: var(--border-color) !important;
+  }
+  
+  .has-shadow-light {
+    box-shadow: 0 2px 8px var(--shadow-light);
+  }
+  
+  .is-clickable:hover {
+    box-shadow: 0 4px 12px var(--shadow-color);
+  }
 }

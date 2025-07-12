@@ -74,5 +74,9 @@
         }
       ]
     }
-  ]
+  ],
+  "display_override": ["standalone", "minimal-ui"],
+  "edge_side_panel": {
+    "preferred_width": 400
+  }
 } 

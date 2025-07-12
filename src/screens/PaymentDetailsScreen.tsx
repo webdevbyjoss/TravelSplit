@@ -8,39 +8,31 @@ type PaymentDetailsScreenProps = {
   initialTitle?: string; // Optional initial payment title
   initialShares?: Map<string, number>; // Optional initial shares
 };
+
 const PaymentDetailsScreen: React.FC<PaymentDetailsScreenProps> = ({
-                                                                     team,
-                                                                     onSave,
-                                                                     onCancel,
-                                                                     initialTitle = '',
-                                                                     initialShares = new Map(),
-                                                                   }) => {
+  team,
+  onSave,
+  onCancel,
+  initialTitle = '',
+  initialShares = new Map(),
+}) => {
   const [paymentTitle, setPaymentTitle] = useState(initialTitle);
-  const [paymentShares, setPaymentShares] = useState<Map<string, string>>(() =>
-    new Map(Array.from(initialShares).map(([key, value]) => [key, value.toString()]))
-  );
-  const [includedMembers, setIncludedMembers] = useState<Set<string>>(() => {
-    // Initialize with all team members if editing, or just those with non-zero amounts
-    if (initialShares.size > 0) {
-      return new Set(Array.from(initialShares.keys()));
-    } else {
-      return new Set(team.map(member => member.name));
-    }
-  });
+  const [paymentShares, setPaymentShares] = useState<Map<string, string>>(new Map());
+  const [includedMembers, setIncludedMembers] = useState<Set<string>>(new Set(team.map(member => member.name)));
   const [formError, setFormError] = useState<string>('');
 
   useEffect(() => {
-    // Populate form when initial values change (e.g., when editing)
-    setPaymentTitle(initialTitle);
-    setPaymentShares(
-      new Map(Array.from(initialShares).map(([key, value]) => [key, value.toString()]))
-    );
-    if (initialShares.size > 0) {
-      setIncludedMembers(new Set(Array.from(initialShares.keys())));
-    } else {
-      setIncludedMembers(new Set(team.map(member => member.name)));
+    if (initialTitle) {
+      setPaymentTitle(initialTitle);
     }
-  }, [initialTitle, initialShares, team]);
+    if (initialShares.size > 0) {
+      const sharesMap = new Map<string, string>();
+      initialShares.forEach((value, key) => {
+        sharesMap.set(key, value.toString());
+      });
+      setPaymentShares(sharesMap);
+    }
+  }, [initialTitle, initialShares]);
 
   const handleSave = () => {
     // Clear previous error
@@ -199,7 +191,7 @@ const PaymentDetailsScreen: React.FC<PaymentDetailsScreenProps> = ({
       </div>
       
       <div className="payment-details-footer">
-        <div className="field has-background-light p-3" style={{ borderRadius: '8px', border: '1px solid #f0f0f0' }}>
+        <div className="field has-background-light p-3" style={{ borderRadius: '8px', border: '1px solid var(--payment-total-border)' }}>
           <div className="columns is-mobile is-vcentered">
             <div className="column">
               <label className="label is-6-mobile has-text-weight-normal has-text-grey-dark">Total</label>
