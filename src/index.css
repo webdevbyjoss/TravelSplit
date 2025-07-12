@@ -256,6 +256,11 @@
     border-top-color: var(--border-color);
   }
 
+  /* Right-align buttons in modal footers */
+  .modal-card-foot .buttons {
+    justify-content: flex-end;
+  }
+
   .modal-background {
     background-color: var(--modal-overlay);
   }
@@ -373,6 +378,11 @@
   /* Currency symbol styling */
   .has-text-weight-bold.has-text-grey-dark {
     color: var(--text-primary) !important;
+  }
+
+  /* Right-align buttons in payment details footer */
+  .payment-details-footer .buttons {
+    justify-content: flex-end;
   }
 }
 
@@ -509,6 +519,11 @@
     padding: 0.75rem;
     border-radius: 0;
     flex-shrink: 0;
+  }
+
+  /* Right-align buttons in modal footers on mobile */
+  .modal-card-foot .buttons {
+    justify-content: flex-end;
   }
   
   /* Prevent body scroll when modal is open */

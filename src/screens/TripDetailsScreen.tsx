@@ -4,6 +4,7 @@ import { RootState } from '../app/store';
 import { useParams, useNavigate } from 'react-router';
 import PaymentDetailsScreen from './PaymentDetailsScreen';
 import TeamSection from '../components/TeamSection';
+import ConfirmDialog from '../components/ConfirmDialog';
 import { calculateExpenses } from '../domain/Expenses';
 import Icon from '../components/Icon';
 import {
@@ -47,6 +48,11 @@ const TripDetailsScreen: React.FC = () => {
 
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
   const [paymentToEdit, setPaymentToEdit] = useState<{ title: string; shares: Map<string, number> } | null>(null);
+  const [paymentConfirmDialog, setPaymentConfirmDialog] = useState<{ show: boolean; paymentId: number | null; paymentTitle: string }>({
+    show: false,
+    paymentId: null,
+    paymentTitle: '',
+  });
 
   const isNewTrip = !tripId;
 
@@ -131,10 +137,19 @@ const TripDetailsScreen: React.FC = () => {
     }
   };
 
-  const handleRemovePayment = (paymentId: number) => {
-    if (trip) {
-      dispatch(removePayment({ tripId: trip.id, paymentId }));
+  const handleRemovePayment = (paymentId: number, paymentTitle: string) => {
+    setPaymentConfirmDialog({ show: true, paymentId, paymentTitle });
+  };
+
+  const confirmPaymentRemoval = () => {
+    if (paymentConfirmDialog.paymentId !== null && trip) {
+      dispatch(removePayment({ tripId: trip.id, paymentId: paymentConfirmDialog.paymentId }));
     }
+    setPaymentConfirmDialog({ show: false, paymentId: null, paymentTitle: '' });
+  };
+
+  const cancelPaymentRemoval = () => {
+    setPaymentConfirmDialog({ show: false, paymentId: null, paymentTitle: '' });
   };
 
   const handleEditPayment = (payment: { title: string; shares: Map<string, number> }) => {
@@ -373,7 +388,7 @@ const TripDetailsScreen: React.FC = () => {
                         </button>
                         <button
                           className="button is-danger is-light is-small-mobile"
-                          onClick={() => handleRemovePayment(payment.id)}
+                          onClick={() => handleRemovePayment(payment.id, payment.title)}
                         >
                           <span className="icon">
                             <Icon name="fa-solid fa-trash-can" />
@@ -416,10 +431,20 @@ const TripDetailsScreen: React.FC = () => {
                 onCancel={() => setIsPaymentModalOpen(false)}
                 initialTitle={paymentToEdit?.title || ''}
                 initialShares={paymentToEdit?.shares || new Map()}
+                currency={currency}
               />
             </section>
           </div>
         </div>
+      )}
+
+      {paymentConfirmDialog.show && (
+        <ConfirmDialog
+          title="Confirm Payment Removal"
+          message={`Are you sure you want to remove the payment "${paymentConfirmDialog.paymentTitle}"?`}
+          onConfirm={confirmPaymentRemoval}
+          onCancel={cancelPaymentRemoval}
+        />
       )}
 
     </div>

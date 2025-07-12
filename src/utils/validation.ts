@@ -1,4 +1,5 @@
 import { VALIDATION } from '../constants';
+import { CURRENCIES } from '../constants';
 
 export const validateTitle = (title: string): string | null => {
   if (!title.trim()) {
@@ -37,4 +38,8 @@ export const validateTeamMember = (name: string): string | null => {
     return 'Name must be no more than 50 characters';
   }
   return null;
-}; 
+};
+
+export function getCurrencySymbol(currency: string): string {
+  return CURRENCIES[currency as keyof typeof CURRENCIES]?.symbol || '$';
+}

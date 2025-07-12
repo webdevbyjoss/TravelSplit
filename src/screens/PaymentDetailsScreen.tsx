@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { getCurrencySymbol } from '../utils/validation';
 
 type PaymentDetailsScreenProps = {
   team: { name: string }[];
@@ -7,6 +8,7 @@ type PaymentDetailsScreenProps = {
   onCancel?: () => void; // Add cancel handler
   initialTitle?: string; // Optional initial payment title
   initialShares?: Map<string, number>; // Optional initial shares
+  currency: string; // required
 };
 
 const PaymentDetailsScreen: React.FC<PaymentDetailsScreenProps> = ({
@@ -15,6 +17,7 @@ const PaymentDetailsScreen: React.FC<PaymentDetailsScreenProps> = ({
   onCancel,
   initialTitle = '',
   initialShares = new Map(),
+  currency, // required, no default
 }) => {
   const [paymentTitle, setPaymentTitle] = useState(initialTitle);
   const [paymentShares, setPaymentShares] = useState<Map<string, string>>(new Map());
@@ -166,7 +169,7 @@ const PaymentDetailsScreen: React.FC<PaymentDetailsScreenProps> = ({
               <div className="column is-narrow">
                 <div className="field has-addons">
                   <p className="control">
-                    <span className="button is-static is-small">$</span>
+                    <span className="button is-static is-small">{getCurrencySymbol(currency)}</span>
                   </p>
                   <p className="control">
                     <input
@@ -199,7 +202,7 @@ const PaymentDetailsScreen: React.FC<PaymentDetailsScreenProps> = ({
             <div className="column is-narrow">
               <div className="field has-addons">
                 <p className="control">
-                  <span className="has-text-weight-bold has-text-grey-dark">$</span>
+                  <span className="has-text-weight-bold has-text-grey-dark">{getCurrencySymbol(currency)}</span>
                   <span className="has-text-weight-bold is-size-5-mobile is-size-4 has-text-primary">
                     {calculateTotal().toFixed(2)}
                   </span>
@@ -211,7 +214,7 @@ const PaymentDetailsScreen: React.FC<PaymentDetailsScreenProps> = ({
         {formError && (
           <p className="help is-danger mb-2">{formError}</p>
         )}
-        <div className="buttons" style={{ justifyContent: 'flex-end' }}>
+        <div className="buttons">
           {onCancel && (
             <button
               className="button is-light is-small-mobile mr-2"

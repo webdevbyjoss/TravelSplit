@@ -20,7 +20,7 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({ title, message, onConfirm
           <p>{message}</p>
         </section>
         <footer className="modal-card-foot">
-          <div className="buttons is-centered">
+          <div className="buttons">
             <button className="button is-danger" onClick={onConfirm}>Yes</button>
             <button className="button" onClick={onCancel}>No</button>
           </div>
