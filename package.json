@@ -1,7 +1,7 @@
 {
   "name": "travelsplit",
   "private": true,
-  "version": "0.0.2",
+  "version": "0.0.4",
   "type": "module",
   "description": "Split travel expenses with friends and family",
   "keywords": [

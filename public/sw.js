@@ -1,5 +1,5 @@
 // Service Worker for TravelSplit PWA
-const STATIC_CACHE = 'travelsplit-static-v3';
+const STATIC_CACHE = 'travelsplit-static-v5';
 
 const PRECACHE_ASSETS = [
   '/',
