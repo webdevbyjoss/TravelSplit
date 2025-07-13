@@ -3,6 +3,7 @@ import { useEffect } from 'react';
 import HomeScreen from './screens/HomeScreen';
 import TripDetailsScreen from './screens/TripDetailsScreen';
 import PaymentDetailsScreen from './screens/PaymentDetailsScreen';
+import ShareScreen from './screens/ShareScreen';
 import UpdateNotification from './components/UpdateNotification';
 import { registerServiceWorker } from './utils/pwa';
 import './App.css'
@@ -33,6 +34,7 @@ function App() {
         <Route index element={<HomeScreen />} />
         <Route path="/trip/:tripId?" element={<TripDetailsScreen />} />
         <Route path="/trip/:tripId/payment/:paymentId?" element={<PaymentDetailsScreen />} />
+        <Route path="/trip/:tripId/share" element={<ShareScreen />} />
       </Routes>
     </>
   );

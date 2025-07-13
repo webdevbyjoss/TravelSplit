@@ -5,6 +5,10 @@ import { useNavigate } from 'react-router';
 import { RootState } from '../app/store';
 import { removeTrip } from '../features/expenses/expensesSlice';
 import { isInstallPromptAvailable, showInstallPrompt, isPWAInstalled } from '../utils/pwa';
+import { generateShareUrl } from '../utils/serialization';
+import { copyToClipboard } from '../utils/clipboard';
+import { TripExpenses } from '../domain/Expenses';
+import { useTemporaryState } from '../hooks/useTemporaryState';
 
 import ConfirmDialog from '../components/ConfirmDialog';
 import Icon from '../components/Icon';
@@ -20,6 +24,7 @@ const HomeScreen: React.FC = () => {
     tripId: null,
   });
   const [showInstallButton, setShowInstallButton] = useState(false);
+  const [copiedTripId, setCopiedTripId] = useTemporaryState<number | null>(null, 2000);
 
   useEffect(() => {
     // Check if install prompt is available and app is not already installed
@@ -57,6 +62,25 @@ const HomeScreen: React.FC = () => {
 
   const cancelRemoval = () => {
     setConfirmDialog({ show: false, tripId: null });
+  };
+
+  const handleShareTrip = async (trip: TripExpenses) => {
+    try {
+      const shareUrl = generateShareUrl(trip);
+      const success = await copyToClipboard(shareUrl);
+      
+      if (success) {
+        setCopiedTripId(trip.id);
+      } else {
+        // Fallback: show URL in alert for manual copy
+        alert(`Share URL copied to clipboard:\n${shareUrl}`);
+      }
+    } catch (error) {
+      console.error('Failed to copy share URL:', error);
+      // Fallback: show URL in alert for manual copy
+      const shareUrl = generateShareUrl(trip);
+      alert(`Share URL:\n${shareUrl}`);
+    }
   };
 
   return (
@@ -129,14 +153,26 @@ const HomeScreen: React.FC = () => {
                       </div>
                     </div>
                     <div className="column is-narrow pl-2">
-                      <button
-                        className="button is-danger is-light is-small-mobile"
-                        onClick={() => handleRemoveTrip(trip.id)}
-                      >
+                      <div className="buttons are-small is-vertical">
+                        <button
+                          className="button is-info is-light is-small-mobile"
+                          onClick={() => handleShareTrip(trip)}
+                          title="Share trip"
+                        >
+                          <span className="icon">
+                            <Icon name={copiedTripId === trip.id ? "fas fa-check" : "fas fa-share-alt"} />
+                          </span>
+                        </button>
+                        <button
+                          className="button is-danger is-light is-small-mobile"
+                          onClick={() => handleRemoveTrip(trip.id)}
+                          title="Remove trip"
+                        >
                           <span className="icon">
                             <Icon name="fas fa-trash" />
                           </span>
-                      </button>
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </li>

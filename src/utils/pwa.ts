@@ -1,6 +1,5 @@
 // PWA utilities for installation prompts and service worker management
 
-// Type definition for BeforeInstallPromptEvent
 interface BeforeInstallPromptEvent extends Event {
   prompt(): Promise<void>;
   userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>;
