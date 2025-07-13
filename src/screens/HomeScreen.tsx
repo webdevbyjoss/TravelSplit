@@ -8,7 +8,6 @@ import { isInstallPromptAvailable, showInstallPrompt, isPWAInstalled } from '../
 import { generateShareUrl } from '../utils/serialization';
 import { copyToClipboard } from '../utils/clipboard';
 import { TripExpenses } from '../domain/Expenses';
-import { useTemporaryState } from '../hooks/useTemporaryState';
 
 import ConfirmDialog from '../components/ConfirmDialog';
 import Icon from '../components/Icon';
@@ -24,7 +23,7 @@ const HomeScreen: React.FC = () => {
     tripId: null,
   });
   const [showInstallButton, setShowInstallButton] = useState(false);
-  const [copiedTripId, setCopiedTripId] = useTemporaryState<number | null>(null, 2000);
+  const [copiedTripId, setCopiedTripId] = useState<number | null>(null);
 
   useEffect(() => {
     // Check if install prompt is available and app is not already installed
@@ -71,13 +70,12 @@ const HomeScreen: React.FC = () => {
       
       if (success) {
         setCopiedTripId(trip.id);
+        setTimeout(() => setCopiedTripId(null), 2000);
       } else {
-        // Fallback: show URL in alert for manual copy
         alert(`Share URL copied to clipboard:\n${shareUrl}`);
       }
     } catch (error) {
       console.error('Failed to copy share URL:', error);
-      // Fallback: show URL in alert for manual copy
       const shareUrl = generateShareUrl(trip);
       alert(`Share URL:\n${shareUrl}`);
     }
