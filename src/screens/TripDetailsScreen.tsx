@@ -318,7 +318,7 @@ const TripDetailsScreen: React.FC = () => {
           </h2>
           {trip.payments.length > 0 && (
             <div className="box">
-              {trip.payments
+              {[...trip.payments]
                 .sort((a, b) => b.id - a.id) // Sort by ID descending (newest first)
                 .map((payment, index) => (
                 <div key={payment.id} className={`${index > 0 ? 'pt-2' : ''} ${index < trip.payments.length - 1 ? 'pb-2 border-bottom' : ''}`}>

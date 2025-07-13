@@ -61,6 +61,11 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
+  // Skip unsupported schemes (chrome-extension, data:, etc.)
+  if (url.protocol === 'chrome-extension:' || url.protocol === 'data:' || url.protocol === 'blob:') {
+    return;
+  }
+
   // Network-first strategy for HTML files (ensures fresh content)
   if (request.destination === 'document' || url.pathname.endsWith('.html')) {
     event.respondWith(
