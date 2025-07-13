@@ -106,6 +106,10 @@ const ShareScreen: React.FC = () => {
 
   // Helper function to check if there are changes to apply
   const hasChanges = (): boolean => {
+    // If no current trip exists, we can always import the shared trip
+    if (!currentTrip) return true;
+    
+    // If there's a diff, check if it has changes
     if (!diff) return false;
     return diff.newPayments.length > 0 || 
            diff.updatedPayments.length > 0 || 
@@ -330,13 +334,25 @@ const ShareScreen: React.FC = () => {
         )}
 
         {/* No changes message */}
-        {diff && !hasChanges() && (
+        {diff && !hasChanges() && currentTrip && (
           <div className="notification is-info is-light">
             <span className="icon-text">
               <span className="icon">
                 <Icon name="fas fa-info-circle" />
               </span>
               <span>No changes to apply. The shared trip is identical to your current version.</span>
+            </span>
+          </div>
+        )}
+
+        {/* New trip import message */}
+        {!currentTrip && (
+          <div className="notification is-success is-light">
+            <span className="icon-text">
+              <span className="icon">
+                <Icon name="fas fa-plus" />
+              </span>
+              <span>This will create a new trip with {sharedTrip.team.length} team members and {sharedTrip.payments.length} payments.</span>
             </span>
           </div>
         )}
@@ -361,7 +377,7 @@ const ShareScreen: React.FC = () => {
                   <span className="icon">
                     <Icon name="fas fa-check" />
                   </span>
-                  <span>Apply Changes</span>
+                  <span>{currentTrip ? 'Apply Changes' : 'Import Trip'}</span>
                 </span>
               </button>
             </div>
@@ -372,7 +388,10 @@ const ShareScreen: React.FC = () => {
       {showConfirmDialog && (
         <ConfirmDialog
           title="Confirm Import"
-          message={`Are you sure you want to apply the changes from the shared trip "${sharedTrip.title}"? This will merge the new data with your existing trip.`}
+          message={currentTrip 
+            ? `Are you sure you want to apply the changes from the shared trip "${sharedTrip.title}"? This will merge the new data with your existing trip.`
+            : `Are you sure you want to import the shared trip "${sharedTrip.title}"? This will create a new trip with all the shared data.`
+          }
           onConfirm={handleApplyChanges}
           onCancel={() => setShowConfirmDialog(false)}
         />
