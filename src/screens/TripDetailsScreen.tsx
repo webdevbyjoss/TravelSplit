@@ -328,10 +328,11 @@ const TripDetailsScreen: React.FC = () => {
                         <span className="is-size-6-mobile mr-3 has-text-weight-normal py-1">{payment.title}</span>
                         <div className="tags">
                           {Array.from(payment.shares)
+                            .filter(([, amount]) => amount > 0) // Only show users who actually paid
                             .sort((a, b) => b[1] - a[1]) // Sort by amount (largest to smallest)
                             .map(([user, amount]) => (
                             <span key={user} className="tag is-info is-light is-small-mobile">
-                              {user}{amount > 0 ? `: ${formatCurrency(amount)}` : ''}
+                              {user}: {formatCurrency(amount)}
                             </span>
                           ))}
                         </div>
