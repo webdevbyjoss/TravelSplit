@@ -5,7 +5,9 @@ import {
   extractShareDataFromUrl,
   calculateTripDiff,
   mergeTripData,
-  validateShareData
+  validateShareData,
+  analyzeUrlLength,
+  createUrlSafeTrip
 } from '../utils/serialization';
 import { TripExpenses } from '../domain/Expenses';
 
@@ -490,6 +492,73 @@ describe('Serialization', () => {
       const deserialized = deserializeTripFromSharing(extractedData!);
       
       expect(deserialized).toEqual(mockTrip);
+    });
+  });
+
+  describe('URL length analysis', () => {
+    it('should analyze URL length correctly', () => {
+      const analysis = analyzeUrlLength(mockTrip);
+      
+      expect(analysis).toHaveProperty('originalSize');
+      expect(analysis).toHaveProperty('compressedSize');
+      expect(analysis).toHaveProperty('compressionRatio');
+      expect(analysis).toHaveProperty('urlLength');
+      expect(analysis).toHaveProperty('maxUrlLength');
+      expect(analysis).toHaveProperty('isWithinLimits');
+      expect(analysis).toHaveProperty('recommendedMaxPayments');
+      
+      expect(analysis.compressionRatio).toBeLessThan(1); // Should be compressed
+      expect(analysis.urlLength).toBeGreaterThan(0);
+      expect(analysis.maxUrlLength).toBe(32000);
+    });
+
+    it('should create URL-safe trip when needed', () => {
+      // Create a trip with many payments to test URL length limits
+      const largeTrip: TripExpenses = {
+        ...mockTrip,
+        payments: Array.from({ length: 100 }, (_, i) => ({
+          id: i + 1,
+          title: `Payment ${i + 1}`,
+          shares: new Map([
+            ['John', 100 + i],
+            ['Alice', 50 + i],
+            ['Bob', i]
+          ])
+        }))
+      };
+      
+      const urlSafeTrip = createUrlSafeTrip(largeTrip);
+      const analysis = analyzeUrlLength(urlSafeTrip);
+      
+      expect(analysis.isWithinLimits).toBe(true);
+      expect(urlSafeTrip.payments.length).toBeLessThanOrEqual(largeTrip.payments.length);
+    });
+
+    it('should preserve recent payments when trimming', () => {
+      const tripWithManyPayments: TripExpenses = {
+        ...mockTrip,
+        payments: Array.from({ length: 50 }, (_, i) => ({
+          id: i + 1,
+          title: `Payment ${i + 1}`,
+          shares: new Map([
+            ['John', 100 + i],
+            ['Alice', 50 + i],
+            ['Bob', i]
+          ])
+        }))
+      };
+      
+      const urlSafeTrip = createUrlSafeTrip(tripWithManyPayments);
+      
+      // Should keep the most recent payments (highest IDs)
+      const originalIds = tripWithManyPayments.payments.map(p => p.id).sort((a, b) => b - a);
+      const safeIds = urlSafeTrip.payments.map(p => p.id).sort((a, b) => b - a);
+      
+      // The first few IDs in safeIds should match the highest IDs from original
+      const maxToCheck = Math.min(safeIds.length, 5);
+      for (let i = 0; i < maxToCheck; i++) {
+        expect(safeIds[i]).toBe(originalIds[i]);
+      }
     });
   });
 }); 

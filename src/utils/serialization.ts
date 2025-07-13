@@ -278,5 +278,100 @@ export function deserializeTripLZ(data: string): TripExpenses | null {
 // --- Helper for size comparison ---
 export function getByteLength(str: string): number {
   // Returns the number of bytes in a string
-  return new TextEncoder().encode(str).length;
+  // Handle test environment where TextEncoder might not be available
+  if (typeof TextEncoder !== 'undefined') {
+    return new TextEncoder().encode(str).length;
+  }
+  // Fallback for test environment - approximate byte length
+  return str.length;
+}
+
+/**
+ * Analyze URL length and compression for trip data
+ * Returns information about URL length, compression ratio, and recommendations
+ */
+export function analyzeUrlLength(trip: TripExpenses, maxUrlLength: number = 32000): {
+  originalSize: number;
+  compressedSize: number;
+  compressionRatio: number;
+  urlLength: number;
+  maxUrlLength: number;
+  isWithinLimits: boolean;
+  recommendedMaxPayments: number;
+} {
+  const serialized = serializeTripForSharing(trip);
+  const originalJson = JSON.stringify({
+    version: SHARE_DATA_VERSION,
+    timestamp: Date.now(),
+    trip: {
+      ...trip,
+      payments: trip.payments.map(payment => ({
+        ...payment,
+        shares: Object.fromEntries(payment.shares),
+      })),
+    }
+  });
+  
+  const originalSize = getByteLength(originalJson);
+  const compressedSize = getByteLength(serialized);
+  const compressionRatio = compressedSize / originalSize;
+  
+  // Calculate full URL length
+  const baseUrl = 'https://travelsplit.app';
+  const fullUrl = `${baseUrl}/trip/${trip.id}/share?d=${serialized}`;
+  const urlLength = fullUrl.length;
+  
+  // Browser URL length limits:
+  // - Chrome: ~32,000 characters
+  // - Firefox: ~65,000 characters
+  // - Safari: ~80,000 characters
+  // - Edge (Chromium): ~32,000+ characters
+  // We use 32,000 for modern browser compatibility (IE not supported)
+  const isWithinLimits = urlLength <= maxUrlLength;
+  
+  // Estimate how many payments we can fit based on current compression
+  const avgPaymentSize = trip.payments.length > 0 ? compressedSize / trip.payments.length : 0;
+  const recommendedMaxPayments = avgPaymentSize > 0 ? Math.floor((maxUrlLength - 200) / avgPaymentSize) : 500; // 200 chars for base URL
+  
+  return {
+    originalSize,
+    compressedSize,
+    compressionRatio,
+    urlLength,
+    maxUrlLength,
+    isWithinLimits,
+    recommendedMaxPayments
+  };
+}
+
+/**
+ * Create a trip with limited payments to fit within URL length constraints
+ * Removes oldest payments first to maintain the most recent data
+ * Uses 32,000 as the default for modern browsers (IE not supported)
+ */
+export function createUrlSafeTrip(trip: TripExpenses, maxUrlLength: number = 32000): TripExpenses {
+  const analysis = analyzeUrlLength(trip, maxUrlLength);
+  
+  if (analysis.isWithinLimits) {
+    return trip; // Already within limits
+  }
+  
+  // Sort payments by ID (assuming newer payments have higher IDs)
+  const sortedPayments = [...trip.payments].sort((a, b) => a.id - b.id);
+  
+  // Try with fewer payments, starting from the most recent
+  for (let i = sortedPayments.length - 1; i >= 0; i--) {
+    const testTrip = { ...trip, payments: sortedPayments.slice(i) };
+    const testAnalysis = analyzeUrlLength(testTrip, maxUrlLength);
+    
+    if (testAnalysis.isWithinLimits) {
+      return testTrip;
+    }
+  }
+  
+  // If we still can't fit, return a minimal trip with just metadata
+  return {
+    ...trip,
+    payments: []
+  };
 } 
