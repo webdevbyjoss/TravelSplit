@@ -9,17 +9,17 @@ import { useState, useEffect, useRef } from 'react';
 export function useTemporaryState<T>(
   initialValue: T,
   duration: number = 2000
-): [T, (arg0: T) => void, () => void] {
+): [T, () => void, () => void] {
   const [state, setState] = useState<T>(initialValue);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  const setTemporaryState = (newValue: T) => {
+  const setTemporaryState = (value: T) => {
     // Clear any existing timeout
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
     }
     
-    setState(newValue);
+    setState(value);
     
     // Set new timeout
     timeoutRef.current = setTimeout(() => {
