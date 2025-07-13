@@ -1,5 +1,10 @@
 // Service Worker for TravelSplit PWA
-const STATIC_CACHE = 'travelsplit-static-v5';
+// Version: auto-updated on deployment
+
+// Simple cache version that changes on each deployment
+const CACHE_VERSION = 'travelsplit-v1';
+const STATIC_CACHE = `travelsplit-static-${CACHE_VERSION}`;
+const DYNAMIC_CACHE = `travelsplit-dynamic-${CACHE_VERSION}`;
 
 const PRECACHE_ASSETS = [
   '/',
@@ -13,7 +18,7 @@ const PRECACHE_ASSETS = [
 
 // Install event - cache static assets
 self.addEventListener('install', (event) => {
-  console.log('Service Worker installing...');
+  console.log('Service Worker installing...', CACHE_VERSION);
   event.waitUntil(
     caches.open(STATIC_CACHE).then((cache) => {
       console.log('Caching static assets');
@@ -27,12 +32,13 @@ self.addEventListener('install', (event) => {
 
 // Activate event - clean up old caches and take control
 self.addEventListener('activate', (event) => {
-  console.log('Service Worker activating...');
+  console.log('Service Worker activating...', CACHE_VERSION);
   event.waitUntil(
     caches.keys().then((cacheNames) => {
       return Promise.all(
         cacheNames.map((cacheName) => {
-          if (cacheName !== STATIC_CACHE) {
+          // Delete all old caches that don't match current version
+          if (!cacheName.includes(CACHE_VERSION)) {
             console.log('Deleting old cache:', cacheName);
             return caches.delete(cacheName);
           }
@@ -45,7 +51,7 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// Fetch event - cache-first for static assets
+// Fetch event - network-first for HTML, cache-first for static assets
 self.addEventListener('fetch', (event) => {
   const { request } = event;
   const url = new URL(request.url);
@@ -55,21 +61,68 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Handle static assets with cache-first strategy
-  if (PRECACHE_ASSETS.includes(url.pathname) || 
+  // Network-first strategy for HTML files (ensures fresh content)
+  if (request.destination === 'document' || url.pathname.endsWith('.html')) {
+    event.respondWith(
+      fetch(request)
+        .then((response) => {
+          // Cache successful responses
+          if (response.ok) {
+            const responseClone = response.clone();
+            caches.open(DYNAMIC_CACHE).then((cache) => {
+              cache.put(request, responseClone);
+            });
+          }
+          return response;
+        })
+        .catch(() => {
+          // Fallback to cache
+          return caches.match(request);
+        })
+    );
+    return;
+  }
+
+  // Cache-first strategy for static assets (JS, CSS, images)
+  if (request.destination === 'script' || 
+      request.destination === 'style' || 
+      request.destination === 'image' ||
       url.pathname.startsWith('/static/') ||
       url.pathname.startsWith('/assets/')) {
     event.respondWith(
       caches.match(request).then((response) => {
-        return response || fetch(request);
+        if (response) {
+          // Return cached response
+          return response;
+        }
+        // Fetch from network and cache
+        return fetch(request).then((networkResponse) => {
+          if (networkResponse.ok) {
+            const responseClone = networkResponse.clone();
+            caches.open(STATIC_CACHE).then((cache) => {
+              cache.put(request, responseClone);
+            });
+          }
+          return networkResponse;
+        });
       })
     );
     return;
   }
 
-  // Default: try network, fallback to cache
+  // Default: network-first with cache fallback
   event.respondWith(
-    fetch(request).catch(() => caches.match(request))
+    fetch(request)
+      .then((response) => {
+        if (response.ok) {
+          const responseClone = response.clone();
+          caches.open(DYNAMIC_CACHE).then((cache) => {
+            cache.put(request, responseClone);
+          });
+        }
+        return response;
+      })
+      .catch(() => caches.match(request))
   );
 });
 
@@ -77,5 +130,19 @@ self.addEventListener('fetch', (event) => {
 self.addEventListener('message', (event) => {
   if (event.data && event.data.type === 'SKIP_WAITING') {
     self.skipWaiting();
+  }
+  
+  // Handle cache clearing
+  if (event.data && event.data.type === 'CLEAR_CACHE') {
+    event.waitUntil(
+      caches.keys().then((cacheNames) => {
+        return Promise.all(
+          cacheNames.map((cacheName) => {
+            console.log('Clearing cache:', cacheName);
+            return caches.delete(cacheName);
+          })
+        );
+      })
+    );
   }
 });

@@ -1,4 +1,4 @@
-# TravelSplit – The Easiest Way to Split Trip Costs
+# TravelSplit
 
 Simplifies tracking and splitting trip expenses.
 - Add expenses and split them among the group members.

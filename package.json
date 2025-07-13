@@ -1,7 +1,7 @@
 {
   "name": "travelsplit",
   "private": true,
-  "version": "0.0.4",
+  "version": "0.0.7",
   "type": "module",
   "description": "Split travel expenses with friends and family",
   "keywords": [
@@ -19,8 +19,7 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "jest",
-    "prepare-deploy": "node scripts/deploy.js",
-    "deploy": "npm run prepare-deploy && BUILD_VERSION=${BUILD_VERSION:-$(date +%s)} npm run build && npx wrangler deploy"
+    "deploy": "npm run build && npx wrangler deploy -e main --var GIT_BRANCH:$(git branch --show-current) --var GIT_SHA:$(git rev-parse --short HEAD)"
   },
   "dependencies": {
     "@reduxjs/toolkit": "^2.5.0",

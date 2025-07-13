@@ -132,7 +132,7 @@ export const showUpdateNotification = (): void => {
 };
 
 // Force update by reloading the page
-export const forceUpdate = (): void => {
+export const forceUpdate = async (): Promise<void> => {
   if (updateAvailable) {
     // Send message to service worker to skip waiting
     if (navigator.serviceWorker.controller) {

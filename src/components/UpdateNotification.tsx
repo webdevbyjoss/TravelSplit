@@ -8,6 +8,7 @@ interface UpdateNotificationProps {
 
 const UpdateNotification: React.FC<UpdateNotificationProps> = ({ className = '', style }) => {
   const [updateAvailable, setUpdateAvailable] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);
 
   useEffect(() => {
     // Check for updates every 5 seconds
@@ -21,6 +22,19 @@ const UpdateNotification: React.FC<UpdateNotificationProps> = ({ className = '',
 
     return () => clearInterval(checkInterval);
   }, []);
+
+  const handleUpdate = async () => {
+    try {
+      setIsUpdating(true);
+      await forceUpdate();
+    } catch (error) {
+      console.error('Failed to force update:', error);
+      // Fallback to simple reload
+      window.location.reload();
+    } finally {
+      setIsUpdating(false);
+    }
+  };
 
   if (!updateAvailable) {
     return null;
@@ -42,17 +56,19 @@ const UpdateNotification: React.FC<UpdateNotificationProps> = ({ className = '',
         <div className="column is-narrow">
           <div className="buttons">
             <button 
-              className="button is-info is-small" 
-              onClick={forceUpdate}
+              className={`button is-info is-small ${isUpdating ? 'is-loading' : ''}`}
+              onClick={handleUpdate}
+              disabled={isUpdating}
             >
               <span className="icon">
                 <i className="fas fa-sync-alt"></i>
               </span>
-              <span>Update Now</span>
+              <span>{isUpdating ? 'Updating...' : 'Update Now'}</span>
             </button>
             <button 
               className="button is-small" 
               onClick={() => setUpdateAvailable(false)}
+              disabled={isUpdating}
             >
               <span className="icon">
                 <i className="fas fa-times"></i>
