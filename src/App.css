@@ -10,11 +10,7 @@
   cursor: pointer;
 }
 
-.is-clickable:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px var(--shadow-color);
-  transition: all 0.2s ease;
-}
+
 
 .tags.has-addons {
   display: flex;
@@ -36,7 +32,5 @@
     box-shadow: 0 2px 8px var(--shadow-light);
   }
   
-  .is-clickable:hover {
-    box-shadow: 0 4px 12px var(--shadow-color);
-  }
+
 }

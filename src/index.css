@@ -319,10 +319,6 @@
     box-shadow: 0 2px 8px var(--shadow-light);
   }
 
-  .is-clickable:hover {
-    box-shadow: 0 4px 12px var(--shadow-color);
-  }
-
   /* Spinner */
   .spinner-border {
     border-color: var(--spinner-color);
@@ -783,14 +779,7 @@
     border: 1px solid var(--payment-total-border);
   }
 
-  .is-clickable {
-    cursor: pointer;
-    transition: all 0.2s ease;
-  }
 
-  .is-clickable:hover {
-    background-color: var(--bg-hover);
-  }
 
   /* Payment details input styling */
   .payment-details-container .field.has-addons .input {
