@@ -5,6 +5,7 @@ import TripDetailsScreen from './screens/TripDetailsScreen';
 import PaymentDetailsScreen from './screens/PaymentDetailsScreen';
 import ShareScreen from './screens/ShareScreen';
 import UpdateNotification from './components/UpdateNotification';
+import IosInstallPrompt from './components/IosInstallPrompt';
 import { registerServiceWorker } from './utils/pwa';
 import './App.css'
 
@@ -16,6 +17,7 @@ function App() {
 
   return (
     <>
+      <IosInstallPrompt />
       <UpdateNotification 
         className="is-fixed-top" 
         style={{
