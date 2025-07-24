@@ -11,6 +11,11 @@
   "lang": "en",
   "categories": ["travel", "utilities", "finance"],
   "prefer_related_applications": false,
+  "url_handlers": [
+    {
+      "origin": "https://travelsplit.softwarepush.workers.dev"
+    }
+  ],
   "icons": [
     {
       "src": "/icon-192x192.png",

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useParams, useNavigate } from 'react-router';
 import { RootState } from '../app/store';
@@ -6,7 +6,7 @@ import { getCurrencySymbol } from '../utils/validation';
 import { addPayment, updateTrip } from '../features/expenses/expensesSlice';
 import { DEFAULT_CURRENCY } from '../constants';
 
-const PaymentDetailsScreen: React.FC = () => {
+const PaymentDetailsScreen = () => {
   const { tripId, paymentId } = useParams<{ tripId: string; paymentId?: string }>();
   const dispatch = useDispatch();
   const navigate = useNavigate();

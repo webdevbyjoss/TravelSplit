@@ -1,29 +1,36 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { RootState } from '../app/store';
 import { useParams, useNavigate } from 'react-router';
+import { RootState } from '../app/store';
 import TeamSection from '../components/TeamSection';
+import TabPanel from '../components/TabPanel';
 import ConfirmDialog from '../components/ConfirmDialog';
+import InfoDialog from '../components/InfoDialog';
 import { calculateExpenses } from '../domain/Expenses';
 import Icon from '../components/Icon';
 import { CURRENCIES, DEFAULT_CURRENCY } from '../constants';
 import {
-  addTrip,
   updateTrip,
+  removePayment,
+  addTrip,
   addTeamMember,
   removeTeamMember,
-  removePayment,
 } from '../features/expenses/expensesSlice';
+import { getCurrencySymbol } from '../utils/validation';
 
-const TripDetailsScreen: React.FC = () => {
+const TripDetailsScreen = () => {
   const { tripId } = useParams<{ tripId: string }>();
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const trip = useSelector((state: RootState) => state.tripExpenses.find(t => t.id === Number(tripId)));
+  
+  const trip = useSelector((state: RootState) => 
+    state.tripExpenses.find(t => t.id === Number(tripId))
+  );
+
   const [title, setTitle] = useState(trip?.title || '');
   const [currency, setCurrency] = useState(trip?.currency || DEFAULT_CURRENCY);
   const [hasChanged, setHasChanged] = useState(false);
-  const [activePanel, setActivePanel] = useState<'split' | 'team'>('split');
+  const [activePanel, setActivePanel] = useState<'split' | 'team' | 'settings'>('split');
   const [userManuallyToggled, setUserManuallyToggled] = useState(false);
 
   // Reset manual toggle when trip changes (navigation to different trip)
@@ -31,7 +38,7 @@ const TripDetailsScreen: React.FC = () => {
     setUserManuallyToggled(false);
   }, [tripId]);
 
-  // Default to team panel if there are no payments yet or no trip exists
+  // Default to split panel if there are payments, otherwise team panel
   useEffect(() => {
     if ((!trip || (trip && trip.payments.length === 0)) && activePanel !== 'team' && !userManuallyToggled) {
       setActivePanel('team');
@@ -51,11 +58,18 @@ const TripDetailsScreen: React.FC = () => {
     paymentTitle: '',
   });
 
+  const [teamMemberInfoDialog, setTeamMemberInfoDialog] = useState<{ show: boolean; memberName: string | null }>({
+    show: false,
+    memberName: null,
+  });
+
+
+
   const isNewTrip = !tripId;
 
   // Helper function to format currency
   const formatCurrency = (amount: number): string => {
-    const symbol = CURRENCIES[currency as keyof typeof CURRENCIES]?.symbol || CURRENCIES[DEFAULT_CURRENCY].symbol;
+    const symbol = getCurrencySymbol(currency);
     return `${symbol}${amount.toFixed(2)}`;
   };
 
@@ -66,7 +80,13 @@ const TripDetailsScreen: React.FC = () => {
       const hasContent = title.trim().length > 0;
       if (hasContent) {
         const newTripId = Date.now();
-        dispatch(addTrip({ id: newTripId, title: title || 'New Trip', currency, team: [], payments: [] }));
+        dispatch(addTrip({ 
+          id: newTripId, 
+          title: title || 'New Trip', 
+          currency, 
+          team: [], 
+          payments: [] 
+        }));
         navigate(`/trip/${newTripId}`);
       }
     }
@@ -91,21 +111,27 @@ const TripDetailsScreen: React.FC = () => {
   };
 
   const handleAddTeamMember = (member: { name: string }) => {
-    setHasChanged(true);
-    
-    if (!trip) {
-      // Create trip if it doesn't exist yet
-      const newTripId = Date.now();
-      dispatch(addTrip({ id: newTripId, title: title || 'New Trip', currency, team: [member], payments: [] }));
-      navigate(`/trip/${newTripId}`);
-    } else {
+    if (trip) {
       dispatch(addTeamMember({ tripId: trip.id, member }));
     }
   };
 
+  // Check if a user has any expenses (participates in any payments)
+  const userHasExpenses = (memberName: string): boolean => {
+    if (!trip) return false;
+    return trip.payments.some(payment => payment.shares.has(memberName));
+  };
+
   const handleRemoveTeamMember = (memberName: string) => {
     if (trip) {
-      dispatch(removeTeamMember({ tripId: trip.id, memberName }));
+      const hasExpenses = userHasExpenses(memberName);
+      if (hasExpenses) {
+        // Show info dialog if user has expenses - can't remove
+        setTeamMemberInfoDialog({ show: true, memberName });
+      } else {
+        // Remove immediately if user has no expenses
+        dispatch(removeTeamMember({ tripId: trip.id, memberName }));
+      }
     }
   };
 
@@ -122,6 +148,10 @@ const TripDetailsScreen: React.FC = () => {
 
   const cancelPaymentRemoval = () => {
     setPaymentConfirmDialog({ show: false, paymentId: null, paymentTitle: '' });
+  };
+
+  const closeTeamMemberInfoDialog = () => {
+    setTeamMemberInfoDialog({ show: false, memberName: null });
   };
 
   const handleAddNewPayment = () => {
@@ -175,50 +205,20 @@ const TripDetailsScreen: React.FC = () => {
         </div>
       </div>
 
-      {/* Panel Switcher: Split (balances) or Team */}
-      {(trip || isNewTrip) && (
-        activePanel === 'split' ? (
-          trip && (
+      {/* Tabbed Panel: Team and Split */}
+      {trip && (
+        <TabPanel
+          activeTab={activePanel}
+          onTabChange={(tab) => {
+            setActivePanel(tab);
+            setUserManuallyToggled(true);
+          }}
+          showSplitTab={trip && trip.payments.length > 0}
+          showTeamTab={trip !== null}
+          showSettingsTab={trip !== null}
+        >
+          {activePanel === 'split' && trip && (
             <div className="box mb-6">
-              <h2 className="subtitle has-text-weight-normal has-text-grey-dark mb-2">
-                <div className="columns is-mobile is-vcentered">
-                  <div className="column">
-                    <span className="icon-text">
-                      <span className="icon">
-                        <Icon name="fa-solid fa-calculator" size={24} />
-                      </span>
-                      <span>Split</span>
-                    </span>
-                  </div>
-                                  <div className="column is-narrow">
-                  <div className="buttons are-small is-align-items-center">
-                    <button
-                      className="button is-info is-light is-small-mobile"
-                      onClick={() => {
-                        setActivePanel('team');
-                        setUserManuallyToggled(true);
-                      }}
-                    >
-                    <span className="icon">
-                      <Icon name="fa-solid fa-users" size={20} />
-                    </span>
-                    </button>
-                    <div className="select is-small">
-                      <select 
-                        value={currency} 
-                        onChange={(e) => handleCurrencyChange(e.target.value)}
-                      >
-                        {Object.entries(CURRENCIES).map(([code, currency]) => (
-                          <option key={code} value={code}>
-                            {code} ({currency.symbol})
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                  </div>
-                  </div>
-                </div>
-              </h2>
               {/* Balances summary */}
               <div className="columns is-mobile">
                 {/* Left Column - Users with negative balance (need to pay) */}
@@ -281,20 +281,37 @@ const TripDetailsScreen: React.FC = () => {
                 </div>
               </div>
             </div>
-          )
-        ) : (
-          <TeamSection
-            team={trip?.team || []}
-            onAddTeamMember={handleAddTeamMember}
-            onRemoveTeamMember={handleRemoveTeamMember}
-            onFocus={() => setHasChanged(true)}
-            onSwitchToSplit={() => {
-              setActivePanel('split');
-              setUserManuallyToggled(true);
-            }}
-            showSplitButton={trip && trip.payments.length > 0}
-          />
-        )
+          )}
+          {activePanel === 'team' && trip && (
+            <TeamSection
+              team={trip.team}
+              onAddTeamMember={handleAddTeamMember}
+              onRemoveTeamMember={handleRemoveTeamMember}
+              onFocus={() => setHasChanged(true)}
+            />
+          )}
+          {activePanel === 'settings' && trip && (
+            <div className="box mb-6">
+              <div className="field">
+                <label className="label is-small">Currency</label>
+                <div className="control">
+                  <div className="select">
+                    <select 
+                      value={currency} 
+                      onChange={(e) => handleCurrencyChange(e.target.value)}
+                    >
+                      {Object.entries(CURRENCIES).map(([code, currency]) => (
+                        <option key={code} value={code}>
+                          {code} ({currency.symbol})
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+        </TabPanel>
       )}
 
       {/* Expenses section always visible if trip and team */}
@@ -378,6 +395,14 @@ const TripDetailsScreen: React.FC = () => {
           message={`Are you sure you want to remove the payment "${paymentConfirmDialog.paymentTitle}"?`}
           onConfirm={confirmPaymentRemoval}
           onCancel={cancelPaymentRemoval}
+        />
+      )}
+
+      {teamMemberInfoDialog.show && (
+        <InfoDialog
+          title="Cannot Remove Team Member"
+          message={`Cannot remove "${teamMemberInfoDialog.memberName}" because they participate in expenses. Please remove all expenses involving this team member first.`}
+          onClose={closeTeamMemberInfoDialog}
         />
       )}
 

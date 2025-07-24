@@ -18,6 +18,7 @@ import {
   Info,
   X,
   RotateCcw,
+  Settings,
 } from 'lucide-react';
 
 interface IconProps {
@@ -65,6 +66,10 @@ const Icon: React.FC<IconProps> = ({ name, size = 16, className = '' }) => {
     'fa-solid fa-times': X,
     'fas fa-sync-alt': RotateCcw,
     'fa-solid fa-sync-alt': RotateCcw,
+    'fa-solid fa-gear': Settings,
+    'fas fa-gear': Settings,
+    'fa-solid fa-cog': Settings,
+    'fas fa-cog': Settings,
   };
 
   const IconComponent = iconMap[name];

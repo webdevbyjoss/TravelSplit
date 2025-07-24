@@ -8,9 +8,14 @@ export default defineConfig({
     port: 5173,
     strictPort: true,
     hmr: {
-      port: 5173,
       host: 'localhost',
-      protocol: 'ws'
+      port: 5173
+    },
+    // Disable caching headers in development
+    headers: {
+      'Cache-Control': 'no-cache, no-store, must-revalidate',
+      'Pragma': 'no-cache',
+      'Expires': '0'
     }
   },
   build: {
@@ -28,4 +33,6 @@ export default defineConfig({
   plugins: [
     react()
   ],
+  // Ensure service worker is served correctly in development
+  publicDir: 'public',
 })

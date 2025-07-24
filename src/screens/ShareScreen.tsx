@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useParams, useNavigate, useLocation } from 'react-router';
 import { RootState } from '../app/store';
@@ -7,8 +7,6 @@ import {
   deserializeTripFromSharing, 
   calculateTripDiff, 
   mergeTripData,
-  extractShareDataFromUrl,
-  validateShareData,
   ShareDiff
 } from '../utils/serialization';
 import { TripExpenses } from '../domain/Expenses';
@@ -17,7 +15,7 @@ import { CURRENCIES, DEFAULT_CURRENCY } from '../constants';
 import Icon from '../components/Icon';
 import ConfirmDialog from '../components/ConfirmDialog';
 
-const ShareScreen: React.FC = () => {
+const ShareScreen = () => {
   const { tripId } = useParams<{ tripId: string }>();
   const location = useLocation();
   const dispatch = useDispatch();
@@ -40,31 +38,18 @@ const ShareScreen: React.FC = () => {
         setError(null);
 
         // Extract data from URL
-        const shareData = extractShareDataFromUrl(location.pathname + location.search);
+        const shareData = deserializeTripFromSharing(location.pathname + location.search);
         
         if (!shareData) {
           setError('Invalid share URL. No data found.');
           return;
         }
 
-        // Validate and deserialize the data
-        if (!validateShareData(shareData)) {
-          setError('Invalid share data. The link may be corrupted or outdated.');
-          return;
-        }
-
-        const deserializedTrip = deserializeTripFromSharing(shareData);
-        
-        if (!deserializedTrip) {
-          setError('Failed to load shared trip data.');
-          return;
-        }
-
-        setSharedTrip(deserializedTrip);
+        setSharedTrip(shareData);
 
         // Calculate diff if we have a current trip
         if (currentTrip) {
-          const tripDiff = calculateTripDiff(currentTrip, deserializedTrip);
+          const tripDiff = calculateTripDiff(currentTrip, shareData);
           setDiff(tripDiff);
         }
 

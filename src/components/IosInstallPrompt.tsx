@@ -44,6 +44,10 @@ const IosInstallPrompt: React.FC = () => {
     }}>
       <span role="img" aria-label="info" style={{ marginRight: 8 }}>📱</span>
       Install this app: Tap <span style={{fontWeight:'bold'}}>Share</span> <span role="img" aria-label="share">⬆️</span> then <span style={{fontWeight:'bold'}}>Add to Home Screen</span>
+      <br />
+      <small style={{ opacity: 0.8, marginTop: '0.5em', display: 'block' }}>
+        This will allow shared trip links to open directly in the app
+      </small>
       <button
         onClick={() => {
           setShow(false);

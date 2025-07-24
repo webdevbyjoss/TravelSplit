@@ -1,0 +1,31 @@
+name: E2E Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  cypress-run:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Start Vite dev server
+        run: npm run dev &
+
+      - name: Wait for Vite to be ready
+        run: npx wait-on http://localhost:5173
+
+      - name: Run Cypress E2E tests (headless)
+        run: npm run cy:run 

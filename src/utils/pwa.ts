@@ -9,6 +9,11 @@ let deferredPrompt: BeforeInstallPromptEvent | null = null;
 let updateAvailable = false;
 let updateCallback: (() => void) | null = null;
 
+// Check if we're in development mode using Vite's environment
+const isDevelopment = (): boolean => {
+  return import.meta.env.DEV;
+};
+
 export const registerServiceWorker = async (): Promise<void> => {
   if ('serviceWorker' in navigator) {
     try {
@@ -19,8 +24,35 @@ export const registerServiceWorker = async (): Promise<void> => {
       
       // Check for updates immediately
       checkForUpdates(registration);
+      
+      // In development mode, clear cache on registration
+      if (isDevelopment()) {
+        console.log('Development mode detected - clearing service worker cache');
+        clearServiceWorkerCache();
+      }
     } catch (error) {
       console.error('Service Worker registration failed:', error);
+    }
+  }
+};
+
+// Clear service worker cache (useful for development)
+export const clearServiceWorkerCache = async (): Promise<void> => {
+  if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+    try {
+      // Send message to service worker to clear cache
+      navigator.serviceWorker.controller.postMessage({ type: 'CLEAR_CACHE' });
+      
+      // Also clear browser cache for development
+      if (isDevelopment()) {
+        const cacheNames = await caches.keys();
+        await Promise.all(
+          cacheNames.map(cacheName => caches.delete(cacheName))
+        );
+        console.log('Development cache cleared');
+      }
+    } catch (error) {
+      console.error('Failed to clear service worker cache:', error);
     }
   }
 };
@@ -188,4 +220,54 @@ export const isPWAInstalled = (): boolean => {
 // Check if install prompt is available
 export const isInstallPromptAvailable = (): boolean => {
   return deferredPrompt !== null;
+};
+
+// Deep linking utilities for iOS PWA
+export const setupDeepLinking = (): void => {
+  // Handle deep linking for shared URLs
+  if (isPWAInstalled()) {
+    // If the app is installed, ensure we're handling the current URL properly
+    handleCurrentURL();
+  }
+
+  // Listen for URL changes
+  window.addEventListener('popstate', () => {
+    if (isPWAInstalled()) {
+      handleCurrentURL();
+    }
+  });
+};
+
+// Handle the current URL for deep linking
+const handleCurrentURL = (): void => {
+  const currentPath = window.location.pathname + window.location.search;
+  
+  // Check if this is a shared trip URL
+  if (currentPath.includes('/trip/') && currentPath.includes('/share')) {
+    // The ShareScreen component will handle the URL parsing
+    console.log('Deep link detected for shared trip:', currentPath);
+  }
+};
+
+// Redirect to PWA if needed (for iOS)
+export const redirectToPWA = (url: string): void => {
+  if (isIos() && !isPWAInstalled()) {
+    // On iOS, if the PWA is not installed, try to open in Safari
+    // This is a fallback since iOS doesn't support programmatic PWA opening
+    window.location.href = url;
+  } else {
+    // For other platforms or if PWA is installed, navigate normally
+    window.location.href = url;
+  }
+};
+
+// Check if running on iOS
+export const isIos = (): boolean => {
+  return /iphone|ipad|ipod/i.test(window.navigator.userAgent);
+};
+
+// Check if running in Safari on iOS
+export const isIosSafari = (): boolean => {
+  const ua = window.navigator.userAgent;
+  return isIos() && /safari/i.test(ua) && !/crios|fxios|opios|edgios/i.test(ua);
 }; 

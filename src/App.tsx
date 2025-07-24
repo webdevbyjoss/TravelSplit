@@ -6,13 +6,51 @@ import PaymentDetailsScreen from './screens/PaymentDetailsScreen';
 import ShareScreen from './screens/ShareScreen';
 import UpdateNotification from './components/UpdateNotification';
 import IosInstallPrompt from './components/IosInstallPrompt';
-import { registerServiceWorker } from './utils/pwa';
+import { registerServiceWorker, clearServiceWorkerCache } from './utils/pwa';
 import './App.css'
+
+const isDevelopment = (): boolean => {
+  return import.meta.env.DEV;
+};
 
 function App() {
   useEffect(() => {
     // Register service worker for PWA functionality
     registerServiceWorker();
+    
+    // In development mode, set up cache clearing on hot reload
+    if (isDevelopment()) {
+      // Add development flag to URL for service worker detection
+      if (!window.location.search.includes('dev=true')) {
+        const separator = window.location.search ? '&' : '?';
+        window.history.replaceState(
+          null, 
+          '', 
+          window.location.pathname + window.location.search + separator + 'dev=true'
+        );
+      }
+      
+      // Clear cache on hot reload for development
+      const handleBeforeUnload = () => {
+        clearServiceWorkerCache();
+      };
+      
+      window.addEventListener('beforeunload', handleBeforeUnload);
+      
+      // Also clear cache on focus (useful for development)
+      const handleFocus = () => {
+        if (isDevelopment()) {
+          clearServiceWorkerCache();
+        }
+      };
+      
+      window.addEventListener('focus', handleFocus);
+      
+      return () => {
+        window.removeEventListener('beforeunload', handleBeforeUnload);
+        window.removeEventListener('focus', handleFocus);
+      };
+    }
   }, []);
 
   return (

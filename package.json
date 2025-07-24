@@ -12,13 +12,16 @@
     "react"
   ],
   "author": "TravelSplit",
-  "homepage": "https://travelsplit.app",
+  "homepage": "https://travelsplit.softwarepush.workers.dev",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "jest",
+    "cy:e2e": "cypress run --e2e",
+    "cy:open": "cypress open --e2e",
+    "cy:run": "cypress run --e2e --headless",
     "deploy": "npm run build && npx wrangler deploy -e main --var GIT_BRANCH:$(git branch --show-current) --var GIT_SHA:$(git rev-parse --short HEAD)"
   },
   "dependencies": {
@@ -39,6 +42,7 @@
     "@types/react": "^19.0.2",
     "@types/react-dom": "^19.0.3",
     "@vitejs/plugin-react": "^4.3.4",
+    "cypress": "^14.5.2",
     "eslint": "^9.17.0",
     "eslint-plugin-react-hooks": "^5.0.0",
     "eslint-plugin-react-refresh": "^0.4.19",

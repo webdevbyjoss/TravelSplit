@@ -317,7 +317,7 @@ export function analyzeUrlLength(trip: TripExpenses, maxUrlLength: number = 3200
   const compressionRatio = compressedSize / originalSize;
   
   // Calculate full URL length
-  const baseUrl = 'https://travelsplit.app';
+  const baseUrl = 'https://travelsplit.softwarepush.workers.dev';
   const fullUrl = `${baseUrl}/trip/${trip.id}/share?d=${serialized}`;
   const urlLength = fullUrl.length;
   

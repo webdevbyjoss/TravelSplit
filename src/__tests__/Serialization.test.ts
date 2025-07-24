@@ -129,7 +129,7 @@ describe('Serialization', () => {
     });
 
     it('should handle different base URLs', () => {
-      const baseUrl = 'https://travelsplit.app';
+      const baseUrl = 'https://travelsplit.softwarepush.workers.dev';
       const shareUrl = generateShareUrl(mockTrip, baseUrl);
       
       expect(shareUrl).toMatch(new RegExp(`^${baseUrl}/trip/${mockTrip.id}/share\\?d=`));
@@ -486,7 +486,7 @@ describe('Serialization', () => {
     });
 
     it('should handle different base URLs', () => {
-      const baseUrl = 'https://travelsplit.app';
+      const baseUrl = 'https://travelsplit.softwarepush.workers.dev';
       const shareUrl = generateShareUrl(mockTrip, baseUrl);
       const extractedData = extractShareDataFromUrl(shareUrl);
       const deserialized = deserializeTripFromSharing(extractedData!);

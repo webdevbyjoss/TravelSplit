@@ -1,6 +1,16 @@
 // Service Worker for TravelSplit PWA
 // Version: auto-updated on deployment
 
+// Check if we're in development mode
+const isDevelopment = () => {
+  // Check for development flag set by the main app
+  return self.location.search.includes('dev=true') || 
+         self.location.hostname === 'localhost' || 
+         self.location.hostname === '127.0.0.1' ||
+         self.location.port === '5173' ||
+         self.location.port === '3000';
+};
+
 // Simple cache version that changes on each deployment
 const CACHE_VERSION = 'travelsplit-v1';
 const STATIC_CACHE = `travelsplit-static-${CACHE_VERSION}`;
@@ -19,6 +29,14 @@ const PRECACHE_ASSETS = [
 // Install event - cache static assets
 self.addEventListener('install', (event) => {
   console.log('Service Worker installing...', CACHE_VERSION);
+  
+  // Skip caching in development mode
+  if (isDevelopment()) {
+    console.log('Development mode detected - skipping cache installation');
+    event.waitUntil(self.skipWaiting());
+    return;
+  }
+  
   event.waitUntil(
     caches.open(STATIC_CACHE).then((cache) => {
       console.log('Caching static assets');
@@ -33,6 +51,14 @@ self.addEventListener('install', (event) => {
 // Activate event - clean up old caches and take control
 self.addEventListener('activate', (event) => {
   console.log('Service Worker activating...', CACHE_VERSION);
+  
+  // Skip cache cleanup in development mode
+  if (isDevelopment()) {
+    console.log('Development mode detected - skipping cache cleanup');
+    event.waitUntil(self.clients.claim());
+    return;
+  }
+  
   event.waitUntil(
     caches.keys().then((cacheNames) => {
       return Promise.all(
@@ -63,6 +89,35 @@ self.addEventListener('fetch', (event) => {
 
   // Skip unsupported schemes (chrome-extension, data:, etc.)
   if (url.protocol === 'chrome-extension:' || url.protocol === 'data:' || url.protocol === 'blob:') {
+    return;
+  }
+
+  // In development mode, always fetch from network and don't cache
+  if (isDevelopment()) {
+    console.log('Development mode - fetching from network:', request.url);
+    event.respondWith(fetch(request));
+    return;
+  }
+
+  // Handle deep linking for shared trip URLs
+  if (url.pathname.includes('/trip/') && url.pathname.includes('/share')) {
+    event.respondWith(
+      fetch(request)
+        .then((response) => {
+          // Cache successful responses
+          if (response.ok) {
+            const responseClone = response.clone();
+            caches.open(DYNAMIC_CACHE).then((cache) => {
+              cache.put(request, responseClone);
+            });
+          }
+          return response;
+        })
+        .catch(() => {
+          // Fallback to cache
+          return caches.match(request);
+        })
+    );
     return;
   }
 
@@ -150,4 +205,10 @@ self.addEventListener('message', (event) => {
       })
     );
   }
+});
+
+// Handle navigation events for deep linking
+self.addEventListener('navigate', (event) => {
+  // This helps ensure deep links work properly in the PWA
+  console.log('Navigation event:', event);
 });
