@@ -27,7 +27,7 @@ export const registerServiceWorker = async (): Promise<void> => {
       
       // In development mode, clear cache on registration
       if (isDevelopment()) {
-        console.log('Development mode detected - clearing service worker cache');
+        console.warn('Development mode detected - clearing service worker cache');
         clearServiceWorkerCache();
       }
     } catch (error) {
@@ -49,7 +49,7 @@ export const clearServiceWorkerCache = async (): Promise<void> => {
         await Promise.all(
           cacheNames.map(cacheName => caches.delete(cacheName))
         );
-        console.log('Development cache cleared');
+        console.warn('Development cache cleared');
       }
     } catch (error) {
       console.error('Failed to clear service worker cache:', error);
@@ -245,7 +245,7 @@ const handleCurrentURL = (): void => {
   // Check if this is a shared trip URL
   if (currentPath.includes('/trip/') && currentPath.includes('/share')) {
     // The ShareScreen component will handle the URL parsing
-    console.log('Deep link detected for shared trip:', currentPath);
+    console.warn('Deep link detected for shared trip:', currentPath);
   }
 };
 

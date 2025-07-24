@@ -3,7 +3,8 @@ import Icon from './Icon';
 
 interface TabPanelProps {
   activeTab: 'team' | 'split' | 'settings';
-  onTabChange: (tab: 'team' | 'split' | 'settings') => void;
+  // eslint-disable-next-line no-unused-vars
+  onTabChange: (_tab: 'team' | 'split' | 'settings') => void;
   children: React.ReactNode;
   showSplitTab?: boolean;
   showTeamTab?: boolean;
